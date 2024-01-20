@@ -10,21 +10,21 @@ import javax.lang.model.util.ElementScanner14;
 
 import org.w3c.dom.css.RGBColor;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
-import com.pathplanner.lib.path.PathConstraints;
-import com.pathplanner.lib.PathPlanner;
+import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.PathPlannerTrajectory;
-import com.pathplanner.lib.path.PathPoint;
-import com.pathplanner.lib.PIDConstants;
-import com.pathplanner.lib.auto.SwerveAutoBuilder;
-import com.pathplanner.lib.commands.PPSwerveControllerCommand;
-import com.pathplanner.lib.server.PathPlannerServer;
+import com.pathplanner.lib.util.PIDConstants;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
@@ -53,13 +53,9 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-
-import frc.robot.Constants.AutoConstants;
-import frc.robot.Constants.DriveConstants;
-import frc.robot.Constants.OIConstants;
-import frc.robot.Constants.ShoulderConstants;
 import frc.robot.Constants.*;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.commands.SwerveJoystickCmd;
@@ -95,8 +91,8 @@ public class RobotContainer
     private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
 
 
-    public final XboxController driverJoystick = new XboxController(OIConstants.kDriverControllerPort);
-    public final XboxController operatorJoystick = new XboxController(OIConstants.kOperatorControllerPort);
+    public final CommandXboxController driverJoystick = new CommandXboxController(OIConstants.kDriverControllerPort);
+    public final CommandXboxController operatorJoystick = new CommandXboxController(OIConstants.kOperatorControllerPort);
 
     private boolean isPracticeRobot;
 
@@ -149,7 +145,7 @@ public class RobotContainer
         isPracticeRobot = !input.get();
         input.close();
 
-        configureAutonomousCommands();
+        //configureAutonomousCommands();
     
         swerveSubsystem.setDefaultCommand(new SwerveJoystickCmd(
                 swerveSubsystem,
@@ -233,39 +229,40 @@ public class RobotContainer
 
     private void configureButtonBindings() 
     {
-        new JoystickButton(driverJoystick, XboxController.Button.kA.value).whenPressed( () -> swerveSubsystem.zeroHeading(0.0) );
+        Trigger aButton = driverJoystick.a();
+        aButton.onTrue( Commands.run( () -> swerveSubsystem.zeroHeading(0.0) ) );
 
-        new JoystickButton(driverJoystick, XboxController.Button.kLeftBumper.value)
+        new JoystickButton(driverJoystick, CommandXboxController.Button.kLeftBumper.value)
            .whenPressed(() -> DriveSlowDividerSet(1.0))
            .whenReleased(() -> DriveSlowDividerSet(1.5));
         
-        new JoystickButton(driverJoystick, XboxController.Button.kRightBumper.value)
+        new JoystickButton(driverJoystick, CommandXboxController.Button.kRightBumper.value)
            .whenPressed(() -> DriveSlowDividerSet(2.6))
            .whenReleased(() -> DriveSlowDividerSet(1.5));
 
-        new JoystickButton(operatorJoystick, XboxController.Button.kRightBumper.value)
+        new JoystickButton(operatorJoystick, CommandXboxController.Button.kRightBumper.value)
            .whenPressed(() -> DriveSlowDividerSet(2.6))
            .whenReleased(() -> DriveSlowDividerSet(1.5));
         
-        new JoystickButton(operatorJoystick, XboxController.Button.kY.value)
+        new JoystickButton(operatorJoystick, CommandXboxController.Button.kY.value)
             .whileTrue( ScoreHighProCmd()
             .finallyDo( this::RumbleConfirm )
             );
-        new JoystickButton(operatorJoystick, XboxController.Button.kB.value)
+        new JoystickButton(operatorJoystick, CommandXboxController.Button.kB.value)
             .whileTrue( ScoreMidProCmd() 
             .finallyDo( this::RumbleConfirm )
             );
-        new JoystickButton(operatorJoystick, XboxController.Button.kA.value)
+        new JoystickButton(operatorJoystick, CommandXboxController.Button.kA.value)
             .whileTrue( ScoreLowCmd() 
             .finallyDo( this::RumbleConfirm )
             );
 
-        new JoystickButton(operatorJoystick, XboxController.Button.kLeftBumper.value)
+        new JoystickButton(operatorJoystick, CommandXboxController.Button.kLeftBumper.value)
             .whileTrue( new ConditionalCommand( ShelfLoadConeCmd(), ShelfLoadCubeCmd(), intakeSubsystem::getCone )
             .finallyDo( this::RumbleConfirm )
             );
 
-        new JoystickButton(operatorJoystick, XboxController.Button.kBack.value)
+        new JoystickButton(operatorJoystick, CommandXboxController.Button.kBack.value)
             .whileTrue( 
                 new SequentialCommandGroup(
                     new InstantCommand( ()-> shoulderSubsystem.latchStartingPosition() ),
@@ -287,7 +284,7 @@ public class RobotContainer
             ));
     
 
-        new JoystickButton(operatorJoystick, XboxController.Button.kStart.value).whenPressed(() -> extendSubsystem.zeroPosition());
+        new JoystickButton(operatorJoystick, CommandXboxController.Button.kStart.value).whenPressed(() -> extendSubsystem.zeroPosition());
 
         m_operatorRightYAxisUp = new GamepadAxisButton(this::operatorRightYAxisUp);
         m_operatorRightYAxisUp.whileTrue( new ShoulderJogUpCmd( shoulderSubsystem ) );
@@ -742,7 +739,7 @@ public class RobotContainer
         }
     }
 
-
+/*
     void configureAutonomousCommands()
     {
         // Add commands to the autonomous command chooser
@@ -768,15 +765,15 @@ public class RobotContainer
     {
         // Load the PathPlanner path file and generate it with a max
         // velocity and acceleration for every path in the group
-        List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup("Balance", 
-            new PathConstraints(0.55, 2));
+        
+        PathPlannerAuto pathA = new PathPlannerAuto("BabyGiraffeAuto");
 
         // This is just an example event map. It would be better to have a constant, global event map
         // in your code that will be used by all path following commands.
         HashMap<String, Command> eventMap = new HashMap<>();
         //eventMap.put("marker1", new PrintCommand("Passed marker 1"));
         //eventMap.put("intakeDown", new IntakeDown());
-
+        AutoBuilder.followPath(pathA).schedule();
         // Create the AutoBuilder. This only needs to be created once when robot code starts, not every time you want to create an auto command. A good place to put this is in RobotContainer along with your subsystems.
         SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
             swerveSubsystem::getPose, // Pose2d supplier
@@ -981,7 +978,7 @@ public class RobotContainer
                 new IntakeJogCmd( intakeSubsystem, false ).withTimeout(3.0),
                 StowCmdHigh()
             )
-        );*/
+        );
 
         // Create the AutoBuilder. This only needs to be created once when robot code starts, not every time you want to create an auto command. A good place to put this is in RobotContainer along with your subsystems.
         SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
@@ -1048,5 +1045,5 @@ public class RobotContainer
             new WaitCommand(7.0),
             autoBuilderCommand
         );
-    }
+    }*/
  }
