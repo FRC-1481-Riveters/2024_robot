@@ -106,8 +106,8 @@ public class Robot extends LoggedRobot {
     @Override
     public void disabledInit() {
         // Turn off position control when the robot is disabled.
-        m_robotContainer.driverJoystick.setRumble(RumbleType.kBothRumble,0);
-        m_robotContainer.operatorJoystick.setRumble(RumbleType.kBothRumble,0);
+        m_robotContainer.driverJoystick.getHID().setRumble(RumbleType.kBothRumble,0);
+        m_robotContainer.operatorJoystick.getHID().setRumble(RumbleType.kBothRumble,0);
         m_robotContainer.extendSubsystem.setExtend(0);
         m_robotContainer.shoulderSubsystem.setShoulder(0);
         m_robotContainer.wristSubsystem.setWrist(0);
@@ -138,12 +138,14 @@ public class Robot extends LoggedRobot {
      */
     @Override
     public void autonomousInit() {
+/* !*!*!* TODO fixme
         m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
         // schedule the autonomous command (example)
         if (m_autonomousCommand != null) {
             m_autonomousCommand.schedule();
         }
+*/
     }
 
     /** This function is called periodically during autonomous. */

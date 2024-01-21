@@ -39,6 +39,7 @@ import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.hal.AllianceStationID;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -152,7 +153,7 @@ public class RobotContainer
                 () -> getDriverMoveFwdBack(),
                 () -> getDriverMoveLeftRight(),
                 () -> getDriverRotate(),
-                () -> !driverJoystick.getRawButton(OIConstants.kDriverFieldOrientedButtonIdx)));
+                () -> !driverJoystick.getHID().getBackButton() ));
 
         configureButtonBindings();
 
@@ -218,8 +219,13 @@ public class RobotContainer
     public void setCreep( double value )
     {
         m_dCreep = value;
+        AllianceStationID station;
 
-        if( DriverStation.getAlliance() == DriverStation.Alliance.Blue ){
+        station = DriverStation.getRawAllianceStation();
+
+        if( (station == AllianceStationID.Blue1) || 
+            (station == AllianceStationID.Blue2) ||
+            (station == AllianceStationID.Blue3) ) {
             m_dCreep = m_dCreep * 1.10;
             //juice blue side a little higher
         }
@@ -231,7 +237,7 @@ public class RobotContainer
     {
         Trigger aButton = driverJoystick.a();
         aButton.onTrue( Commands.run( () -> swerveSubsystem.zeroHeading(0.0) ) );
-
+/* !*!*!* TODO fixme
         new JoystickButton(driverJoystick, CommandXboxController.Button.kLeftBumper.value)
            .whenPressed(() -> DriveSlowDividerSet(1.0))
            .whenReleased(() -> DriveSlowDividerSet(1.5));
@@ -332,11 +338,15 @@ public class RobotContainer
         m_driverLT.whileTrue( new IntakeJogCmd( intakeSubsystem, true ) );
         m_driverRT = new GamepadAxisButton(this::DriverRTtrigger);
         m_driverRT.whileTrue( new IntakeJogCmd( intakeSubsystem, false ) );
+*/
     }
 
     public boolean driverDpadUp()
     {
+        return false; 
+/* !*!*!* TODO fixme
         return ( driverJoystick.getPOV() == 0 );
+*/
     }
 
     public boolean operatorRightYAxisUp()
@@ -382,22 +392,22 @@ public class RobotContainer
 
     public boolean operatorDpadUp()
     {
-        return ( operatorJoystick.getPOV() == 0 );
+        return false; //!*!*!* TODO fixme        return ( operatorJoystick.getPOV() == 0 );
     }
 
     public boolean operatorDpadDown()
     {
-        return ( operatorJoystick.getPOV() == 180 );
+        return false; //!*!*!* TODO fixme        return ( operatorJoystick.getPOV() == 180 );
     }
 
     public boolean operatorDpadLeft()
     {
-        return ( operatorJoystick.getPOV() == 270 );
+        return false; //!*!*!* TODO fixme        return ( operatorJoystick.getPOV() == 270 );
     }
 
     public boolean operatorDpadRight()
     {
-        return ( operatorJoystick.getPOV() == 90 );
+        return false; //!*!*!* TODO fixme        return ( operatorJoystick.getPOV() == 90 );
     }
 
 
@@ -698,8 +708,8 @@ public class RobotContainer
     public Command RumbleCmd( double rumbleAmount )
     {
         return new ParallelCommandGroup(
-            new InstantCommand(() -> operatorJoystick.setRumble(RumbleType.kLeftRumble, rumbleAmount) ),
-            new InstantCommand(() -> driverJoystick.setRumble(RumbleType.kLeftRumble, rumbleAmount) )
+            new InstantCommand(() -> operatorJoystick.getHID().setRumble(RumbleType.kLeftRumble, rumbleAmount) ),
+            new InstantCommand(() -> driverJoystick.getHID().setRumble(RumbleType.kLeftRumble, rumbleAmount) )
         );
     }
     
