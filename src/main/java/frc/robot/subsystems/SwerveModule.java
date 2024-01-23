@@ -31,9 +31,9 @@ public class SwerveModule {
     private final boolean absoluteEncoderReversed;
     private final double absoluteEncoderOffsetDegrees;
 
-    public static final double drive_kA = -0.12872;
-    public static final double drive_kV = -2.3014;
-    public static final double drive_kS = -0.55493;
+    public static final double drive_kA = 0.12872;
+    public static final double drive_kV = 2.3014;
+    public static final double drive_kS = 0.55493;
     private SimpleMotorFeedforward m_feedForward = new SimpleMotorFeedforward( drive_kS, drive_kV, drive_kA );
 
 
@@ -45,7 +45,7 @@ public class SwerveModule {
         this.absoluteEncoderOffsetDegrees = absoluteEncoderOffsetDegrees;
         this.absoluteEncoderReversed = absoluteEncoderReversed;
         absoluteEncoder = new CANCoder(absoluteEncoderId, "CANivore");
-
+                
         driveMotor = new TalonFX(driveMotorId, "CANivore");
         turningMotor = new TalonFX(turningMotorId, "CANivore");
 

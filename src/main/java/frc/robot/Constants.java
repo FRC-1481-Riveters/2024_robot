@@ -33,15 +33,15 @@ public final class Constants {
                 new Translation2d(-kWheelBase / 2, -kTrackWidth / 2));
 
         // FIXME: patch these motor IDs up to match the Swervie 2022 configuration
-        public static final int kFrontLeftDriveMotorPort = 15;
-        public static final int kFrontRightDriveMotorPort = 12;
+        public static final int kFrontLeftDriveMotorPort = 19;
+        public static final int kFrontRightDriveMotorPort = 10;
         public static final int kBackLeftDriveMotorPort = 18;
-        public static final int kBackRightDriveMotorPort = 21;
+        public static final int kBackRightDriveMotorPort = 13;
 
-        public static final int kFrontLeftTurningMotorPort = 13;
-        public static final int kFrontRightTurningMotorPort = 10;
-        public static final int kBackLeftTurningMotorPort = 16;
-        public static final int kBackRightTurningMotorPort = 19;
+        public static final int kFrontLeftTurningMotorPort = 12;
+        public static final int kFrontRightTurningMotorPort = 21;
+        public static final int kBackLeftTurningMotorPort = 15;     
+        public static final int kBackRightTurningMotorPort = 16;
 
         public static final int gyroPort = 60;
 
