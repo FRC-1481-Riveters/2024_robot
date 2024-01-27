@@ -21,36 +21,36 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public IntakeSubsystem() 
     {
-        m_intakeMotor = new TalonSRX(IntakeConstants.INTAKE_MOTOR);
+        // m_intakeMotor = new TalonSRX(IntakeConstants.INTAKE_MOTOR);
           
-        m_intakeMotor.configFactoryDefault();
-        // Configure Talon  SRX output and sensor direction
-        m_intakeMotor.setSensorPhase(false);
-        // Set peak current
-        m_intakeMotor.configPeakCurrentLimit(20, IntakeConstants.TALON_TIMEOUT_MS);
-        m_intakeMotor.configPeakCurrentDuration(500, IntakeConstants.TALON_TIMEOUT_MS);
-        m_intakeMotor.configContinuousCurrentLimit(15, IntakeConstants.TALON_TIMEOUT_MS);
-        m_intakeMotor.enableCurrentLimit(true);
-        m_intakeMotor.setNeutralMode(NeutralMode.Brake);
+        // m_intakeMotor.configFactoryDefault();
+        // // Configure Talon  SRX output and sensor direction
+        // m_intakeMotor.setSensorPhase(false);
+        // // Set peak current
+        // m_intakeMotor.configPeakCurrentLimit(20, IntakeConstants.TALON_TIMEOUT_MS);
+        // m_intakeMotor.configPeakCurrentDuration(500, IntakeConstants.TALON_TIMEOUT_MS);
+        // m_intakeMotor.configContinuousCurrentLimit(15, IntakeConstants.TALON_TIMEOUT_MS);
+        // m_intakeMotor.enableCurrentLimit(true);
+        // m_intakeMotor.setNeutralMode(NeutralMode.Brake);
     }
 
     public void setIntake( double minus_one_to_one )
     {
-        double output;
-        output = minus_one_to_one;
+        // double output;
+        // output = minus_one_to_one;
 
-        m_intakeMotor.set(ControlMode.PercentOutput, output);
-        Logger.getInstance().recordOutput("IntakeSpeed", output );
+        // m_intakeMotor.set(ControlMode.PercentOutput, output);
+        // Logger.getInstance().recordOutput("IntakeSpeed", output );
     }
 
     public void setCone( boolean bHasCone )
     {
-        m_hasCone = bHasCone;
-        Logger.getInstance().recordOutput("HasCone", bHasCone );
-        System.out.println("setCone "  + bHasCone);
+        // m_hasCone = bHasCone;
+        // Logger.getInstance().recordOutput("HasCone", bHasCone );
+        // System.out.println("setCone "  + bHasCone);
     }
     public boolean getCone()
     {
-        return( m_hasCone );
+        return false; //( m_hasCone );
     }
 }

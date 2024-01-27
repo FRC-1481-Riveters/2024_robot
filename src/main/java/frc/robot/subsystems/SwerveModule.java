@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ModuleConstants;
 
@@ -52,8 +53,6 @@ public class SwerveModule {
         driveMotor.setInverted(driveMotorReversed);
         turningMotor.setInverted(turningMotorReversed);
 
-        //TODO: maybe copy the PID + motion magic stuff from the old Falcon500SteerControllerFactoryBuilder.java?
-
         currentConfig = new SupplyCurrentLimitConfiguration();
         currentConfig.currentLimit = 30;
         currentConfig.enable = true;
@@ -85,7 +84,7 @@ public class SwerveModule {
     public double getDrivePosition() {
         double position;
         position = driveMotor.getSelectedSensorPosition();  // 0..2048 counts per revolution
-        position = (position / 2048) * (14.0 / 50.0) * (28.0 / 16.0) * (15.0 / 60.0);
+        position = (position / 2048) * (14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0);
         position = -position * ModuleConstants.kWheelDiameterMeters * Math.PI;
         SmartDashboard.putNumber("driving Position[" + absoluteEncoder.getDeviceID() + "]",position);
 
@@ -103,10 +102,7 @@ public class SwerveModule {
         position = turningMotor.getSelectedSensorPosition();
 
         // convert the encodercount to radians
-        position = position * (2*Math.PI / (2048*12.8));
-        //driving geer ratio; (14.0 / 50.0) * (28.0 / 16.0) * (15.0 / 60.0),
-        //steering geer ratio; (15.0 / 32.0) * (10.0 / 60.0), 
-
+        position = position * ((2*Math.PI) / 2048) / Constants.ModuleConstants.SWERVE_STEERING_RATIO;
 
         return( position );
     }
@@ -143,7 +139,7 @@ public class SwerveModule {
         // Clear the drive motor encoder position
         driveMotor.setSelectedSensorPosition( 0 );
         absPosition = getAbsoluteEncoderDegrees();
-        absPosition = absPosition * ((2048*12.8)/360);
+        absPosition = absPosition * ((2048*Constants.ModuleConstants.SWERVE_STEERING_RATIO)/360);
         turningMotor.setSelectedSensorPosition( absPosition );
     }
 
@@ -159,10 +155,11 @@ public class SwerveModule {
         state = SwerveModuleState.optimize(state, getState().angle);
         //double speed = m_feedForward.calculate( state.speedMetersPerSecond );
         double speed = state.speedMetersPerSecond;
+        double turningPosition = getTurningPosition();
         driveMotor.set( ControlMode.PercentOutput, speed / DriveConstants.kPhysicalMaxSpeedMetersPerSecond );
         turningMotor.set( ControlMode.PercentOutput, 
-                          turningPidController.calculate( getTurningPosition(), state.angle.getRadians() ) );
-        SmartDashboard.putNumber("Turning Position[" + absoluteEncoder.getDeviceID() + "]", turningMotor.getSelectedSensorPosition() );
+                          turningPidController.calculate( turningPosition, state.angle.getRadians() ) );
+        SmartDashboard.putNumber("Turning Position[" + absoluteEncoder.getDeviceID() + "]", turningPosition );
         SmartDashboard.putString("Swerve[" + absoluteEncoder.getDeviceID() + "] state", state.toString());
     }
 

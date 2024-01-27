@@ -26,7 +26,7 @@ public class ShoulderSubsystem extends SubsystemBase {
 
     public ShoulderSubsystem() 
     {
-        m_shoulderMotorFollower = new TalonSRX(ShoulderConstants.SHOULDER_MOTOR_FOLLOWER);
+        /*m_shoulderMotorFollower = new TalonSRX(ShoulderConstants.SHOULDER_MOTOR_FOLLOWER);
         m_shoulderMotor = new TalonSRX(ShoulderConstants.SHOULDER_MOTOR);
         m_shoulderMotorFollower.follow(m_shoulderMotor);
 
@@ -82,22 +82,22 @@ public class ShoulderSubsystem extends SubsystemBase {
         m_shoulderMotor.configContinuousCurrentLimit(25, ShoulderConstants.TALON_TIMEOUT_MS);
         m_shoulderMotor.enableCurrentLimit(true);
         
-        m_shoulderMotorFollower.setNeutralMode(NeutralMode.Brake);
+        m_shoulderMotorFollower.setNeutralMode(NeutralMode.Brake); */
         }
 
     @Override
     public void periodic() 
     {
-        double pos = m_shoulderMotor.getSelectedSensorPosition();
+        /*double pos = m_shoulderMotor.getSelectedSensorPosition();
         nt_shoulder_pos.setDouble( pos );
         Logger.getInstance().recordOutput("ShoulderPosition", pos );
         Logger.getInstance().recordOutput("ShoulderSetPoint", shoulderPosition);
         Logger.getInstance().recordOutput("ShoulderOutput", nt_shoulder_set.getDouble(0) );
-   
+        */
     }  
     public void selectShoulderPID( int range )
     {
-        if( range == 0 )    // high
+        /*if( range == 0 )    // high
         {
             System.out.println("shoulder PID slot 0");
             m_shoulderMotor.selectProfileSlot(0, 0);
@@ -111,22 +111,23 @@ public class ShoulderSubsystem extends SubsystemBase {
         {
             System.out.println("shoulder PID slot 2");
             m_shoulderMotor.selectProfileSlot(2, 0);
-        }
+        } */
     }
 
     public void setShoulder( double minus_one_to_one )
     {
-        m_shoulderMotor.set(ControlMode.PercentOutput, minus_one_to_one);
-        nt_shoulder_set.setDouble( minus_one_to_one );
+        //m_shoulderMotor.set(ControlMode.PercentOutput, minus_one_to_one);
+        //nt_shoulder_set.setDouble( minus_one_to_one );
     }
     
     public double getShoulderOutput()
     {
-        return( nt_shoulder_set.getDouble( 0 ) );
+        return 0.0;
+        //return( nt_shoulder_set.getDouble( 0 ) );
     }
     
     public void setPosition(double value){
-        shoulderPosition = value;
+        /*shoulderPosition = value;
         System.out.println("Shoulder setPosition " + value);
         if( shoulderPosition > ShoulderConstants.SHOULDER_POSITION_BETWEEN_STOWED_AND_LEVEL )
         {
@@ -145,45 +146,49 @@ public class ShoulderSubsystem extends SubsystemBase {
         }
         m_shoulderMotor.setIntegralAccumulator(0);
         m_shoulderMotor.set(ControlMode.MotionMagic, value);
-        nt_shoulder_set.setDouble( shoulderPosition );
+        nt_shoulder_set.setDouble( shoulderPosition ); */
     }
     
     public boolean atPosition()
     {
-        return ( Math.abs( nt_shoulder_pos.getDouble(0) - shoulderPosition ) < ShoulderConstants.SHOULDER_TOLERANCE );
+        return false;
+        //return ( Math.abs( nt_shoulder_pos.getDouble(0) - shoulderPosition ) < ShoulderConstants.SHOULDER_TOLERANCE );
     }
 
     public double getPosition(){
-        return (nt_shoulder_pos.getDouble(0));
+        return 0.0;
+        //return (nt_shoulder_pos.getDouble(0));
     }
 
     public void latchStartingPosition()
     {
-        startingPosition = nt_shoulder_pos.getDouble(0);
+        //startingPosition = nt_shoulder_pos.getDouble(0);
     }
 
     public boolean startedBelowLevel()
     {
-        boolean rc;
+        return false;
+        // boolean rc;
 
-        if( startingPosition > ShoulderConstants.SHOULDER_POSITION_LEVEL )
-          rc =true;
-        else
-          rc = false;
+        // if( startingPosition > ShoulderConstants.SHOULDER_POSITION_LEVEL )
+        //   rc =true;
+        // else
+        //   rc = false;
 
-        return rc;
+        // return rc;
     }
 
     public double getCosine(){
-        double cosine;
-        double pos;
-        pos = nt_shoulder_pos.getDouble(0);
-      // if the arm is above level treat it as level (no feed forward needed to hold it in place)
-        if (pos < ShoulderConstants.SHOULDER_POSITION_LEVEL) 
-            pos = ShoulderConstants.SHOULDER_POSITION_LEVEL;
-      //Convert arm Position in encoder counts to radians 
-            cosine = ((pos - ShoulderConstants.SHOULDER_POSITION_LEVEL) / (ShoulderConstants.SHOULDER_POSITION_DOWN - ShoulderConstants.SHOULDER_POSITION_LEVEL)) * Math.PI/2.0;   
-        cosine = Math.cos(cosine);
-    return (cosine);
+    //     double cosine;
+    //     double pos;
+    //     pos = nt_shoulder_pos.getDouble(0);
+    //   // if the arm is above level treat it as level (no feed forward needed to hold it in place)
+    //     if (pos < ShoulderConstants.SHOULDER_POSITION_LEVEL) 
+    //         pos = ShoulderConstants.SHOULDER_POSITION_LEVEL;
+    //   //Convert arm Position in encoder counts to radians 
+    //         cosine = ((pos - ShoulderConstants.SHOULDER_POSITION_LEVEL) / (ShoulderConstants.SHOULDER_POSITION_DOWN - ShoulderConstants.SHOULDER_POSITION_LEVEL)) * Math.PI/2.0;   
+    //     cosine = Math.cos(cosine);
+    // return (cosine);
+        return 0.0;
     }
 }

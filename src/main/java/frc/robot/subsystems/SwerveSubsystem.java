@@ -52,7 +52,7 @@ public class SwerveSubsystem extends SubsystemBase {
             DriveConstants.kBackRightDriveAbsoluteEncoderOffset,
             DriveConstants.kBackRightDriveAbsoluteEncoderReversed);
 
-    private final Pigeon2 gyro = new Pigeon2( Constants.DriveConstants.gyroPort );
+    private final Pigeon2 gyro = new Pigeon2( Constants.DriveConstants.gyroPort, "CANivore" );
 
     private double yawOffset = 0;
     private double pitchOffset = 0;
