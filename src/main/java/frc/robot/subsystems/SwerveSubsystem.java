@@ -87,10 +87,6 @@ public class SwerveSubsystem extends SubsystemBase {
         System.out.println("initialPitch: " + pitchOffset);
     }
 
-    public double getRate()
-    {
-        return 0; //gyro.getRate();
-    }
 
     public void zeroHeading(double heading) {
         //gyro.setAccumZAngle(0); //.setFusedHeading(0);

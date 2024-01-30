@@ -99,7 +99,7 @@ public class RobotContainer
 
     private Field2d m_field;
 
-    double driveDivider = 1.5;
+    double driveDivider = 1.0;
 
     GamepadAxisButton m_driverDpadUp;
     GamepadAxisButton m_operatorRightYAxisUp;
@@ -207,7 +207,7 @@ public class RobotContainer
         if( m_dCreep != 0 )
             pos = 0;
         else
-            pos = driverJoystick.getRawAxis(OIConstants.kDriverRotAxis) / driveDivider;
+            pos = -driverJoystick.getRawAxis(OIConstants.kDriverRotAxis) / driveDivider;
         return pos;
     }
 
@@ -236,7 +236,7 @@ public class RobotContainer
     private void configureButtonBindings() 
     {
         Trigger aButton = driverJoystick.a();
-        aButton.onTrue( Commands.run( () -> swerveSubsystem.zeroHeading(0.0) ) );
+        aButton.onTrue( Commands.runOnce( () -> swerveSubsystem.zeroHeading(0.0) ) );
 /* !*!*!* TODO fixme
         new JoystickButton(driverJoystick, CommandXboxController.Button.kLeftBumper.value)
            .whenPressed(() -> DriveSlowDividerSet(1.0))

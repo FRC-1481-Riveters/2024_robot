@@ -41,15 +41,15 @@ public final class Constants {
 
         public static final int gyroPort = 60;
 
-        public static final boolean kFrontLeftTurningEncoderReversed = false;
-        public static final boolean kFrontRightTurningEncoderReversed = false;
-        public static final boolean kBackLeftTurningEncoderReversed = false;
-        public static final boolean kBackRightTurningEncoderReversed = false;
+        public static final boolean kFrontLeftTurningEncoderReversed = true;
+        public static final boolean kFrontRightTurningEncoderReversed = true;
+        public static final boolean kBackLeftTurningEncoderReversed = true;
+        public static final boolean kBackRightTurningEncoderReversed = true;
 
-        public static final boolean kFrontLeftDriveEncoderReversed = true;
-        public static final boolean kFrontRightDriveEncoderReversed = false;
-        public static final boolean kBackLeftDriveEncoderReversed = true;
-        public static final boolean kBackRightDriveEncoderReversed = false;
+        public static final boolean kFrontLeftDriveEncoderReversed = false;
+        public static final boolean kFrontRightDriveEncoderReversed = true;
+        public static final boolean kBackLeftDriveEncoderReversed = false;
+        public static final boolean kBackRightDriveEncoderReversed = true;
 
         // CANCoder IDs
         public static final int kFrontLeftDriveAbsoluteEncoderPort = 14;

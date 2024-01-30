@@ -102,7 +102,7 @@ public class SwerveModule {
         position = turningMotor.getSelectedSensorPosition();
 
         // convert the encodercount to radians
-        position = position * ((2*Math.PI) / 2048) / Constants.ModuleConstants.SWERVE_STEERING_RATIO;
+        position = position * (2*Math.PI) / (2048 * Constants.ModuleConstants.SWERVE_STEERING_RATIO);
 
         return( position );
     }
@@ -111,7 +111,7 @@ public class SwerveModule {
         double velocity;
         velocity = -driveMotor.getSelectedSensorVelocity();
 
-        velocity = (velocity / 204.8) * (14.0 / 50.0) * (28.0 / 16.0) * (15.0 / 60.0);
+        velocity = (velocity / 204.8) * (14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0);
         velocity = velocity * ModuleConstants.kWheelDiameterMeters * Math.PI;
 
         return( velocity );
@@ -136,10 +136,13 @@ public class SwerveModule {
 
     public void resetEncoders() {
         double absPosition;
+        System.out.println("resetEncoders");
         // Clear the drive motor encoder position
         driveMotor.setSelectedSensorPosition( 0 );
-        absPosition = getAbsoluteEncoderDegrees();
-        absPosition = absPosition * ((2048*Constants.ModuleConstants.SWERVE_STEERING_RATIO)/360);
+
+        absPosition = getAbsoluteEncoderDegrees() * 1.0;  // negative because turning motors are upside down in mk4i
+        absPosition = (absPosition/180.0) * (2048.0*Constants.ModuleConstants.SWERVE_STEERING_RATIO/2.0);
+        System.out.println("Absolute Position = " + absPosition);
         turningMotor.setSelectedSensorPosition( absPosition );
     }
 
