@@ -61,6 +61,7 @@ import frc.robot.Constants.*;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.commands.SwerveJoystickCmd;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
 
 
 import frc.robot.GamepadAxisButton;
@@ -71,6 +72,7 @@ public class RobotContainer
 {
     public final SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
     private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
+    private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
 
 
     public final CommandXboxController driverJoystick = new CommandXboxController(OIConstants.kDriverControllerPort);
@@ -224,75 +226,23 @@ public class RobotContainer
             .onFalse(Commands.runOnce( ()-> DriveDividerSet( Constants.DriveConstants.DRIVE_DIVIDER_NORMAL )))
             .onTrue( Commands.runOnce( ()-> DriveDividerSet( Constants.DriveConstants.DRIVE_DIVIDER_TURBO )));
         
-       
+       //Medium
+        Trigger operatorDPadUp = operatorJoystick.povUp();
+       operatorDPadUp
+            .onTrue(Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(0.6), shooterSubsystem))
+            .onFalse(Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(0), shooterSubsystem));
+
+        //Low
+        Trigger operatorDPadLeft = operatorJoystick.povLeft();
+        operatorDPadLeft
+            .onTrue(Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(0.4), shooterSubsystem))
+            .onFalse(Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(0), shooterSubsystem));
+
+        //High
+        Trigger operatorDPadRight = operatorJoystick.povRight();
+        operatorDPadRight
+            .onTrue(Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(1), shooterSubsystem))
+            .onFalse(Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(0), shooterSubsystem));
     }
 
-    public boolean driverDpadUp()
-    {
-        return false; 
-/* !*!*!* TODO fixme
-        return ( driverJoystick.getPOV() == 0 );
-*/
-    }
-
-    public boolean operatorRightYAxisUp()
-    {
-        return ( operatorJoystick.getRawAxis( XboxController.Axis.kRightY.value ) < -0.3 );
-    }
-
-    public boolean operatorRightYAxisDown()
-    {
-        return ( operatorJoystick.getRawAxis( XboxController.Axis.kRightY.value ) > 0.3 );
-    }
-
-    public boolean DriverLTrigger()
-    {
-        return ( driverJoystick.getRawAxis( XboxController.Axis.kLeftTrigger.value ) > 0.3 );
-    }
-
-    public boolean DriverRTtrigger()
-    {
-        return ( driverJoystick.getRawAxis( XboxController.Axis.kRightTrigger.value ) > 0.3 );
-    }
-
-    
-    public boolean operatorLeftYAxisUp()
-    {
-        return ( operatorJoystick.getRawAxis( XboxController.Axis.kLeftY.value ) < -0.3 );
-    }
-
-    public boolean operatorLeftYAxisDown()
-    {
-        return ( operatorJoystick.getRawAxis( XboxController.Axis.kLeftY.value ) > 0.3 );
-    }
-
-    public boolean operatorLeftTrigger()
-    {
-        return ( operatorJoystick.getRawAxis( XboxController.Axis.kLeftTrigger.value ) > 0.3 );
-    }
-
-    public boolean operatorRightTrigger()
-    {
-        return ( operatorJoystick.getRawAxis( XboxController.Axis.kRightTrigger.value ) > 0.3 );
-    }
-
-    public boolean operatorDpadUp()
-    {
-        return false; //!*!*!* TODO fixme        return ( operatorJoystick.getPOV() == 0 );
-    }
-
-    public boolean operatorDpadDown()
-    {
-        return false; //!*!*!* TODO fixme        return ( operatorJoystick.getPOV() == 180 );
-    }
-
-    public boolean operatorDpadLeft()
-    {
-        return false; //!*!*!* TODO fixme        return ( operatorJoystick.getPOV() == 270 );
-    }
-
-    public boolean operatorDpadRight()
-    {
-        return false; //!*!*!* TODO fixme        return ( operatorJoystick.getPOV() == 90 );
-    }
  }
