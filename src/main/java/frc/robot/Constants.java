@@ -76,6 +76,9 @@ public final class Constants {
         public static final double kTeleDriveMaxAccelerationUnitsPerSecond = 6;
         public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 6;
 
+        public static final double DRIVE_DIVIDER_NORMAL = 2.0;
+        public static final double DRIVE_DIVIDER_TURBO = 1.0;
+
         public static final double CreepLoading = -0.37;
         public static final double CreepBalance = -0.30;
         public static final double CreepBalanceMobility = 0.35;

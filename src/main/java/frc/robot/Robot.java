@@ -18,9 +18,6 @@ import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.subsystems.ShoulderSubsystem;
-import frc.robot.subsystems.ExtendSubsystem;
-import frc.robot.subsystems.WristSubsystem;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
@@ -98,8 +95,7 @@ public class Robot extends LoggedRobot {
         // robot's periodic
         // block in order for anything in the Command-based framework to work.
         CommandScheduler.getInstance().run();
-        m_robotContainer.extendSubsystem.setShoulder(
-        m_robotContainer.shoulderSubsystem.getCosine());
+       
     }
 
     /** This function is called once each time the robot enters Disabled mode. */
@@ -108,10 +104,7 @@ public class Robot extends LoggedRobot {
         // Turn off position control when the robot is disabled.
         m_robotContainer.driverJoystick.getHID().setRumble(RumbleType.kBothRumble,0);
         m_robotContainer.operatorJoystick.getHID().setRumble(RumbleType.kBothRumble,0);
-        m_robotContainer.extendSubsystem.setExtend(0);
-        m_robotContainer.shoulderSubsystem.setShoulder(0);
-        m_robotContainer.wristSubsystem.setWrist(0);
-        m_robotContainer.extendSubsystem.zeroPosition();
+       
     }
 
     @Override
