@@ -57,14 +57,14 @@ import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import frc.robot.commands.SwerveJoystickCmd;
 import frc.robot.Constants.*;
 import frc.robot.subsystems.SwerveSubsystem;
-import frc.robot.commands.SwerveJoystickCmd;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.ClimbSubsystem;
 
 
-import frc.robot.GamepadAxisButton;
 import frc.robot.commands.SwerveJoystickCmd;
 import frc.robot.commands.IntakeJogCmd;
 
@@ -73,6 +73,7 @@ public class RobotContainer
     public final SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
     private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
     private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
+    private final ClimbSubsystem climbSubsystem = new ClimbSubsystem();
 
 
     public final CommandXboxController driverJoystick = new CommandXboxController(OIConstants.kDriverControllerPort);
@@ -83,19 +84,6 @@ public class RobotContainer
     private Field2d m_field;
 
     double driveDivider = Constants.DriveConstants.DRIVE_DIVIDER_NORMAL;
-
-    GamepadAxisButton m_driverDpadUp;
-    GamepadAxisButton m_operatorRightYAxisUp;
-    GamepadAxisButton m_operatorRightYAxisDown;
-    GamepadAxisButton m_operatorLeftYAxisUp;
-    GamepadAxisButton m_operatorLeftYAxisDown;
-    GamepadAxisButton m_operatorLeftTrigger;
-    GamepadAxisButton m_operatorRightTrigger;
-    GamepadAxisButton m_operatorDpadUp;
-    GamepadAxisButton m_operatorDpadDown;
-    GamepadAxisButton m_operatorDpadLeft;
-    GamepadAxisButton m_operatorDpadRight;
-    GamepadAxisButton m_driverLT, m_driverRT;
 
     double m_dCreep=0;
 
@@ -225,6 +213,11 @@ public class RobotContainer
         driverLeftTrigger
             .onFalse(Commands.runOnce( ()-> DriveDividerSet( Constants.DriveConstants.DRIVE_DIVIDER_NORMAL )))
             .onTrue( Commands.runOnce( ()-> DriveDividerSet( Constants.DriveConstants.DRIVE_DIVIDER_TURBO )));
+
+        Trigger operatorLeftTrigger = operatorJoystick.leftTrigger( 0.7 );
+        operatorLeftTrigger
+            .onFalse(Commands.runOnce( ()-> climbSubsystem.setClimb( 0.5 ), climbSubsystem))
+            .onTrue( Commands.runOnce( ()-> climbSubsystem.setClimb( 0 ), climbSubsystem));
         
        //Medium
         Trigger operatorDPadUp = operatorJoystick.povUp();

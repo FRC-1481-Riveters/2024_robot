@@ -113,6 +113,11 @@ public final class Constants {
         public static final double SHOOTER_SPEED_TOLERANCE = 100.0;
     }
 
+     public static final class ClimbConstants {
+        public static final int CLIMB_MOTOR = 58;
+        public static final int TALON_TIMEOUT_MS = 5000;
+    }
+
     public static final class OIConstants {
         public static final int kDriverControllerPort = 0;
         public static final int kOperatorControllerPort = 1;

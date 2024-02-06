@@ -17,7 +17,6 @@ import org.littletonrobotics.junction.Logger;
 public class IntakeSubsystem extends SubsystemBase {
 
     private TalonSRX m_intakeMotor;
-    private boolean m_hasCone;
 
     public IntakeSubsystem() 
     {
@@ -43,14 +42,4 @@ public class IntakeSubsystem extends SubsystemBase {
         // Logger.getInstance().recordOutput("IntakeSpeed", output );
     }
 
-    public void setCone( boolean bHasCone )
-    {
-        // m_hasCone = bHasCone;
-        // Logger.getInstance().recordOutput("HasCone", bHasCone );
-        // System.out.println("setCone "  + bHasCone);
-    }
-    public boolean getCone()
-    {
-        return false; //( m_hasCone );
-    }
 }
