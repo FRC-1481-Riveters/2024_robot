@@ -103,18 +103,21 @@ public final class Constants {
     }
     
     public static final class IntakeConstants {
-        public static final int INTAKE_MOTOR = 58;
+        public static final int INTAKE_ROLLER_MOTOR = 58;
+        public static final int INTAKE_ANGLE_MOTOR = 59;
+        public static final int INTAKE_ANGLE_MOTOR_FOLLOWER = 62;
+        public static final int INTAKE_ANGLE_CANCODER = 61;
         public static final int TALON_TIMEOUT_MS = 5000;
     }
 
     public static final class ShooterConstants{
-        public static final int SHOOTER_MOTOR = 3;
-        public static final int SHOOTER_MOTOR_FOLLOWER = 4;
+        public static final int SHOOTER_MOTOR_TOP = 3;
+        public static final int SHOOTER_MOTOR_BOTTOM = 4;
         public static final double SHOOTER_SPEED_TOLERANCE = 100.0;
     }
 
      public static final class ClimbConstants {
-        public static final int CLIMB_MOTOR = 58;
+        public static final int CLIMB_MOTOR = 24;
         public static final int TALON_TIMEOUT_MS = 5000;
     }
 

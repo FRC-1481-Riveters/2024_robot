@@ -4,19 +4,16 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.ShooterConstants;
 import edu.wpi.first.wpilibj.smartdashboard.*;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 
-import com.revrobotics.CANSparkMax;
 import com.revrobotics.*;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import com.revrobotics.SparkMaxPIDController;
-import com.revrobotics.SparkMaxRelativeEncoder;
-
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
@@ -25,10 +22,9 @@ import static frc.robot.Constants.*;
 
 public class ShooterSubsystem extends SubsystemBase{
     private double m_shooterIntendedSpeed = 10000.0;
-    private CANSparkMax m_shooterMotor = new CANSparkMax(ShooterConstants.SHOOTER_MOTOR, MotorType.kBrushless);
-    private CANSparkMax m_shooterMotorFollower = new CANSparkMax(ShooterConstants.SHOOTER_MOTOR_FOLLOWER, MotorType.kBrushless);
-    private SparkMaxRelativeEncoder m_encoder = (SparkMaxRelativeEncoder) m_shooterMotor.getEncoder();
-    //TalonSRX m_kickerMotor = new TalonSRX(KICKER_MOTOR);
+    private CANSparkMax m_shooterMotorTop = new CANSparkMax(ShooterConstants.SHOOTER_MOTOR_TOP, CANSparkLowLevel.MotorType.kBrushless );
+    private CANSparkMax m_shooterMotorBottom = new CANSparkMax(ShooterConstants.SHOOTER_MOTOR_BOTTOM, CANSparkLowLevel.MotorType.kBrushless);
+    private SparkRelativeEncoder m_encoder = (SparkRelativeEncoder) m_shooterMotorTop.getEncoder();
     //private SparkMaxPIDController m_pidController = m_shooterMotor.getPIDController();
     private NetworkTableEntry shooterKp;
     private NetworkTableEntry shooterKi;
@@ -42,17 +38,14 @@ public class ShooterSubsystem extends SubsystemBase{
     private NetworkTableEntry lightSensor;
     
     public ShooterSubsystem(){
-      /*m_kickerMotor.configFactoryDefault();
-      m_kickerMotor.setInverted(true);
-      m_kickerMotor.setNeutralMode(NeutralMode.Brake);
-      m_kickerMotor.configPeakCurrentLimit(20, 5000);
-      m_kickerMotor.configPeakCurrentDuration(200, 5000);
-      m_kickerMotor.configContinuousCurrentLimit(15, 5000);
-      m_kickerMotor.enableCurrentLimit(true);*/
-      m_shooterMotor.restoreFactoryDefaults();
-      //m_shooterMotor.setInverted(true);
-      m_shooterMotor.setSmartCurrentLimit(50, 50);
-      m_shooterMotor.setIdleMode(IdleMode.kCoast);
+      m_shooterMotorTop.restoreFactoryDefaults();
+      m_shooterMotorTop.setInverted(true);
+      m_shooterMotorTop.setSmartCurrentLimit(50, 50);
+      m_shooterMotorTop.setIdleMode(IdleMode.kCoast);
+      m_shooterMotorBottom.restoreFactoryDefaults();
+      m_shooterMotorBottom.setInverted(true);
+      m_shooterMotorBottom.setSmartCurrentLimit(50, 50);
+      m_shooterMotorBottom.setIdleMode(IdleMode.kCoast);
       //m_pidController.setP(0.0008);
       //m_pidController.setI(0.000000060);
       //m_pidController.setD(0.0001);
@@ -77,21 +70,21 @@ public class ShooterSubsystem extends SubsystemBase{
 
       setShooterSpeed(0.0);
 
-      //FIXME: ugh why doesn't this work sometimes
-      //m_kickerMotor.setInverted(true);
-      //m_shooterMotor.setInverted(true);
     }
 
     @Override
     public void periodic() {
       // This method will be called once per scheduler run
-      //shooterOutputEntry.setDouble( m_shooterMotor.getBusVoltage() );
+      shooterSpeedEntry.setDouble( m_encoder.getVelocity() );
       //shooterSpeedEntry.setDouble( getSpeed() );
+      
     }
 
     public void setShooterSpeed (double RPM){
-        m_shooterMotor.set(RPM);
-        m_shooterMotorFollower.set(RPM);
+        m_shooterMotorTop.set(RPM);
+        m_shooterMotorBottom.set(-RPM);
+        System.out.println("setShooterSpeed " + RPM);
+
         /*m_shooterIntendedSpeed = RPM;
         shooterSetpointEntry.setDouble(m_shooterIntendedSpeed);
         if (m_shooterIntendedSpeed > 10.0) {

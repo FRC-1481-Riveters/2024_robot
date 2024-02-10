@@ -66,7 +66,6 @@ import frc.robot.subsystems.ClimbSubsystem;
 
 
 import frc.robot.commands.SwerveJoystickCmd;
-import frc.robot.commands.IntakeJogCmd;
 
 public class RobotContainer 
 {
@@ -214,10 +213,30 @@ public class RobotContainer
             .onFalse(Commands.runOnce( ()-> DriveDividerSet( Constants.DriveConstants.DRIVE_DIVIDER_NORMAL )))
             .onTrue( Commands.runOnce( ()-> DriveDividerSet( Constants.DriveConstants.DRIVE_DIVIDER_TURBO )));
 
+        Trigger operatorIntakeDeployTrigger = operatorJoystick.y();
+        operatorIntakeDeployTrigger
+            .onFalse(Commands.runOnce( ()-> intakeSubsystem.setIntakeAngle( 0 ), intakeSubsystem))
+            .onTrue( Commands.runOnce( ()-> intakeSubsystem.setIntakeAngle( 0.2 ), intakeSubsystem));
+
+        Trigger operatorIntakeRetractTrigger = operatorJoystick.a();
+        operatorIntakeRetractTrigger
+            .onFalse(Commands.runOnce( ()-> intakeSubsystem.setIntakeAngle( 0 ), intakeSubsystem))
+            .onTrue( Commands.runOnce( ()-> intakeSubsystem.setIntakeAngle( -0.2 ), intakeSubsystem));
+
+        Trigger operatorIntakeWheelsInTrigger = operatorJoystick.leftBumper();
+        operatorIntakeWheelsInTrigger
+            .onFalse(Commands.runOnce( ()-> intakeSubsystem.setIntakeRoller( 0 ), intakeSubsystem))
+            .onTrue( Commands.runOnce( ()-> intakeSubsystem.setIntakeRoller( 1.0 ), intakeSubsystem));
+
+        Trigger operatorIntakeWheelsOutTrigger = operatorJoystick.rightBumper();
+        operatorIntakeWheelsOutTrigger
+            .onFalse(Commands.runOnce( ()-> intakeSubsystem.setIntakeRoller( 0 ), intakeSubsystem))
+            .onTrue( Commands.runOnce( ()-> intakeSubsystem.setIntakeRoller( -1.0 ), intakeSubsystem));
+
         Trigger operatorLeftTrigger = operatorJoystick.leftTrigger( 0.7 );
         operatorLeftTrigger
-            .onFalse(Commands.runOnce( ()-> climbSubsystem.setClimb( 0.5 ), climbSubsystem))
-            .onTrue( Commands.runOnce( ()-> climbSubsystem.setClimb( 0 ), climbSubsystem));
+            .onFalse(Commands.runOnce( ()-> climbSubsystem.setClimb( 0 ), climbSubsystem))
+            .onTrue( Commands.runOnce( ()-> climbSubsystem.setClimb( 0.5 ), climbSubsystem));
         
        //Medium
         Trigger operatorDPadUp = operatorJoystick.povUp();
