@@ -1,12 +1,6 @@
 package frc.robot;
 
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-
-import javax.lang.model.util.ElementScanner14;
 
 import org.w3c.dom.css.RGBColor;
 
@@ -16,46 +10,17 @@ import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.path.PathPlannerTrajectory;
-import com.pathplanner.lib.util.PIDConstants;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.ScheduleCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Filesystem;
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
-import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.hal.AllianceStationID;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.TrajectoryGenerator;
-import edu.wpi.first.math.trajectory.TrajectoryUtil;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import frc.robot.commands.SwerveJoystickCmd;
 import frc.robot.Constants.*;
@@ -65,8 +30,6 @@ import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.ClimbSubsystem;
 
 
-import frc.robot.commands.SwerveJoystickCmd;
-
 public class RobotContainer 
 {
     public final SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
@@ -74,11 +37,11 @@ public class RobotContainer
     private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
     private final ClimbSubsystem climbSubsystem = new ClimbSubsystem();
 
-
     public final CommandXboxController driverJoystick = new CommandXboxController(OIConstants.kDriverControllerPort);
     public final CommandXboxController operatorJoystick = new CommandXboxController(OIConstants.kOperatorControllerPort);
 
-    private boolean isPracticeRobot;
+    SendableChooser<Command> m_autoChooser;
+
 
     private Field2d m_field;
 
@@ -86,15 +49,11 @@ public class RobotContainer
 
     double m_dCreep=0;
 
-    // A chooser for autonomous commands
-    SendableChooser<Command> m_chooser = new SendableChooser<>();
-
     public AddressableLED m_led;
     public AddressableLEDBuffer m_ledBuffer;
 
     public RobotContainer() 
     {
-        DigitalInput input;
         m_led = new AddressableLED(0);
 
         // Reuse buffer
@@ -112,12 +71,6 @@ public class RobotContainer
         m_led.setData(m_ledBuffer);
         m_led.start();
         
-        input = new DigitalInput(9);
-        isPracticeRobot = !input.get();
-        input.close();
-
-        //configureAutonomousCommands();
-    
         swerveSubsystem.setDefaultCommand(new SwerveJoystickCmd(
                 swerveSubsystem,
                 () -> getDriverMoveFwdBack(),
@@ -126,6 +79,10 @@ public class RobotContainer
                 () -> !driverJoystick.getHID().getBackButton() ));
 
         configureButtonBindings();
+
+        // A chooser for autonomous commands
+        m_autoChooser = AutoBuilder.buildAutoChooser(); // Default auto will be `Commands.none()`
+        SmartDashboard.putData( "Auto Mode", m_autoChooser );
 
         // Create and push Field2d to SmartDashboard.
         m_field = new Field2d();
@@ -255,6 +212,24 @@ public class RobotContainer
         operatorDPadRight
             .onTrue(Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(1), shooterSubsystem))
             .onFalse(Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(0), shooterSubsystem));
+        
+        // Register named pathplanner commands
+        NamedCommands.registerCommand("marker1", Commands.print("Passed marker 1"));
+        NamedCommands.registerCommand("marker2", Commands.print("Passed marker 2"));
+        NamedCommands.registerCommand("print hello", Commands.print("hello"));
+
+        // Add a button to run the example auto to SmartDashboard
+        SmartDashboard.putData("Example Auto", new PathPlannerAuto("Example Auto"));
+    }
+
+    /**
+     * Use this to pass the autonomous command to the main {@link Robot} class.
+     *
+     * @return the command to run in autonomous
+     */
+    public Command getAutonomousCommand() 
+    {
+        return m_autoChooser.getSelected();
     }
 
  }
