@@ -108,6 +108,8 @@ public final class Constants {
         public static final int INTAKE_ANGLE_MOTOR_FOLLOWER = 62;
         public static final int INTAKE_ANGLE_CANCODER = 61;
         public static final int TALON_TIMEOUT_MS = 5000;
+        public static final double INTAKE_ANGLE_STOWED = 0.0;
+        public static final double INTAKE_FLOOR_PICKUP = 191;
     }
 
     public static final class ShooterConstants{

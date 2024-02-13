@@ -43,7 +43,7 @@ public class ShooterSubsystem extends SubsystemBase{
       m_shooterMotorTop.setSmartCurrentLimit(50, 50);
       m_shooterMotorTop.setIdleMode(IdleMode.kCoast);
       m_shooterMotorBottom.restoreFactoryDefaults();
-      m_shooterMotorBottom.setInverted(true);
+      m_shooterMotorBottom.setInverted(false);
       m_shooterMotorBottom.setSmartCurrentLimit(50, 50);
       m_shooterMotorBottom.setIdleMode(IdleMode.kCoast);
       //m_pidController.setP(0.0008);
@@ -82,7 +82,7 @@ public class ShooterSubsystem extends SubsystemBase{
 
     public void setShooterSpeed (double RPM){
         m_shooterMotorTop.set(RPM);
-        m_shooterMotorBottom.set(-RPM);
+        m_shooterMotorBottom.set(RPM);
         System.out.println("setShooterSpeed " + RPM);
 
         /*m_shooterIntendedSpeed = RPM;

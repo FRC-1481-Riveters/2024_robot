@@ -81,8 +81,8 @@ public class RobotContainer
         configureButtonBindings();
 
         // A chooser for autonomous commands
-        m_autoChooser = AutoBuilder.buildAutoChooser(); // Default auto will be `Commands.none()`
-        SmartDashboard.putData( "Auto Mode", m_autoChooser );
+        //m_autoChooser = AutoBuilder.buildAutoChooser(); // Default auto will be `Commands.none()`
+        //SmartDashboard.putData( "Auto Mode", m_autoChooser );
 
         // Create and push Field2d to SmartDashboard.
         m_field = new Field2d();
@@ -172,23 +172,24 @@ public class RobotContainer
 
         Trigger operatorIntakeDeployTrigger = operatorJoystick.y();
         operatorIntakeDeployTrigger
-            .onFalse(Commands.runOnce( ()-> intakeSubsystem.setIntakeAngle( 0 ), intakeSubsystem))
-            .onTrue( Commands.runOnce( ()-> intakeSubsystem.setIntakeAngle( 0.2 ), intakeSubsystem));
+            .onFalse(Commands.runOnce( ()-> intakeSubsystem.intakeAngleDisable(), intakeSubsystem))
+            .onTrue( Commands.runOnce( ()-> intakeSubsystem.setIntakeAngle(IntakeConstants.INTAKE_FLOOR_PICKUP ), intakeSubsystem));
 
         Trigger operatorIntakeRetractTrigger = operatorJoystick.a();
         operatorIntakeRetractTrigger
-            .onFalse(Commands.runOnce( ()-> intakeSubsystem.setIntakeAngle( 0 ), intakeSubsystem))
-            .onTrue( Commands.runOnce( ()-> intakeSubsystem.setIntakeAngle( -0.2 ), intakeSubsystem));
+            .onFalse(Commands.runOnce( ()-> intakeSubsystem.intakeAngleDisable(), intakeSubsystem))
+            .onTrue( Commands.runOnce( ()-> intakeSubsystem.setIntakeAngle( IntakeConstants.INTAKE_ANGLE_STOWED ), intakeSubsystem));
+
 
         Trigger operatorIntakeWheelsInTrigger = operatorJoystick.leftBumper();
         operatorIntakeWheelsInTrigger
             .onFalse(Commands.runOnce( ()-> intakeSubsystem.setIntakeRoller( 0 ), intakeSubsystem))
-            .onTrue( Commands.runOnce( ()-> intakeSubsystem.setIntakeRoller( 1.0 ), intakeSubsystem));
+            .onTrue( Commands.runOnce( ()-> intakeSubsystem.setIntakeRoller( -1 ), intakeSubsystem));
 
         Trigger operatorIntakeWheelsOutTrigger = operatorJoystick.rightBumper();
         operatorIntakeWheelsOutTrigger
             .onFalse(Commands.runOnce( ()-> intakeSubsystem.setIntakeRoller( 0 ), intakeSubsystem))
-            .onTrue( Commands.runOnce( ()-> intakeSubsystem.setIntakeRoller( -1.0 ), intakeSubsystem));
+            .onTrue( Commands.runOnce( ()-> intakeSubsystem.setIntakeRoller( 1 ), intakeSubsystem));
 
         Trigger operatorLeftTrigger = operatorJoystick.leftTrigger( 0.7 );
         operatorLeftTrigger
@@ -214,12 +215,12 @@ public class RobotContainer
             .onFalse(Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(0), shooterSubsystem));
         
         // Register named pathplanner commands
-        NamedCommands.registerCommand("marker1", Commands.print("Passed marker 1"));
-        NamedCommands.registerCommand("marker2", Commands.print("Passed marker 2"));
-        NamedCommands.registerCommand("print hello", Commands.print("hello"));
+        //NamedCommands.registerCommand("marker1", Commands.print("Passed marker 1"));
+        //NamedCommands.registerCommand("marker2", Commands.print("Passed marker 2"));
+        //NamedCommands.registerCommand("print hello", Commands.print("hello"));
 
         // Add a button to run the example auto to SmartDashboard
-        SmartDashboard.putData("Example Auto", new PathPlannerAuto("Example Auto"));
+        //SmartDashboard.putData("Example Auto", new PathPlannerAuto("Example Auto"));
     }
 
     /**
