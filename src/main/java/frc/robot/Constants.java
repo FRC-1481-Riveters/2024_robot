@@ -121,6 +121,35 @@ public final class Constants {
         public static final int SHOOTER_MOTOR_TOP = 3;
         public static final int SHOOTER_MOTOR_BOTTOM = 4;
         public static final double SHOOTER_SPEED_TOLERANCE = 100.0;
+        public static final double SHOOTER_SPEED_WING = 6000;
+        public static final double SHOOTER_SPEED_PODIUM = 4000;
+        public static final double SHOOTER_SPEED_SPEAKER = 2000;
+        public static final double SHOOTER_SPEED_AMP = 500;
+    }
+
+    public static final class ShooterPivotConstants{
+        public static final int SHOOTER_PIVOT_MOTOR = 35;
+        public static final int SHOOTER_PIVOT_MOTOR_FOLLOWER = 36;
+        public static final int SHOOTER_PIVOT_CANCODER = 37;
+        //fill out position values later
+        public static final double SHOOTER_PIVOT_START = 0;
+        public static final double SHOOTER_PIVOT_WING = 0;
+        public static final double SHOOTER_PIVOT_PODIUM = 0;
+        public static final double SHOOTER_PIVOT_SPEAKER = 0;
+        public static final double SHOOTER_PIVOT_AMP = 0;
+        public static final double SHOOTER_PIVOT_TRAP = 0;
+    }
+
+    public static final class ElevatorConstants{
+        public static final int ELEVATOR_MOTOR = 42;
+        public static final double ELEVATOR_POSITION_TOLERANCE = 100;
+        //fill out position values later
+        public static final double ELEVATOR_START = 0;
+        public static final double ELEVATOR_WING = 0;
+        public static final double ELEVATOR_PODIUM = 0;
+        public static final double ELEVATOR_SPEAKER = 0;
+        public static final double ELEVATOR_AMP = 0;
+        public static final double ELEVATOR_TRAP = 0;
     }
 
      public static final class ClimbConstants {

@@ -34,7 +34,7 @@ public class IntakeSubsystem extends SubsystemBase {
     {
         m_intakeRollerMotor.restoreFactoryDefaults();
         m_intakeRollerMotor.setInverted(false);
-        m_intakeRollerMotor.setSmartCurrentLimit(30, 30);
+        m_intakeRollerMotor.setSmartCurrentLimit(80, 30);
         m_intakeRollerMotor.setIdleMode(IdleMode.kCoast);
 
         m_intakeAngleMotor = new TalonSRX(IntakeConstants.INTAKE_ANGLE_MOTOR);

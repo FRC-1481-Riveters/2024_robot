@@ -21,15 +21,11 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import static frc.robot.Constants.*;
 
 public class ShooterSubsystem extends SubsystemBase{
-    private double m_shooterIntendedSpeed = 10000.0;
+    private double m_shooterIntendedSpeed;
     private CANSparkMax m_shooterMotorTop = new CANSparkMax(ShooterConstants.SHOOTER_MOTOR_TOP, CANSparkLowLevel.MotorType.kBrushless );
     private CANSparkMax m_shooterMotorBottom = new CANSparkMax(ShooterConstants.SHOOTER_MOTOR_BOTTOM, CANSparkLowLevel.MotorType.kBrushless);
     private SparkRelativeEncoder m_encoder = (SparkRelativeEncoder) m_shooterMotorTop.getEncoder();
-    //private SparkMaxPIDController m_pidController = m_shooterMotor.getPIDController();
-    private NetworkTableEntry shooterKp;
-    private NetworkTableEntry shooterKi;
-    private NetworkTableEntry shooterKd;
-    private NetworkTableEntry shooterKf;
+    private SparkPIDController m_pidController = m_shooterMotorTop.getPIDController();
     private NetworkTableEntry shooterOutputEntry;
     private NetworkTableEntry shooterSpeedEntry;
     private NetworkTableEntry shooterSetpointEntry;
@@ -46,23 +42,15 @@ public class ShooterSubsystem extends SubsystemBase{
       m_shooterMotorBottom.setInverted(false);
       m_shooterMotorBottom.setSmartCurrentLimit(50, 50);
       m_shooterMotorBottom.setIdleMode(IdleMode.kCoast);
-      //m_pidController.setP(0.0008);
-      //m_pidController.setI(0.000000060);
-      //m_pidController.setD(0.0001);
-      //m_pidController.setFF(0.000145); //0.00018
+      m_shooterMotorBottom.follow(m_shooterMotorTop);
+      m_pidController.setP(0.0008);
+      m_pidController.setI(0.000000060);
+      m_pidController.setD(0.0001);
+      m_pidController.setFF(0.000145); //0.00018
 
-      shooterKp = NetworkTableInstance.getDefault().getTable("SmartDashboard").getEntry("Shooter kP");
-      shooterKi = NetworkTableInstance.getDefault().getTable("SmartDashboard").getEntry("Shooter kI");
-      shooterKd = NetworkTableInstance.getDefault().getTable("SmartDashboard").getEntry("Shooter kD");
-      shooterKf = NetworkTableInstance.getDefault().getTable("SmartDashboard").getEntry("Shooter kF");
       shooterOutputEntry = NetworkTableInstance.getDefault().getTable("SmartDashboard").getEntry("Shooter Output");
       shooterSpeedEntry = NetworkTableInstance.getDefault().getTable("SmartDashboard").getEntry("Shooter Speed");
       shooterSetpointEntry = NetworkTableInstance.getDefault().getTable("SmartDashboard").getEntry("Shooter Setpoint");
-
-      //shooterKp.setDouble(m_pidController.getP());
-      //shooterKi.setDouble(m_pidController.getI());
-      //shooterKd.setDouble(m_pidController.getD());
-      //shooterKf.setDouble(m_pidController.getFF());
 
       shooterOutputEntry.setDouble(0);
       shooterSpeedEntry.setDouble(0);
@@ -76,28 +64,23 @@ public class ShooterSubsystem extends SubsystemBase{
     public void periodic() {
       // This method will be called once per scheduler run
       shooterSpeedEntry.setDouble( m_encoder.getVelocity() );
-      //shooterSpeedEntry.setDouble( getSpeed() );
+      shooterSpeedEntry.setDouble( getSpeed() );
       
     }
 
-    public void setShooterSpeed (double RPM){
-        m_shooterMotorTop.set(RPM);
-        m_shooterMotorBottom.set(RPM);
-        System.out.println("setShooterSpeed " + RPM);
+    public void setShooterSpeed (double rpm){
+        System.out.println("setShooterSpeed " + rpm);
 
-        /*m_shooterIntendedSpeed = RPM;
+        m_shooterIntendedSpeed = rpm;
         shooterSetpointEntry.setDouble(m_shooterIntendedSpeed);
         if (m_shooterIntendedSpeed > 10.0) {
-          m_pidController.setReference(RPM, ControlType.kVelocity);
+          m_pidController.setReference(rpm, ControlType.kVelocity);
         } else {
-          m_shooterMotor.set(0.0);
-        }*/
+          m_shooterMotorTop.set(0.0);
+        }
         
     }
 
-    public void setKickerSpeed(double value){
-        //m_kickerMotor.set(ControlMode.PercentOutput, value);
-    }
     public double getSpeed() {
         return m_encoder.getVelocity();
     }

@@ -28,6 +28,8 @@ import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.ClimbSubsystem;
+import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.ShooterPivotSubsystem;
 
 
 public class RobotContainer 
@@ -36,6 +38,8 @@ public class RobotContainer
     private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
     private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
     private final ClimbSubsystem climbSubsystem = new ClimbSubsystem();
+    private final ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem();
+    private final ShooterPivotSubsystem shooterPivotSubsystem = new ShooterPivotSubsystem();
 
     public final CommandXboxController driverJoystick = new CommandXboxController(OIConstants.kDriverControllerPort);
     public final CommandXboxController operatorJoystick = new CommandXboxController(OIConstants.kOperatorControllerPort);
@@ -195,23 +199,51 @@ public class RobotContainer
         operatorLeftTrigger
             .onFalse(Commands.runOnce( ()-> climbSubsystem.setClimb( 0 ), climbSubsystem))
             .onTrue( Commands.runOnce( ()-> climbSubsystem.setClimb( 0.5 ), climbSubsystem));
-        
-       //Medium
-        Trigger operatorDPadUp = operatorJoystick.povUp();
-       operatorDPadUp
-            .onTrue(Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(0.6), shooterSubsystem))
-            .onFalse(Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(0), shooterSubsystem));
 
-        //Low
+        Trigger operatorRightJoystickAxisRight = operatorJoystick.axisGreaterThan(4, 0.7 );
+        operatorRightJoystickAxisRight
+            .onFalse(Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog( 0 ), climbSubsystem))
+            .onTrue( Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog( 0.2 ), climbSubsystem));
+        
+        Trigger operatorRightJoystickAxisLeft = operatorJoystick.axisLessThan(4, -0.7 );
+        operatorRightJoystickAxisLeft
+            .onFalse(Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog( 0 ), climbSubsystem))
+            .onTrue( Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog( -0.2 ), climbSubsystem));
+        
+        Trigger operatorLeftJoystickAxisUp = operatorJoystick.axisGreaterThan(1, -0.7 );
+        operatorLeftJoystickAxisUp 
+            .onFalse(Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog( 0 ), climbSubsystem))
+            .onTrue( Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog( 0.2 ), climbSubsystem));
+        
+        Trigger operatorLeftJoystickAxisDown = operatorJoystick.axisLessThan(1, 0.7 );
+        operatorLeftJoystickAxisDown
+            .onFalse(Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog( 0 ), climbSubsystem))
+            .onTrue( Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog( -0.2 ), climbSubsystem));
+   
+        
+        //Podium
+        Trigger operatorDPadUp = operatorJoystick.povUp();
+        operatorDPadUp
+            .onTrue(Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(ShooterConstants.SHOOTER_SPEED_PODIUM), shooterSubsystem))
+            .onFalse(Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(0), shooterSubsystem));
+ 
+
+        //Close
         Trigger operatorDPadLeft = operatorJoystick.povLeft();
         operatorDPadLeft
-            .onTrue(Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(0.4), shooterSubsystem))
+            .onTrue(Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(ShooterConstants.SHOOTER_SPEED_SPEAKER), shooterSubsystem))
             .onFalse(Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(0), shooterSubsystem));
 
-        //High
+        //Wing
         Trigger operatorDPadRight = operatorJoystick.povRight();
         operatorDPadRight
-            .onTrue(Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(1), shooterSubsystem))
+            .onTrue(Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(ShooterConstants.SHOOTER_SPEED_WING), shooterSubsystem))
+            .onFalse(Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(0), shooterSubsystem));
+        
+        //Amp
+        Trigger operatorDPadDown = operatorJoystick.povDown();
+        operatorDPadDown
+            .onTrue(Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(ShooterConstants.SHOOTER_SPEED_AMP), shooterSubsystem))
             .onFalse(Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(0), shooterSubsystem));
         
         // Register named pathplanner commands
