@@ -37,6 +37,8 @@ public class SwerveModule {
     public static final double drive_kS = 0.55493;
     private SimpleMotorFeedforward m_feedForward = new SimpleMotorFeedforward( drive_kS, drive_kV, drive_kA );
 
+    private SwerveModulePosition currentPosition = new SwerveModulePosition();
+    private SwerveModuleState currentState = new SwerveModuleState();
 
     public SwerveModule(int driveMotorId, int turningMotorId, boolean driveMotorReversed, boolean turningMotorReversed,
             int absoluteEncoderId, double absoluteEncoderOffsetDegrees, boolean absoluteEncoderReversed) {
@@ -92,10 +94,12 @@ public class SwerveModule {
     }
 
     public SwerveModulePosition getPosition(){
-        return new SwerveModulePosition(
-            getDrivePosition(),new Rotation2d(getTurningPosition()));
+        return currentPosition;
     }
 
+    public SwerveModuleState getState() {
+        return currentState;
+    }
 
     public double getTurningPosition() {
         double position;
@@ -146,10 +150,13 @@ public class SwerveModule {
         turningMotor.setSelectedSensorPosition( absPosition );
     }
 
-    public SwerveModuleState getState() {
-        return new SwerveModuleState(getDriveVelocity(), new Rotation2d(getTurningPosition()));
+    public void setTargetState(SwerveModuleState targetState) {
+        // Optimize the state
+        currentState = SwerveModuleState.optimize(targetState, currentState.angle);
+  
+        currentPosition = new SwerveModulePosition(currentPosition.distanceMeters + (currentState.speedMetersPerSecond * 0.02), currentState.angle);
     }
-
+  
     public void setDesiredState(SwerveModuleState state) {
         if (Math.abs(state.speedMetersPerSecond) < 0.001) {
             stop();

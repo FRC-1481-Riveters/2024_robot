@@ -1,5 +1,9 @@
 package frc.robot;
 
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.ReplanningConfig;
+
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -22,11 +26,10 @@ public final class Constants {
         // Distance between right and left wheels
         public static final double kWheelBase = Units.inchesToMeters(20.75);
         // Distance between front and back wheels
-        public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
-                new Translation2d(kWheelBase / 2, kTrackWidth / 2),
-                new Translation2d(kWheelBase / 2, -kTrackWidth / 2),
-                new Translation2d(-kWheelBase / 2, kTrackWidth / 2),
-                new Translation2d(-kWheelBase / 2, -kTrackWidth / 2));
+        public static final Translation2d frontLeftModuleOffset =   new Translation2d(kWheelBase / 2, kTrackWidth / 2);
+        public static final Translation2d frontRightModuleOffset =  new Translation2d(kWheelBase / 2, -kTrackWidth / 2);
+        public static final Translation2d backLeftModuleOffset =    new Translation2d(-kWheelBase / 2, kTrackWidth / 2);
+        public static final Translation2d backRightModuleOffset =   new Translation2d(-kWheelBase / 2, -kTrackWidth / 2);
 
         // FIXME: patch these motor IDs up to match the Swervie 2022 configuration
         public static final int kFrontLeftDriveMotorPort = 19;
@@ -67,7 +70,7 @@ public final class Constants {
         public static final double kBackLeftDriveAbsoluteEncoderOffset   = 0.0;
         public static final double kBackRightDriveAbsoluteEncoderOffset  = 0.0;
 
-        public static final double kPhysicalMaxSpeedMetersPerSecond = 4;
+        public static final double kPhysicalMaxSpeedMetersPerSecond = 5.0292;   // MK4i 16.5 FPS => 5.0292 m/s
         public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = 2 * 2 * Math.PI;
 
         public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond;
@@ -76,14 +79,16 @@ public final class Constants {
         public static final double kTeleDriveMaxAccelerationUnitsPerSecond = 6;
         public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 6;
 
+        public static final HolonomicPathFollowerConfig pathFollowerConfig = new HolonomicPathFollowerConfig(
+            new PIDConstants(5.0, 0, 0), // Translation constants 
+            new PIDConstants(5.0, 0, 0), // Rotation constants 
+            kPhysicalMaxSpeedMetersPerSecond, 
+            frontLeftModuleOffset.getNorm(), // Drive base radius (distance from center to furthest module) 
+            new ReplanningConfig()
+        );
+
         public static final double DRIVE_DIVIDER_NORMAL = 2.0;
         public static final double DRIVE_DIVIDER_TURBO = 1.0;
-
-        public static final double CreepLoading = -0.37;
-        public static final double CreepBalance = -0.30;
-        public static final double CreepBalanceMobility = 0.35;
-        public static final double CreepBalanceMobilityBackup = -0.2;
-
     }
 
     public static final class AutoConstants {
