@@ -4,17 +4,18 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeConstants;
 
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix.sensors.CANCoder;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-
+import com.ctre.phoenix.motorcontrol.RemoteFeedbackDevice;
 import com.revrobotics.*;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 
 import org.littletonrobotics.junction.Logger;
 
@@ -25,8 +26,7 @@ public class IntakeSubsystem extends SubsystemBase {
     private TalonSRX m_intakeAngleMotorFollower;
     private NetworkTableEntry intakeSpeedEntry;
     private SparkRelativeEncoder m_intakeRollerEncoder = (SparkRelativeEncoder) m_intakeRollerMotor.getEncoder();
-    private PIDController pidIntakeAngle = new PIDController(0.007, 0, 0);
-    private CANcoder m_intakeAngleCANcoder = new CANcoder(IntakeConstants.INTAKE_ANGLE_CANCODER);
+    private CANCoder m_intakeAngleCANcoder = new CANCoder(IntakeConstants.INTAKE_ANGLE_CANCODER);
     private boolean m_intakeAnglePid;
     private double m_intakeAngleSetpoint;
 
@@ -41,27 +41,47 @@ public class IntakeSubsystem extends SubsystemBase {
         m_intakeAngleMotor.configFactoryDefault();
         // Set peak current
         m_intakeAngleMotor.setInverted(true);
-        m_intakeAngleMotor.configPeakCurrentLimit(8, IntakeConstants.TALON_TIMEOUT_MS);
+        m_intakeAngleMotor.configPeakCurrentLimit(10, IntakeConstants.TALON_TIMEOUT_MS);
         m_intakeAngleMotor.configPeakCurrentDuration(500, IntakeConstants.TALON_TIMEOUT_MS);
-        m_intakeAngleMotor.configContinuousCurrentLimit(8, IntakeConstants.TALON_TIMEOUT_MS);
+        m_intakeAngleMotor.configContinuousCurrentLimit(10, IntakeConstants.TALON_TIMEOUT_MS);
         m_intakeAngleMotor.enableCurrentLimit(true);
         m_intakeAngleMotor.setNeutralMode(NeutralMode.Brake);
 
         m_intakeAngleMotorFollower = new TalonSRX(IntakeConstants.INTAKE_ANGLE_MOTOR_FOLLOWER);
         m_intakeAngleMotorFollower.configFactoryDefault();
         // Set peak current
-        m_intakeAngleMotorFollower.configPeakCurrentLimit(8, IntakeConstants.TALON_TIMEOUT_MS);
+        m_intakeAngleMotorFollower.configPeakCurrentLimit(10, IntakeConstants.TALON_TIMEOUT_MS);
         m_intakeAngleMotorFollower.configPeakCurrentDuration(500, IntakeConstants.TALON_TIMEOUT_MS);
-        m_intakeAngleMotorFollower.configContinuousCurrentLimit(8, IntakeConstants.TALON_TIMEOUT_MS);
+        m_intakeAngleMotorFollower.configContinuousCurrentLimit(10, IntakeConstants.TALON_TIMEOUT_MS);
         m_intakeAngleMotorFollower.enableCurrentLimit(true);
         m_intakeAngleMotorFollower.setNeutralMode(NeutralMode.Brake);
         m_intakeAngleMotorFollower.setInverted(false);
         m_intakeAngleMotorFollower.follow(m_intakeAngleMotor);
 
+        m_intakeAngleMotor.configSelectedFeedbackSensor(RemoteFeedbackDevice.RemoteSensor0);
+        m_intakeAngleMotor.configRemoteFeedbackFilter(m_intakeAngleCANcoder, 0);
+        // Configure Talon  SRX output and sensor direction
+        m_intakeAngleMotor.setSensorPhase(true);
+        // Set Motion Magic gains in slot0
+        m_intakeAngleMotor.selectProfileSlot(0, 0);
+        m_intakeAngleMotor.config_kF(0, IntakeConstants.INTAKE_ANGLE_MOTOR_KF);
+        m_intakeAngleMotor.config_kP(0, IntakeConstants.INTAKE_ANGLE_MOTOR_KP);
+        m_intakeAngleMotor.config_kI(0, IntakeConstants.INTAKE_ANGLE_MOTOR_KI);
+        m_intakeAngleMotor.config_kD(0, IntakeConstants.INTAKE_ANGLE_MOTOR_KD);
+        // Set acceleration and cruise velocity
+        m_intakeAngleMotor.configMotionCruiseVelocity(IntakeConstants.INTAKE_ANGLE_MOTOR_CRUISE );
+        m_intakeAngleMotor.configMotionAcceleration(IntakeConstants.INTAKE_ANGLE_MOTOR_ACCELERATION );
+        m_intakeAngleMotor.configPeakOutputForward(0.8);
+        m_intakeAngleMotor.configPeakOutputReverse(-0.8);
+        // Set extend motion limits
+        m_intakeAngleMotor.configForwardSoftLimitThreshold(IntakeConstants.INTAKE_ANGLE_MOTOR_MAX*(4096/360));
+        m_intakeAngleMotor.configForwardSoftLimitEnable(true);
+        m_intakeAngleMotor.configReverseSoftLimitThreshold(IntakeConstants.INTAKE_ANGLE_MOTOR_MIN*(4096/360));
+        m_intakeAngleMotor.configReverseSoftLimitEnable(true);
+        
+
         intakeSpeedEntry = NetworkTableInstance.getDefault().getTable("SmartDashboard").getEntry("Intake Roller Speed");
 
-        //PID Intake Angle Stuff
-        pidIntakeAngle.setTolerance(2, 10);
     }
 
     public void setIntakeRoller( double minus_one_to_one )
@@ -73,21 +93,31 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public void setIntakeAngle( double angle )
     {
-        pidIntakeAngle.reset();
+        double sensorSetpoint;
+        sensorSetpoint = angle * (4096/360);
         m_intakeAngleSetpoint = angle;
         Logger.recordOutput("IntakeAngleSet", angle );
         System.out.println("setIntakeAngle " + angle + ", current angle=" + getIntakeAngle());
-        m_intakeAnglePid = true;
-
+        m_intakeAngleMotor.set(ControlMode.MotionMagic, sensorSetpoint );
     }
 
     public double getIntakeAngle ()
     {
-        return (m_intakeAngleCANcoder.getAbsolutePosition().getValue())*360;
+        return (m_intakeAngleCANcoder.getAbsolutePosition());
     }
 
     public boolean atSetpoint(){
-        return pidIntakeAngle.atSetpoint();
+        double intended, current;
+        intended = m_intakeAngleSetpoint;
+        current = m_intakeAngleCANcoder.getAbsolutePosition();
+        if( Math.abs(intended - current ) < IntakeConstants.INTAKE_ANGLE_TOLERANCE )
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public void intakeAngleDisable()
@@ -109,15 +139,8 @@ public class IntakeSubsystem extends SubsystemBase {
         intakeSpeedEntry.setDouble( rpm );
         Logger.recordOutput("IntakeRollerRPM", rpm );
 
-        if( m_intakeAnglePid == true )
-        {
-            angle = getIntakeAngle();
-            pidCalculate = pidIntakeAngle.calculate( angle, m_intakeAngleSetpoint);
-            m_intakeAngleMotor.set( 
-                ControlMode.PercentOutput, 
-                MathUtil.clamp( pidCalculate, -0.4, 0.4)
-            );
-        }
+        Logger.recordOutput("IntakeAngle", m_intakeAngleCANcoder.getAbsolutePosition());
+        Logger.recordOutput("IntakeAngleOutput", m_intakeAngleMotor.getMotorOutputPercent());
     }
 
 }

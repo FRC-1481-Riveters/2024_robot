@@ -35,15 +35,15 @@ public class ShooterSubsystem extends SubsystemBase{
     
     public ShooterSubsystem(){
       m_shooterMotorTop.restoreFactoryDefaults();
-      m_shooterMotorTop.setInverted(true);
+      m_shooterMotorTop.setInverted(false);
       m_shooterMotorTop.setSmartCurrentLimit(50, 50);
       m_shooterMotorTop.setIdleMode(IdleMode.kCoast);
       m_shooterMotorBottom.restoreFactoryDefaults();
       m_shooterMotorBottom.setInverted(false);
       m_shooterMotorBottom.setSmartCurrentLimit(50, 50);
       m_shooterMotorBottom.setIdleMode(IdleMode.kCoast);
-      m_shooterMotorBottom.follow(m_shooterMotorTop);
-      m_pidController.setP(0.0008);
+      m_shooterMotorBottom.follow(m_shooterMotorTop,true);
+      m_pidController.setP(0.00005);
       m_pidController.setI(0.000000060);
       m_pidController.setD(0.0001);
       m_pidController.setFF(0.000145); //0.00018
@@ -80,6 +80,13 @@ public class ShooterSubsystem extends SubsystemBase{
         }
         
     }
+
+    public void setShooterJog (double speed){
+        System.out.println("setShooterJog " + speed);
+
+        m_shooterIntendedSpeed = 0;
+        m_shooterMotorTop.set(speed);
+   }
 
     public double getSpeed() {
         return m_encoder.getVelocity();

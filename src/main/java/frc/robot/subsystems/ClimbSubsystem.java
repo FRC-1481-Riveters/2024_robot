@@ -20,6 +20,7 @@ public class ClimbSubsystem extends SubsystemBase {
 
     public ClimbSubsystem() 
     {
+     /*
          m_climbMotor = new TalonSRX(ClimbConstants.CLIMB_MOTOR);
           
          m_climbMotor.configFactoryDefault();
@@ -31,6 +32,7 @@ public class ClimbSubsystem extends SubsystemBase {
          m_climbMotor.configContinuousCurrentLimit(15, ClimbConstants.TALON_TIMEOUT_MS);
          m_climbMotor.enableCurrentLimit(true);
          m_climbMotor.setNeutralMode(NeutralMode.Brake);
+         */
     }
 
     public void setClimb( double minus_one_to_one )
@@ -38,7 +40,7 @@ public class ClimbSubsystem extends SubsystemBase {
          double output;
          output = minus_one_to_one;
 
-         m_climbMotor.set(ControlMode.PercentOutput, output);
+         //m_climbMotor.set(ControlMode.PercentOutput, output);
          Logger.getInstance().recordOutput("ClimbMotor", output );
     }
 

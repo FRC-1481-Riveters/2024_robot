@@ -25,11 +25,11 @@ public final class Constants {
         public static final double kTrackWidth = Units.inchesToMeters(20.75);
         // Distance between right and left wheels
         public static final double kWheelBase = Units.inchesToMeters(20.75);
-        // Distance between front and back wheels
-        public static final Translation2d frontLeftModuleOffset =   new Translation2d(kWheelBase / 2, kTrackWidth / 2);
-        public static final Translation2d frontRightModuleOffset =  new Translation2d(kWheelBase / 2, -kTrackWidth / 2);
-        public static final Translation2d backLeftModuleOffset =    new Translation2d(-kWheelBase / 2, kTrackWidth / 2);
-        public static final Translation2d backRightModuleOffset =   new Translation2d(-kWheelBase / 2, -kTrackWidth / 2);
+        public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
+                new Translation2d(kWheelBase / 2, kTrackWidth / 2),
+                new Translation2d(kWheelBase / 2, -kTrackWidth / 2),
+                new Translation2d(-kWheelBase / 2, kTrackWidth / 2),
+                new Translation2d(-kWheelBase / 2, -kTrackWidth / 2));
 
         // FIXME: patch these motor IDs up to match the Swervie 2022 configuration
         public static final int kFrontLeftDriveMotorPort = 19;
@@ -83,7 +83,7 @@ public final class Constants {
             new PIDConstants(5.0, 0, 0), // Translation constants 
             new PIDConstants(5.0, 0, 0), // Rotation constants 
             kPhysicalMaxSpeedMetersPerSecond, 
-            frontLeftModuleOffset.getNorm(), // Drive base radius (distance from center to furthest module) 
+            new Translation2d(kWheelBase / 2, kTrackWidth / 2).getNorm(), // Drive base radius (distance from center to furthest module) 
             new ReplanningConfig()
         );
 
@@ -113,8 +113,18 @@ public final class Constants {
         public static final int INTAKE_ANGLE_MOTOR_FOLLOWER = 62;
         public static final int INTAKE_ANGLE_CANCODER = 61;
         public static final int TALON_TIMEOUT_MS = 5000;
-        public static final double INTAKE_ANGLE_STOWED = 0.0;
+        public static final double INTAKE_ANGLE_STOWED = 0;
         public static final double INTAKE_FLOOR_PICKUP = 191;
+        public static final double INTAKE_ANGLE_TOLERANCE = 2;
+        public static final double INTAKE_ANGLE_MOTOR_ACCELERATION = 10000;
+        public static final double INTAKE_ANGLE_MOTOR_CRUISE = 7000;
+        public static final double INTAKE_ANGLE_MOTOR_KP = 0.6;
+        public static final double INTAKE_ANGLE_MOTOR_KI = 0;
+        public static final double INTAKE_ANGLE_MOTOR_KD = 0.06;
+        public static final double INTAKE_ANGLE_MOTOR_KF = 0;
+        public static final double INTAKE_ANGLE_MOTOR_MAX = 191;
+        public static final double INTAKE_ANGLE_MOTOR_MIN = 0;
+
     }
 
     public static final class ShooterConstants{
@@ -122,9 +132,10 @@ public final class Constants {
         public static final int SHOOTER_MOTOR_BOTTOM = 4;
         public static final double SHOOTER_SPEED_TOLERANCE = 100.0;
         public static final double SHOOTER_SPEED_WING = 6000;
-        public static final double SHOOTER_SPEED_PODIUM = 4000;
-        public static final double SHOOTER_SPEED_SPEAKER = 2000;
+        public static final double SHOOTER_SPEED_PODIUM = 6000;
+        public static final double SHOOTER_SPEED_SPEAKER = 6000;
         public static final double SHOOTER_SPEED_AMP = 500;
+
     }
 
     public static final class ShooterPivotConstants{
@@ -133,21 +144,37 @@ public final class Constants {
         public static final int SHOOTER_PIVOT_CANCODER = 37;
         //fill out position values later
         public static final double SHOOTER_PIVOT_START = 0;
-        public static final double SHOOTER_PIVOT_WING = 0;
-        public static final double SHOOTER_PIVOT_PODIUM = 0;
-        public static final double SHOOTER_PIVOT_SPEAKER = 0;
-        public static final double SHOOTER_PIVOT_AMP = 0;
-        public static final double SHOOTER_PIVOT_TRAP = 0;
+        public static final double SHOOTER_PIVOT_WING = 110;
+        public static final double SHOOTER_PIVOT_PODIUM = 100;
+        public static final double SHOOTER_PIVOT_SPEAKER = 83;
+        // 63 degrees nominal
+        public static final double SHOOTER_PIVOT_SLOT1 = 120;
+        public static final double SHOOTER_PIVOT_AMP = 130;
+        public static final double SHOOTER_PIVOT_TRAP = 140;
+        public static final double SHOOTER_PIVOT_MAX = 180; // max travel
+        public static final double SHOOTER_PIVOT_MIN = 60;
+        public static final double SHOOTER_PIVOT_ACCELERATION = 4000;
+        public static final double SHOOTER_PIVOT_CRUISE = 4000;
+        public static final double SHOOTER_PIVOT_0_KP = 2.3;
+        public static final double SHOOTER_PIVOT_0_KI = 0.015;
+        public static final double SHOOTER_PIVOT_0_KD = 0.0;
+        public static final double SHOOTER_PIVOT_0_KF = 1;
+        // slot 1 for amp/trap
+        public static final double SHOOTER_PIVOT_1_KP = 0.2;
+        public static final double SHOOTER_PIVOT_1_KI = 0.0;
+        public static final double SHOOTER_PIVOT_1_KD = 0.02;
+        public static final double SHOOTER_PIVOT_1_KF = 0;
+
     }
 
     public static final class ElevatorConstants{
         public static final int ELEVATOR_MOTOR = 42;
-        public static final double ELEVATOR_POSITION_TOLERANCE = 100;
+        public static final double ELEVATOR_POSITION_TOLERANCE = 0.1;
         //fill out position values later
         public static final double ELEVATOR_START = 0;
-        public static final double ELEVATOR_WING = 0;
-        public static final double ELEVATOR_PODIUM = 0;
-        public static final double ELEVATOR_SPEAKER = 0;
+        public static final double ELEVATOR_WING = -7.3;
+        public static final double ELEVATOR_PODIUM = -8.3;
+        public static final double ELEVATOR_SPEAKER = -9.3;
         public static final double ELEVATOR_AMP = 0;
         public static final double ELEVATOR_TRAP = 0;
     }

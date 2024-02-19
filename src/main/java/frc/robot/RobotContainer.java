@@ -85,8 +85,16 @@ public class RobotContainer
         configureButtonBindings();
 
         // A chooser for autonomous commands
-        //m_autoChooser = AutoBuilder.buildAutoChooser(); // Default auto will be `Commands.none()`
-        //SmartDashboard.putData( "Auto Mode", m_autoChooser );
+        // Add a button to run the example auto to SmartDashboard
+        //SmartDashboard.putData("Example Auto", new PathPlannerAuto("Example Auto"));
+/*
+        m_autoChooser = AutoBuilder.buildAutoChooser(); // Default auto will be `Commands.none()`
+        SmartDashboard.putData( "Auto Mode", m_autoChooser );
+*/  
+        // Register named pathplanner commands
+        //NamedCommands.registerCommand("marker1", Commands.print("Passed marker 1"));
+        //NamedCommands.registerCommand("marker2", Commands.print("Passed marker 2"));
+        //NamedCommands.registerCommand("print hello", Commands.print("hello"));
 
         // Create and push Field2d to SmartDashboard.
         m_field = new Field2d();
@@ -200,59 +208,105 @@ public class RobotContainer
             .onFalse(Commands.runOnce( ()-> climbSubsystem.setClimb( 0 ), climbSubsystem))
             .onTrue( Commands.runOnce( ()-> climbSubsystem.setClimb( 0.5 ), climbSubsystem));
 
-        Trigger operatorRightJoystickAxisRight = operatorJoystick.axisGreaterThan(4, 0.7 );
-        operatorRightJoystickAxisRight
+        Trigger operatorRightJoystickAxisUp = operatorJoystick.axisGreaterThan(5, 0.7 );
+        operatorRightJoystickAxisUp
             .onFalse(Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog( 0 ), climbSubsystem))
-            .onTrue( Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog( 0.2 ), climbSubsystem));
+            .onTrue( Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog( 0.5 ), climbSubsystem));
         
+        Trigger operatorRightJoystickAxisDown = operatorJoystick.axisLessThan(5, -0.7 );
+        operatorRightJoystickAxisDown
+            .onFalse(Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog( 0 ), climbSubsystem))
+            .onTrue( Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog( -0.5 ), climbSubsystem));
+        
+        Trigger operatorLeftJoystickAxisUp = operatorJoystick.axisGreaterThan(1, 0.7 );
+        operatorLeftJoystickAxisUp 
+            .onFalse(Commands.runOnce( ()-> elevatorSubsystem.setElevatorJog( 0 ), climbSubsystem))
+            .onTrue( Commands.runOnce( ()-> elevatorSubsystem.setElevatorJog( 0.25 ), climbSubsystem));
+        
+        Trigger operatorLeftJoystickAxisDown = operatorJoystick.axisLessThan(1, -0.7 );
+        operatorLeftJoystickAxisDown
+            .onFalse(Commands.runOnce( ()-> elevatorSubsystem.setElevatorJog( 0 ), climbSubsystem))
+            .onTrue( Commands.runOnce( ()-> elevatorSubsystem.setElevatorJog( -0.25 ), climbSubsystem));
+   
         Trigger operatorRightJoystickAxisLeft = operatorJoystick.axisLessThan(4, -0.7 );
         operatorRightJoystickAxisLeft
-            .onFalse(Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog( 0 ), climbSubsystem))
-            .onTrue( Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog( -0.2 ), climbSubsystem));
+            .onFalse( Commands.runOnce( ()->shooterSubsystem.setShooterJog(0), shooterSubsystem))
+            .onTrue( Commands.runOnce( ()->shooterSubsystem.setShooterJog(1), shooterSubsystem));
         
-        Trigger operatorLeftJoystickAxisUp = operatorJoystick.axisGreaterThan(1, -0.7 );
-        operatorLeftJoystickAxisUp 
-            .onFalse(Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog( 0 ), climbSubsystem))
-            .onTrue( Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog( 0.2 ), climbSubsystem));
-        
-        Trigger operatorLeftJoystickAxisDown = operatorJoystick.axisLessThan(1, 0.7 );
-        operatorLeftJoystickAxisDown
-            .onFalse(Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog( 0 ), climbSubsystem))
-            .onTrue( Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog( -0.2 ), climbSubsystem));
-   
+        Trigger operatorRightJoystickAxisRight = operatorJoystick.axisGreaterThan(4, 0.7 );
+        operatorRightJoystickAxisRight
+            .onFalse( Commands.runOnce( ()->shooterSubsystem.setShooterJog(0), shooterSubsystem))
+            .onTrue( Commands.runOnce( ()->shooterSubsystem.setShooterJog(1), shooterSubsystem));
         
         //Podium
         Trigger operatorDPadUp = operatorJoystick.povUp();
         operatorDPadUp
-            .onTrue(Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(ShooterConstants.SHOOTER_SPEED_PODIUM), shooterSubsystem))
-            .onFalse(Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(0), shooterSubsystem));
- 
+            .onFalse(
+                Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(0), shooterSubsystem)
+            .alongWith (
+                Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog(0), shooterPivotSubsystem),
+                Commands.runOnce( ()-> elevatorSubsystem.setElevatorJog(0), elevatorSubsystem)
+                )
+            )      
+            .onTrue(
+                Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(ShooterConstants.SHOOTER_SPEED_PODIUM), shooterSubsystem)
+                .alongWith(
+                    Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivot(ShooterPivotConstants.SHOOTER_PIVOT_PODIUM)),
+                    Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition(ElevatorConstants.ELEVATOR_PODIUM), elevatorSubsystem))
+                    );
 
         //Close
         Trigger operatorDPadLeft = operatorJoystick.povLeft();
         operatorDPadLeft
-            .onTrue(Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(ShooterConstants.SHOOTER_SPEED_SPEAKER), shooterSubsystem))
-            .onFalse(Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(0), shooterSubsystem));
+         .onFalse(
+            Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(0), shooterSubsystem)
+            .alongWith (
+                Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog(0), shooterPivotSubsystem),
+                Commands.runOnce( ()-> elevatorSubsystem.setElevatorJog(0), elevatorSubsystem)
+                )
+            )      
+
+        .onTrue(
+            Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(ShooterConstants.SHOOTER_SPEED_SPEAKER), shooterSubsystem)
+                 .alongWith(
+                    Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivot(ShooterPivotConstants.SHOOTER_PIVOT_SPEAKER)),
+                    Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition(ElevatorConstants.ELEVATOR_SPEAKER), elevatorSubsystem))
+                    );
+            
 
         //Wing
         Trigger operatorDPadRight = operatorJoystick.povRight();
         operatorDPadRight
-            .onTrue(Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(ShooterConstants.SHOOTER_SPEED_WING), shooterSubsystem))
-            .onFalse(Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(0), shooterSubsystem));
+            .onFalse(
+                Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(0), shooterSubsystem)
+                .alongWith (
+                Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog(0), shooterPivotSubsystem),
+                Commands.runOnce( ()-> elevatorSubsystem.setElevatorJog(0), elevatorSubsystem)
+                )
+            )                     
+            .onTrue(
+                Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(ShooterConstants.SHOOTER_SPEED_WING), shooterSubsystem)
+                .alongWith(
+                    Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivot(ShooterPivotConstants.SHOOTER_PIVOT_WING)),
+                    Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition(ElevatorConstants.ELEVATOR_WING), elevatorSubsystem))
+                    )
+         ;
         
         //Amp
         Trigger operatorDPadDown = operatorJoystick.povDown();
         operatorDPadDown
-            .onTrue(Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(ShooterConstants.SHOOTER_SPEED_AMP), shooterSubsystem))
-            .onFalse(Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(0), shooterSubsystem));
-        
-        // Register named pathplanner commands
-        //NamedCommands.registerCommand("marker1", Commands.print("Passed marker 1"));
-        //NamedCommands.registerCommand("marker2", Commands.print("Passed marker 2"));
-        //NamedCommands.registerCommand("print hello", Commands.print("hello"));
-
-        // Add a button to run the example auto to SmartDashboard
-        //SmartDashboard.putData("Example Auto", new PathPlannerAuto("Example Auto"));
+            .onFalse(Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(0), shooterSubsystem)
+            .alongWith (
+                Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog(0), shooterPivotSubsystem),
+                Commands.runOnce( ()-> elevatorSubsystem.setElevatorJog(0), elevatorSubsystem)
+                )
+            )      
+            .onTrue(
+                Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(ShooterConstants.SHOOTER_SPEED_AMP), shooterSubsystem)
+                 .alongWith(
+                    Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivot(ShooterPivotConstants.SHOOTER_PIVOT_AMP)),
+                    Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition(ElevatorConstants.ELEVATOR_AMP), elevatorSubsystem))
+                );
     }
 
     /**

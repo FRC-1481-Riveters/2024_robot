@@ -27,15 +27,16 @@ import org.littletonrobotics.junction.Logger;
 public class ElevatorSubsystem extends SubsystemBase{
     private CANSparkMax m_elevatorMotor = new CANSparkMax(ElevatorConstants.ELEVATOR_MOTOR, CANSparkLowLevel.MotorType.kBrushless );
     private SparkRelativeEncoder m_encoder = (SparkRelativeEncoder) m_elevatorMotor.getEncoder();
-    private PIDController pidElevator = new PIDController(0.007, 0, 0);
+    private PIDController pidElevator = new PIDController(0.13, 0, 0.005);
     private boolean m_elevatorPid;
     private double m_elevatorSetpoint;
     
     public ElevatorSubsystem(){
       m_elevatorMotor.restoreFactoryDefaults();
       m_elevatorMotor.setInverted(true);
-      m_elevatorMotor.setSmartCurrentLimit(50, 30);
+      m_elevatorMotor.setSmartCurrentLimit(20, 20);
       m_elevatorMotor.setIdleMode(IdleMode.kBrake);
+      m_encoder.setPosition(0);
     }
 
     @Override
@@ -57,13 +58,16 @@ public class ElevatorSubsystem extends SubsystemBase{
 
     public void setElevatorJog( double speed )
     {
+      m_elevatorPid = false;
       m_elevatorMotor.set(speed);
+      System.out.println("setElevatorJog " + speed );
     }
 
     public void setElevatorPosition (double position){
         System.out.println("setElevatorPosition " + position);
 
-        m_elevatorSetpoint = position;        
+        m_elevatorSetpoint = position;    
+        m_elevatorPid = true;
     }
 
     public double getPosition() {
