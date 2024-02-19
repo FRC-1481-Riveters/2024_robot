@@ -9,6 +9,7 @@ import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -72,6 +73,8 @@ public class SwerveSubsystem extends SubsystemBase {
 
     private final Field2d m_field = new Field2d();
 
+    private SwerveModuleState[] savedStates;
+
     public SwerveSubsystem() {
         new Thread(() -> {
             try {
@@ -82,7 +85,6 @@ public class SwerveSubsystem extends SubsystemBase {
             }
         }).start();
 
-/*
         // Configure AutoBuilder
         AutoBuilder.configureHolonomic(
         this::getPose, 
@@ -104,10 +106,10 @@ public class SwerveSubsystem extends SubsystemBase {
         this
         );
 
-    // Set up custom logging to add the current path to a field 2d widget
-    PathPlannerLogging.setLogActivePathCallback((poses) -> field.getObject("path").setPoses(poses));
-*/
-    SmartDashboard.putData("Field", m_field);
+        // Set up custom logging to add the current path to a field 2d widget
+        PathPlannerLogging.setLogActivePathCallback((poses) -> m_field.getObject("path").setPoses(poses));
+
+        SmartDashboard.putData("Field", m_field);
     }
 
     public double getPitch()
@@ -172,10 +174,23 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     public void setModuleStates(SwerveModuleState[] desiredStates) {
-        SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, DriveConstants.kPhysicalMaxSpeedMetersPerSecond);        
+        SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, DriveConstants.kPhysicalMaxSpeedMetersPerSecond);
+        savedStates = new SwerveModuleState[] {desiredStates[0], desiredStates[1], desiredStates[2], desiredStates[3] };
         frontLeft.setDesiredState(desiredStates[0]);
         frontRight.setDesiredState(desiredStates[1]);
         backLeft.setDesiredState(desiredStates[2]);
         backRight.setDesiredState(desiredStates[3]);
+    }
+
+    public void driveRobotRelative(ChassisSpeeds robotRelativeSpeeds) {
+        ChassisSpeeds targetSpeeds = ChassisSpeeds.discretize(robotRelativeSpeeds, 0.02);
+    
+        SwerveModuleState[] targetStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(targetSpeeds);
+        setModuleStates(targetStates);
+    }
+      
+    public ChassisSpeeds getSpeeds()
+    {
+        return DriveConstants.kDriveKinematics.toChassisSpeeds(savedStates);
     }
 }
