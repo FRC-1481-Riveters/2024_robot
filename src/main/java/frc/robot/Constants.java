@@ -116,8 +116,8 @@ public final class Constants {
         public static final double INTAKE_ANGLE_STOWED = 0;
         public static final double INTAKE_FLOOR_PICKUP = 191;
         public static final double INTAKE_ANGLE_TOLERANCE = 2;
-        public static final double INTAKE_ANGLE_MOTOR_ACCELERATION = 10000;
-        public static final double INTAKE_ANGLE_MOTOR_CRUISE = 7000;
+        public static final double INTAKE_ANGLE_MOTOR_ACCELERATION = 5000;
+        public static final double INTAKE_ANGLE_MOTOR_CRUISE = 3500;
         public static final double INTAKE_ANGLE_MOTOR_KP = 0.6;
         public static final double INTAKE_ANGLE_MOTOR_KI = 0;
         public static final double INTAKE_ANGLE_MOTOR_KD = 0.06;
@@ -133,7 +133,7 @@ public final class Constants {
         public static final double SHOOTER_SPEED_TOLERANCE = 100.0;
         public static final double SHOOTER_SPEED_WING = 6000;
         public static final double SHOOTER_SPEED_PODIUM = 6000;
-        public static final double SHOOTER_SPEED_SPEAKER = 6000;
+        public static final double SHOOTER_SPEED_SPEAKER = 5000;
         public static final double SHOOTER_SPEED_AMP = 500;
 
     }

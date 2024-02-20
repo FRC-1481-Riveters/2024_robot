@@ -45,18 +45,7 @@ public class IntakeSubsystem extends SubsystemBase {
         m_intakeAngleMotor.configPeakCurrentDuration(500, IntakeConstants.TALON_TIMEOUT_MS);
         m_intakeAngleMotor.configContinuousCurrentLimit(10, IntakeConstants.TALON_TIMEOUT_MS);
         m_intakeAngleMotor.enableCurrentLimit(true);
-        m_intakeAngleMotor.setNeutralMode(NeutralMode.Brake);
-
-        m_intakeAngleMotorFollower = new TalonSRX(IntakeConstants.INTAKE_ANGLE_MOTOR_FOLLOWER);
-        m_intakeAngleMotorFollower.configFactoryDefault();
-        // Set peak current
-        m_intakeAngleMotorFollower.configPeakCurrentLimit(10, IntakeConstants.TALON_TIMEOUT_MS);
-        m_intakeAngleMotorFollower.configPeakCurrentDuration(500, IntakeConstants.TALON_TIMEOUT_MS);
-        m_intakeAngleMotorFollower.configContinuousCurrentLimit(10, IntakeConstants.TALON_TIMEOUT_MS);
-        m_intakeAngleMotorFollower.enableCurrentLimit(true);
-        m_intakeAngleMotorFollower.setNeutralMode(NeutralMode.Brake);
-        m_intakeAngleMotorFollower.setInverted(false);
-        m_intakeAngleMotorFollower.follow(m_intakeAngleMotor);
+        m_intakeAngleMotor.setNeutralMode(NeutralMode.Coast);
 
         m_intakeAngleMotor.configSelectedFeedbackSensor(RemoteFeedbackDevice.RemoteSensor0);
         m_intakeAngleMotor.configRemoteFeedbackFilter(m_intakeAngleCANcoder, 0);
@@ -71,17 +60,25 @@ public class IntakeSubsystem extends SubsystemBase {
         // Set acceleration and cruise velocity
         m_intakeAngleMotor.configMotionCruiseVelocity(IntakeConstants.INTAKE_ANGLE_MOTOR_CRUISE );
         m_intakeAngleMotor.configMotionAcceleration(IntakeConstants.INTAKE_ANGLE_MOTOR_ACCELERATION );
-        m_intakeAngleMotor.configPeakOutputForward(0.8);
-        m_intakeAngleMotor.configPeakOutputReverse(-0.8);
         // Set extend motion limits
         m_intakeAngleMotor.configForwardSoftLimitThreshold(IntakeConstants.INTAKE_ANGLE_MOTOR_MAX*(4096/360));
         m_intakeAngleMotor.configForwardSoftLimitEnable(true);
         m_intakeAngleMotor.configReverseSoftLimitThreshold(IntakeConstants.INTAKE_ANGLE_MOTOR_MIN*(4096/360));
         m_intakeAngleMotor.configReverseSoftLimitEnable(true);
-        
+
+
+        m_intakeAngleMotorFollower = new TalonSRX(IntakeConstants.INTAKE_ANGLE_MOTOR_FOLLOWER);
+        m_intakeAngleMotorFollower.configFactoryDefault();
+        // Set peak current
+        m_intakeAngleMotorFollower.configPeakCurrentLimit(10, IntakeConstants.TALON_TIMEOUT_MS);
+        m_intakeAngleMotorFollower.configPeakCurrentDuration(500, IntakeConstants.TALON_TIMEOUT_MS);
+        m_intakeAngleMotorFollower.configContinuousCurrentLimit(10, IntakeConstants.TALON_TIMEOUT_MS);
+        m_intakeAngleMotorFollower.enableCurrentLimit(true);
+        m_intakeAngleMotorFollower.setNeutralMode(NeutralMode.Coast);
+        m_intakeAngleMotorFollower.setInverted(false);
+        m_intakeAngleMotorFollower.follow(m_intakeAngleMotor);
 
         intakeSpeedEntry = NetworkTableInstance.getDefault().getTable("SmartDashboard").getEntry("Intake Roller Speed");
-
     }
 
     public void setIntakeRoller( double minus_one_to_one )
@@ -141,6 +138,11 @@ public class IntakeSubsystem extends SubsystemBase {
 
         Logger.recordOutput("IntakeAngle", m_intakeAngleCANcoder.getAbsolutePosition());
         Logger.recordOutput("IntakeAngleOutput", m_intakeAngleMotor.getMotorOutputPercent());
+        Logger.recordOutput("IntakeAngleFollowOutput", m_intakeAngleMotorFollower.getMotorOutputPercent());
+        Logger.recordOutput("IntakeAngleCurrent", m_intakeAngleMotor.getStatorCurrent());
+        Logger.recordOutput("IntakeAngleTemp", m_intakeAngleMotor.getTemperature());
+        Logger.recordOutput("IntakeAngleFollowCurrent", m_intakeAngleMotorFollower.getStatorCurrent());
+        Logger.recordOutput("IntakeAngleFollowTemp", m_intakeAngleMotorFollower.getTemperature());
     }
 
 }

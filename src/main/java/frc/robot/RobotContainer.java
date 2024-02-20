@@ -87,10 +87,8 @@ public class RobotContainer
         // A chooser for autonomous commands
         // Add a button to run the example auto to SmartDashboard
         //SmartDashboard.putData("Example Auto", new PathPlannerAuto("Example Auto"));
-/*
         m_autoChooser = AutoBuilder.buildAutoChooser(); // Default auto will be `Commands.none()`
         SmartDashboard.putData( "Auto Mode", m_autoChooser );
-*/  
         // Register named pathplanner commands
         //NamedCommands.registerCommand("marker1", Commands.print("Passed marker 1"));
         //NamedCommands.registerCommand("marker2", Commands.print("Passed marker 2"));
@@ -174,13 +172,19 @@ public class RobotContainer
 
     private void configureButtonBindings() 
     {
-        Trigger aButton = driverJoystick.a();
-        aButton.onTrue( Commands.runOnce( () -> swerveSubsystem.zeroHeading(0.0) ) );
+        Trigger aButton = driverJoystick.start();
+        aButton
+            .onTrue( Commands.runOnce( () -> swerveSubsystem.zeroHeading(0.0) ) );
 
         Trigger driverLeftTrigger = driverJoystick.leftTrigger( 0.7 );
         driverLeftTrigger
             .onFalse(Commands.runOnce( ()-> DriveDividerSet( Constants.DriveConstants.DRIVE_DIVIDER_NORMAL )))
             .onTrue( Commands.runOnce( ()-> DriveDividerSet( Constants.DriveConstants.DRIVE_DIVIDER_TURBO )));
+        
+        Trigger driverShootTrigger = driverJoystick.a();
+        driverShootTrigger
+            .onFalse(Commands.runOnce( ()-> intakeSubsystem.setIntakeRoller( 0 ), intakeSubsystem))
+            .onTrue( Commands.runOnce( ()-> intakeSubsystem.setIntakeRoller( 1 ), intakeSubsystem));
 
         Trigger operatorIntakeDeployTrigger = operatorJoystick.y();
         operatorIntakeDeployTrigger
