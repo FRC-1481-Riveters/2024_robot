@@ -135,14 +135,17 @@ public class IntakeSubsystem extends SubsystemBase {
         // This method will be called once per scheduler run
         intakeSpeedEntry.setDouble( rpm );
         Logger.recordOutput("IntakeRollerRPM", rpm );
+        m_intakeAngleMotorFollower.follow(m_intakeAngleMotor);
 
         Logger.recordOutput("IntakeAngle", m_intakeAngleCANcoder.getAbsolutePosition());
         Logger.recordOutput("IntakeAngleOutput", m_intakeAngleMotor.getMotorOutputPercent());
         Logger.recordOutput("IntakeAngleFollowOutput", m_intakeAngleMotorFollower.getMotorOutputPercent());
         Logger.recordOutput("IntakeAngleCurrent", m_intakeAngleMotor.getStatorCurrent());
+        Logger.recordOutput("IntakeAngleSupplyA", m_intakeAngleMotor.getSupplyCurrent());
         Logger.recordOutput("IntakeAngleTemp", m_intakeAngleMotor.getTemperature());
         Logger.recordOutput("IntakeAngleFollowCurrent", m_intakeAngleMotorFollower.getStatorCurrent());
         Logger.recordOutput("IntakeAngleFollowTemp", m_intakeAngleMotorFollower.getTemperature());
+        Logger.recordOutput("IntakeAngleFollowSupplyA", m_intakeAngleMotorFollower.getSupplyCurrent());
     }
 
 }

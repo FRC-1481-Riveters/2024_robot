@@ -91,22 +91,6 @@ public final class Constants {
         public static final double DRIVE_DIVIDER_TURBO = 1.0;
     }
 
-    public static final class AutoConstants {
-        public static final double kMaxSpeedMetersPerSecond = DriveConstants.kPhysicalMaxSpeedMetersPerSecond / 3;
-        public static final double kMaxAngularSpeedRadiansPerSecond = 
-                DriveConstants.kPhysicalMaxAngularSpeedRadiansPerSecond / 3;
-        public static final double kMaxAccelerationMetersPerSecondSquared = 1;
-        public static final double kMaxAngularAccelerationRadiansPerSecondSquared = Math.PI;
-        public static final double kPXController = -5;
-        public static final double kPYController = -5;
-        public static final double kPThetaController = -2;
-
-        public static final TrapezoidProfile.Constraints kThetaControllerConstraints = 
-                new TrapezoidProfile.Constraints(
-                        kMaxAngularSpeedRadiansPerSecond,
-                        kMaxAngularAccelerationRadiansPerSecondSquared);
-    }
-    
     public static final class IntakeConstants {
         public static final int INTAKE_ROLLER_MOTOR = 58;
         public static final int INTAKE_ANGLE_MOTOR = 59;
@@ -114,11 +98,11 @@ public final class Constants {
         public static final int INTAKE_ANGLE_CANCODER = 61;
         public static final int TALON_TIMEOUT_MS = 5000;
         public static final double INTAKE_ANGLE_STOWED = 0;
-        public static final double INTAKE_FLOOR_PICKUP = 191;
+        public static final double INTAKE_FLOOR_PICKUP = 187;
         public static final double INTAKE_ANGLE_TOLERANCE = 2;
-        public static final double INTAKE_ANGLE_MOTOR_ACCELERATION = 5000;
-        public static final double INTAKE_ANGLE_MOTOR_CRUISE = 3500;
-        public static final double INTAKE_ANGLE_MOTOR_KP = 0.6;
+        public static final double INTAKE_ANGLE_MOTOR_ACCELERATION = 4500;
+        public static final double INTAKE_ANGLE_MOTOR_CRUISE = 3000;
+        public static final double INTAKE_ANGLE_MOTOR_KP = 0.5;
         public static final double INTAKE_ANGLE_MOTOR_KI = 0;
         public static final double INTAKE_ANGLE_MOTOR_KD = 0.06;
         public static final double INTAKE_ANGLE_MOTOR_KF = 0;
@@ -146,12 +130,12 @@ public final class Constants {
         public static final double SHOOTER_PIVOT_START = 0;
         public static final double SHOOTER_PIVOT_WING = 110;
         public static final double SHOOTER_PIVOT_PODIUM = 100;
-        public static final double SHOOTER_PIVOT_SPEAKER = 83;
+        public static final double SHOOTER_PIVOT_CLOSE = 83;
         // 63 degrees nominal
         public static final double SHOOTER_PIVOT_SLOT1 = 120;
-        public static final double SHOOTER_PIVOT_AMP = 130;
+        public static final double SHOOTER_PIVOT_AMP = 160;
         public static final double SHOOTER_PIVOT_TRAP = 140;
-        public static final double SHOOTER_PIVOT_MAX = 180; // max travel
+        public static final double SHOOTER_PIVOT_MAX = 270; // max travel
         public static final double SHOOTER_PIVOT_MIN = 60;
         public static final double SHOOTER_PIVOT_ACCELERATION = 4000;
         public static final double SHOOTER_PIVOT_CRUISE = 4000;
@@ -160,7 +144,7 @@ public final class Constants {
         public static final double SHOOTER_PIVOT_0_KD = 0.0;
         public static final double SHOOTER_PIVOT_0_KF = 1;
         // slot 1 for amp/trap
-        public static final double SHOOTER_PIVOT_1_KP = 0.2;
+        public static final double SHOOTER_PIVOT_1_KP = 1.0;
         public static final double SHOOTER_PIVOT_1_KI = 0.0;
         public static final double SHOOTER_PIVOT_1_KD = 0.02;
         public static final double SHOOTER_PIVOT_1_KF = 0;
@@ -174,14 +158,17 @@ public final class Constants {
         public static final double ELEVATOR_START = 0;
         public static final double ELEVATOR_WING = -7.3;
         public static final double ELEVATOR_PODIUM = -8.3;
-        public static final double ELEVATOR_SPEAKER = -9.3;
-        public static final double ELEVATOR_AMP = 0;
+        public static final double ELEVATOR_CLOSE = -9.3;
+        public static final double ELEVATOR_AMP = -12;
         public static final double ELEVATOR_TRAP = 0;
     }
 
      public static final class ClimbConstants {
         public static final int CLIMB_MOTOR = 24;
         public static final int TALON_TIMEOUT_MS = 5000;
+        public static final int CLIMB_MAX = 0;
+        public static final int CLIMB_MIN = 0;
+
     }
 
     public static final class OIConstants {

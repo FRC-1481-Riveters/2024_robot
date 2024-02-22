@@ -44,7 +44,7 @@ public class ShooterPivotSubsystem extends SubsystemBase {
         m_shooterPivotMotorFollower.configContinuousCurrentLimit(20);
         m_shooterPivotMotorFollower.enableCurrentLimit(true);
         m_shooterPivotMotorFollower.setNeutralMode(NeutralMode.Brake);
-        m_shooterPivotMotor.setInverted(InvertType.FollowMaster);
+        m_shooterPivotMotorFollower.setInverted(InvertType.FollowMaster);
         m_shooterPivotMotorFollower.follow(m_shooterPivotMotor);
         m_shooterPivotMotor.configSelectedFeedbackSensor(RemoteFeedbackDevice.RemoteSensor0);
         m_shooterPivotMotor.configRemoteFeedbackFilter(m_shooterPivotCANCoder, 0);
