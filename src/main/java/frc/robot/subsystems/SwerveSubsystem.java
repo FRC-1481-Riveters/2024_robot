@@ -21,6 +21,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.SwerveModule;
+
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class SwerveSubsystem extends SubsystemBase {
@@ -72,14 +74,12 @@ public class SwerveSubsystem extends SubsystemBase {
 
     private final Field2d m_field = new Field2d();
 
-    private SwerveModuleState[] savedStates;
-
     public SwerveSubsystem() {
         new Thread(() -> {
             try {
                 Thread.sleep(1000);
                 gyro.setYaw(0, 1000);
-                zeroHeading(0.0);
+                zeroHeading(180);
             } catch (Exception e) {
             }
         }).start();
@@ -88,7 +88,7 @@ public class SwerveSubsystem extends SubsystemBase {
         AutoBuilder.configureHolonomic(
         this::getPose, 
         this::resetOdometry, 
-        this::getSpeeds, 
+        () -> DriveConstants.kDriveKinematics.toChassisSpeeds(getModuleStates()),
         this::driveRobotRelative, 
         DriveConstants.pathFollowerConfig,
         () -> {
@@ -144,6 +144,7 @@ public class SwerveSubsystem extends SubsystemBase {
         return Rotation2d.fromDegrees(getHeading());
     }
 
+    @AutoLogOutput(key = "Odometry/Robot")
     public Pose2d getPose() {
         return odometer.getPoseMeters();
     }
@@ -156,13 +157,8 @@ public class SwerveSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         odometer.update(getRotation2d(), new SwerveModulePosition[]{frontLeft.getPosition(),frontRight.getPosition(),backLeft.getPosition(),backRight.getPosition()});
+        Logger.recordOutput("Drive/Gyro", getRotation2d());
         m_field.setRobotPose(odometer.getPoseMeters());
-      
-        Logger.getInstance().recordOutput("MyPose2d", m_field.getRobotPose());
-
-        // SwerveModuleState
-        Logger.getInstance().recordOutput("MySwerveModuleStates",
-             frontLeft.getState(), frontRight.getState(), backLeft.getState(), backRight.getState() );
     }
 
     public void stopModules() {
@@ -174,7 +170,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
     public void setModuleStates(SwerveModuleState[] desiredStates) {
         SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, DriveConstants.kPhysicalMaxSpeedMetersPerSecond);
-        savedStates = new SwerveModuleState[] {desiredStates[0], desiredStates[1], desiredStates[2], desiredStates[3] };
+        Logger.recordOutput("SwerveStates/Setpoints", desiredStates);
         frontLeft.setDesiredState(desiredStates[0]);
         frontRight.setDesiredState(desiredStates[1]);
         backLeft.setDesiredState(desiredStates[2]);
@@ -187,9 +183,17 @@ public class SwerveSubsystem extends SubsystemBase {
         SwerveModuleState[] targetStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(targetSpeeds);
         setModuleStates(targetStates);
     }
-      
-    public ChassisSpeeds getSpeeds()
+
+    /** Returns the module states (turn angles and drive velocities) for all of the modules. */
+    @AutoLogOutput(key = "SwerveStates/Measured")
+    private SwerveModuleState[] getModuleStates() 
     {
-        return DriveConstants.kDriveKinematics.toChassisSpeeds(savedStates);
+        SwerveModuleState[] states = new SwerveModuleState[4];
+        states[0] = frontLeft.getState();
+        states[1] = frontRight.getState();
+        states[2] = backLeft.getState();
+        states[3] = backRight.getState();
+        return states;
     }
+    
 }

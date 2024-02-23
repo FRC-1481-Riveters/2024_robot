@@ -54,7 +54,7 @@ public class SwerveJoystickCmd extends Command {
         ySpeed = Math.abs(ySpeed) > OIConstants.kDeadband ? ySpeed : 0.0;
         turningSpeed = Math.abs(turningSpeed) > OIConstants.kDeadband ? turningSpeed : 0.0;
 
-        if( xSpeed < 0 )
+        if( xSpeed > 0 )
         {
             xSpeed = -1 * xSpeed * xSpeed;
         }
@@ -63,7 +63,7 @@ public class SwerveJoystickCmd extends Command {
             xSpeed = xSpeed * xSpeed;
         }
       
-        if( ySpeed < 0 )
+        if( ySpeed > 0 )
         {
             ySpeed = -1 * ySpeed * ySpeed;
         }

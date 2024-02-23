@@ -85,7 +85,7 @@ public class SwerveModule {
         double position;
         position = driveMotor.getSelectedSensorPosition();  // 0..2048 counts per revolution
         position = (position / 2048) * (14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0);
-        position = -position * ModuleConstants.kWheelDiameterMeters * Math.PI;
+        position = position * ModuleConstants.kWheelDiameterMeters * Math.PI;
         SmartDashboard.putNumber("driving Position[" + absoluteEncoder.getDeviceID() + "]",position);
 
         return( position );
@@ -109,7 +109,7 @@ public class SwerveModule {
 
     public double getDriveVelocity() {
         double velocity;
-        velocity = -driveMotor.getSelectedSensorVelocity();
+        velocity = driveMotor.getSelectedSensorVelocity();
 
         velocity = (velocity / 204.8) * (14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0);
         velocity = velocity * ModuleConstants.kWheelDiameterMeters * Math.PI;

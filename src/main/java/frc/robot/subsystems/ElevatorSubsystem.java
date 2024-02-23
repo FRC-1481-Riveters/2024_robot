@@ -30,7 +30,8 @@ public class ElevatorSubsystem extends SubsystemBase{
     private PIDController pidElevator = new PIDController(0.13, 0, 0.005);
     private boolean m_elevatorPid;
     private double m_elevatorSetpoint;
-    
+    private int m_positionStable;
+
     public ElevatorSubsystem(){
       m_elevatorMotor.restoreFactoryDefaults();
       m_elevatorMotor.setInverted(true);
@@ -68,6 +69,7 @@ public class ElevatorSubsystem extends SubsystemBase{
 
         m_elevatorSetpoint = position;    
         m_elevatorPid = true;
+        m_positionStable = 0;
     }
 
     public double getPosition() {
@@ -75,9 +77,21 @@ public class ElevatorSubsystem extends SubsystemBase{
     }
     
     public boolean isAtPosition() {
-      if (Math.abs((getPosition() - m_elevatorSetpoint)) <= ElevatorConstants.ELEVATOR_POSITION_TOLERANCE) {
-        return true;
-      } else {
+      if (Math.abs((getPosition() - m_elevatorSetpoint)) <= ElevatorConstants.ELEVATOR_POSITION_TOLERANCE) 
+      {
+        m_positionStable++;
+        if (m_positionStable >= 10)
+        {
+          return true; 
+        }
+        else
+        {
+          return false;
+        } 
+      } 
+      else
+      {
+        m_positionStable = 0;
         return false;
       }
     }

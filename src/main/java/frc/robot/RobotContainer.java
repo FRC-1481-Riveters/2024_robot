@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.hal.AllianceStationID;
@@ -174,7 +175,7 @@ public class RobotContainer
     {
         Trigger aButton = driverJoystick.start();
         aButton
-            .onTrue( Commands.runOnce( () -> swerveSubsystem.zeroHeading(0.0) ) );
+            .onTrue( Commands.runOnce( () -> swerveSubsystem.zeroHeading(180.0) ) );
 
         Trigger driverLeftTrigger = driverJoystick.leftTrigger( 0.7 );
         driverLeftTrigger
@@ -215,12 +216,12 @@ public class RobotContainer
         Trigger operatorRightJoystickAxisUp = operatorJoystick.axisGreaterThan(5, 0.7 );
         operatorRightJoystickAxisUp
             .onFalse(Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog( 0 ), climbSubsystem))
-            .onTrue( Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog( 0.5 ), climbSubsystem));
+            .onTrue( Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog( -0.25 ), climbSubsystem));
         
         Trigger operatorRightJoystickAxisDown = operatorJoystick.axisLessThan(5, -0.7 );
         operatorRightJoystickAxisDown
             .onFalse(Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog( 0 ), climbSubsystem))
-            .onTrue( Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog( -0.5 ), climbSubsystem));
+            .onTrue( Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog( 0.25 ), climbSubsystem));
         
         Trigger operatorLeftJoystickAxisUp = operatorJoystick.axisGreaterThan(1, 0.7 );
         operatorLeftJoystickAxisUp 
@@ -311,6 +312,29 @@ public class RobotContainer
                     Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivot(ShooterPivotConstants.SHOOTER_PIVOT_AMP)),
                     Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition(ElevatorConstants.ELEVATOR_AMP), elevatorSubsystem))
                 );
+
+        //Stow
+        Trigger operatorStart = operatorJoystick.start();
+        operatorStart
+         .onFalse(
+            Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog(0), shooterPivotSubsystem)
+            .alongWith (
+                Commands.runOnce( ()-> elevatorSubsystem.setElevatorJog(0), elevatorSubsystem),
+                Commands.runOnce( ()->driverJoystick.getHID().setRumble(RumbleType.kBothRumble, 1)),
+                Commands.runOnce( ()->driverJoystick.getHID().setRumble(RumbleType.kBothRumble, 0))
+                )
+            )      
+
+        .onTrue(
+            Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivot(ShooterPivotConstants.SHOOTER_PIVOT_START))
+            .alongWith( Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition(ElevatorConstants.ELEVATOR_START ), elevatorSubsystem))
+            .until( elevatorSubsystem::isAtPosition)
+            .andThen( Commands.runOnce( ()->operatorJoystick.getHID().setRumble(RumbleType.kBothRumble, 1)))
+            .andThen( Commands.runOnce( ()->operatorJoystick.getHID().setRumble(RumbleType.kBothRumble, 0)))
+            .andThen( Commands.waitSeconds(0.5 ))
+            .andThen( Commands.runOnce( ()->driverJoystick.getHID().setRumble(RumbleType.kBothRumble, 1)))
+            .andThen( Commands.runOnce( ()->driverJoystick.getHID().setRumble(RumbleType.kBothRumble, 0)))
+        );
     }
 
     /**
