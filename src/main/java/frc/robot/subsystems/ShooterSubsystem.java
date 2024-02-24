@@ -29,7 +29,7 @@ public class ShooterSubsystem extends SubsystemBase{
     private NetworkTableEntry shooterOutputEntry;
     private NetworkTableEntry shooterSpeedEntry;
     private NetworkTableEntry shooterSetpointEntry;
-    DigitalInput m_shooterBeamBreak = new DigitalInput(0);
+    DigitalInput m_shooterBeamBreak = new DigitalInput(2);
     private ShuffleboardTab tab;
     private NetworkTableEntry lightSensor;
     

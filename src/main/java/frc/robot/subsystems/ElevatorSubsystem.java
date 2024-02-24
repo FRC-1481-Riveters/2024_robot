@@ -28,6 +28,8 @@ public class ElevatorSubsystem extends SubsystemBase{
     private CANSparkMax m_elevatorMotor = new CANSparkMax(ElevatorConstants.ELEVATOR_MOTOR, CANSparkLowLevel.MotorType.kBrushless );
     private SparkRelativeEncoder m_encoder = (SparkRelativeEncoder) m_elevatorMotor.getEncoder();
     private PIDController pidElevator = new PIDController(0.13, 0, 0.005);
+    private DigitalInput m_elevatorDownBeamBreak = new DigitalInput(3);
+
     private boolean m_elevatorPid;
     private double m_elevatorSetpoint;
     private int m_positionStable;
@@ -54,6 +56,12 @@ public class ElevatorSubsystem extends SubsystemBase{
       {
         pidCalculate = pidElevator.calculate( position, m_elevatorSetpoint);
         m_elevatorMotor.set(MathUtil.clamp( pidCalculate, -0.4, 0.4));
+      }
+
+      // If the elevator is all the way down, zero the encoder
+      if( m_elevatorDownBeamBreak.get() == false )
+      {
+        m_encoder.setPosition(0);
       }
     }
 

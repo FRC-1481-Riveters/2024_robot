@@ -139,8 +139,8 @@ public final class Constants {
         public static final double SHOOTER_PIVOT_MIN = 60;
         public static final double SHOOTER_PIVOT_ACCELERATION = 500;
         public static final double SHOOTER_PIVOT_CRUISE = 500;
-        public static final double SHOOTER_PIVOT_0_KP = 2.3;
-        public static final double SHOOTER_PIVOT_0_KI = 0.015;
+        public static final double SHOOTER_PIVOT_0_KP = 1.5;
+        public static final double SHOOTER_PIVOT_0_KI = 0.009;
         public static final double SHOOTER_PIVOT_0_KD = 0.0;
         public static final double SHOOTER_PIVOT_0_KF = 0.2;
         // slot 1 for amp/trap

@@ -65,8 +65,8 @@ public class ShooterPivotSubsystem extends SubsystemBase {
         // Set acceleration and cruise velocity
         m_shooterPivotMotor.configMotionCruiseVelocity(ShooterPivotConstants.SHOOTER_PIVOT_CRUISE );
         m_shooterPivotMotor.configMotionAcceleration(ShooterPivotConstants.SHOOTER_PIVOT_ACCELERATION );
-        m_shooterPivotMotor.configPeakOutputForward(1.0);
-        m_shooterPivotMotor.configPeakOutputReverse(-1.0);
+        m_shooterPivotMotor.configPeakOutputForward(0.4);
+        m_shooterPivotMotor.configPeakOutputReverse(-0.4);
         // Set extend motion limits
         m_shooterPivotMotor.configForwardSoftLimitThreshold(ShooterPivotConstants.SHOOTER_PIVOT_MAX*(4096/360));
         m_shooterPivotMotor.configForwardSoftLimitEnable(true);

@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
@@ -90,10 +91,14 @@ public class RobotContainer
         //SmartDashboard.putData("Example Auto", new PathPlannerAuto("Example Auto"));
         m_autoChooser = AutoBuilder.buildAutoChooser(); // Default auto will be `Commands.none()`
         SmartDashboard.putData( "Auto Mode", m_autoChooser );
+
         // Register named pathplanner commands
-        //NamedCommands.registerCommand("marker1", Commands.print("Passed marker 1"));
-        //NamedCommands.registerCommand("marker2", Commands.print("Passed marker 2"));
-        //NamedCommands.registerCommand("print hello", Commands.print("hello"));
+        NamedCommands.registerCommand("ShootCommand", ShooterCommand());
+        NamedCommands.registerCommand("IntakeRetractCommand", IntakeRetractCommand() );
+        NamedCommands.registerCommand("IntakeDeployCommand", IntakeDeployCommand() );
+        NamedCommands.registerCommand("IntakeRollersIn", IntakeDeployCommand() );
+        NamedCommands.registerCommand("IntakeRollersStop", IntakeDeployCommand() );
+
 
         // Create and push Field2d to SmartDashboard.
         m_field = new Field2d();
@@ -190,23 +195,23 @@ public class RobotContainer
         Trigger operatorIntakeDeployTrigger = operatorJoystick.y();
         operatorIntakeDeployTrigger
             .onFalse(Commands.runOnce( ()-> intakeSubsystem.intakeAngleDisable(), intakeSubsystem))
-            .onTrue( Commands.runOnce( ()-> intakeSubsystem.setIntakeAngle(IntakeConstants.INTAKE_FLOOR_PICKUP ), intakeSubsystem));
+            .onTrue( IntakeDeployCommand() );
 
         Trigger operatorIntakeRetractTrigger = operatorJoystick.a();
         operatorIntakeRetractTrigger
             .onFalse(Commands.runOnce( ()-> intakeSubsystem.intakeAngleDisable(), intakeSubsystem))
-            .onTrue( Commands.runOnce( ()-> intakeSubsystem.setIntakeAngle( IntakeConstants.INTAKE_ANGLE_STOWED ), intakeSubsystem));
+            .onTrue(IntakeRetractCommand());
 
 
         Trigger operatorIntakeWheelsInTrigger = operatorJoystick.leftBumper();
         operatorIntakeWheelsInTrigger
-            .onFalse(Commands.runOnce( ()-> intakeSubsystem.setIntakeRoller( 0 ), intakeSubsystem))
-            .onTrue( Commands.runOnce( ()-> intakeSubsystem.setIntakeRoller( -1 ), intakeSubsystem));
+            .onFalse(IntakeRollersStopCommand())
+            .onTrue( IntakeRollersInCommand());
 
         Trigger operatorIntakeWheelsOutTrigger = operatorJoystick.rightBumper();
         operatorIntakeWheelsOutTrigger
-            .onFalse(Commands.runOnce( ()-> intakeSubsystem.setIntakeRoller( 0 ), intakeSubsystem))
-            .onTrue( Commands.runOnce( ()-> intakeSubsystem.setIntakeRoller( 1 ), intakeSubsystem));
+            .onFalse(IntakeRollersStopCommand())
+            .onTrue( IntakeRollersOutCommand());
 
         Trigger operatorLeftTrigger = operatorJoystick.leftTrigger( 0.7 );
         operatorLeftTrigger
@@ -273,10 +278,10 @@ public class RobotContainer
 
         .onTrue(
             Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(ShooterConstants.SHOOTER_SPEED_SPEAKER), shooterSubsystem)
-                 .alongWith(
+                .alongWith(
                     Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivot(ShooterPivotConstants.SHOOTER_PIVOT_CLOSE)),
-                    Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition(ElevatorConstants.ELEVATOR_CLOSE), elevatorSubsystem))
-                    );
+                    Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition(ElevatorConstants.ELEVATOR_CLOSE), elevatorSubsystem))    
+                );
             
 
         //Wing
@@ -320,7 +325,7 @@ public class RobotContainer
             Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog(0), shooterPivotSubsystem)
             .alongWith (
                 Commands.runOnce( ()-> elevatorSubsystem.setElevatorJog(0), elevatorSubsystem),
-                Commands.runOnce( ()->driverJoystick.getHID().setRumble(RumbleType.kBothRumble, 1)),
+                Commands.runOnce( ()->operatorJoystick.getHID().setRumble(RumbleType.kBothRumble, 0)),
                 Commands.runOnce( ()->driverJoystick.getHID().setRumble(RumbleType.kBothRumble, 0))
                 )
             )      
@@ -335,6 +340,46 @@ public class RobotContainer
             .andThen( Commands.runOnce( ()->driverJoystick.getHID().setRumble(RumbleType.kBothRumble, 1)))
             .andThen( Commands.runOnce( ()->driverJoystick.getHID().setRumble(RumbleType.kBothRumble, 0)))
         );
+    }
+    
+
+    public Command ShooterCommand() 
+    {
+        return Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(ShooterConstants.SHOOTER_SPEED_SPEAKER), shooterSubsystem)
+                .alongWith(
+                    Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivot(ShooterPivotConstants.SHOOTER_PIVOT_CLOSE)),
+                    Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition(ElevatorConstants.ELEVATOR_CLOSE), elevatorSubsystem)
+                )
+                .until( elevatorSubsystem::isAtPosition )
+                .until( shooterSubsystem::isAtSpeed )
+                .andThen(IntakeRollersOutCommand())
+                .andThen(Commands.waitSeconds(1))
+                .andThen(IntakeRollersStopCommand());
+    }
+
+    public Command IntakeRetractCommand() 
+    {
+        return Commands.runOnce( ()-> intakeSubsystem.setIntakeAngle( IntakeConstants.INTAKE_ANGLE_STOWED ), intakeSubsystem);
+    }
+
+    public Command IntakeDeployCommand() 
+    {
+        return Commands.runOnce( ()-> intakeSubsystem.setIntakeAngle(IntakeConstants.INTAKE_FLOOR_PICKUP ), intakeSubsystem);
+    }
+
+    public Command IntakeRollersInCommand() 
+    {
+        return Commands.runOnce( ()-> intakeSubsystem.setIntakeRoller( -1 ), intakeSubsystem);
+    }
+
+    public Command IntakeRollersStopCommand() 
+    {
+        return Commands.runOnce( ()-> intakeSubsystem.setIntakeRoller( 0 ), intakeSubsystem);
+    }
+
+    public Command IntakeRollersOutCommand() 
+    {
+        return Commands.runOnce( ()-> intakeSubsystem.setIntakeRoller( 1 ), intakeSubsystem);
     }
 
     /**
