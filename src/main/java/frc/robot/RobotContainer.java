@@ -86,19 +86,17 @@ public class RobotContainer
 
         configureButtonBindings();
 
+        // Register named pathplanner commands
+        NamedCommands.registerCommand("ShootCommand", ShooterCommand());
+        NamedCommands.registerCommand("IntakeRetractCommand", IntakeRetractCommand() );
+        NamedCommands.registerCommand("IntakeDeployCommand", IntakeDeployCommand() );
+        NamedCommands.registerCommand("IntakeRollersIn", IntakeRollersInCommand() );
+        NamedCommands.registerCommand("IntakeRollersStop", IntakeRollersStopCommand() );
         // A chooser for autonomous commands
         // Add a button to run the example auto to SmartDashboard
         //SmartDashboard.putData("Example Auto", new PathPlannerAuto("Example Auto"));
         m_autoChooser = AutoBuilder.buildAutoChooser(); // Default auto will be `Commands.none()`
         SmartDashboard.putData( "Auto Mode", m_autoChooser );
-
-        // Register named pathplanner commands
-        NamedCommands.registerCommand("ShootCommand", ShooterCommand());
-        NamedCommands.registerCommand("IntakeRetractCommand", IntakeRetractCommand() );
-        NamedCommands.registerCommand("IntakeDeployCommand", IntakeDeployCommand() );
-        NamedCommands.registerCommand("IntakeRollersIn", IntakeDeployCommand() );
-        NamedCommands.registerCommand("IntakeRollersStop", IntakeDeployCommand() );
-
 
         // Create and push Field2d to SmartDashboard.
         m_field = new Field2d();
@@ -205,8 +203,8 @@ public class RobotContainer
 
         Trigger operatorIntakeWheelsInTrigger = operatorJoystick.leftBumper();
         operatorIntakeWheelsInTrigger
-            .onFalse(IntakeRollersStopCommand())
-            .onTrue( IntakeRollersInCommand());
+            .whileTrue( IntakeRollersInCommand())
+            .onFalse( Commands.runOnce( ()-> intakeSubsystem.setIntakeRoller( 0 ) ) );
 
         Trigger operatorIntakeWheelsOutTrigger = operatorJoystick.rightBumper();
         operatorIntakeWheelsOutTrigger
@@ -305,26 +303,35 @@ public class RobotContainer
         //Amp
         Trigger operatorDPadDown = operatorJoystick.povDown();
         operatorDPadDown
-            .onFalse(Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(0), shooterSubsystem)
+        .onFalse( Commands.runOnce( ()->StopControls(true) ) )
+        .whileTrue(
+            Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog(0), shooterPivotSubsystem)
             .alongWith (
-                Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog(0), shooterPivotSubsystem),
-                Commands.runOnce( ()-> elevatorSubsystem.setElevatorJog(0), elevatorSubsystem)
+                Commands.runOnce( ()-> elevatorSubsystem.setElevatorJog(0), elevatorSubsystem),
+                Commands.runOnce( ()-> intakeSubsystem.setIntakeRoller( 0.30 ), intakeSubsystem)
                 )
-            )      
-            .onTrue(
-                Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(ShooterConstants.SHOOTER_SPEED_AMP), shooterSubsystem)
-                 .alongWith(
-                    Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivot(ShooterPivotConstants.SHOOTER_PIVOT_AMP)),
-                    Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition(ElevatorConstants.ELEVATOR_AMP), elevatorSubsystem))
-                );
+            .andThen( Commands.waitSeconds(10000)
+                .until( shooterSubsystem::isLightCurtainBlocked))
+            .andThen(Commands.waitSeconds(0.5))
+            .andThen(Commands.runOnce( ()-> intakeSubsystem.setIntakeRoller( 0 ), intakeSubsystem))
+            .andThen( Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition(Constants.ElevatorConstants.ELEVATOR_AMP), elevatorSubsystem) )
+            .andThen( Commands.waitSeconds(10000)
+                .until( elevatorSubsystem::isAtPosition))
+            .andThen( Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivot(ShooterPivotConstants.SHOOTER_PIVOT_AMP), shooterPivotSubsystem))
+            .andThen( Commands.waitSeconds(10000) 
+                .until( shooterPivotSubsystem::atSetpoint))
+            .andThen( Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(ShooterConstants.SHOOTER_SPEED_AMP), shooterSubsystem))
+            .andThen( Commands.waitSeconds(1000))
+        );
 
         //Stow
-        Trigger operatorStart = operatorJoystick.start();
-        operatorStart
+        Trigger operatorBack = operatorJoystick.back();
+        operatorBack
          .onFalse(
             Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog(0), shooterPivotSubsystem)
             .alongWith (
                 Commands.runOnce( ()-> elevatorSubsystem.setElevatorJog(0), elevatorSubsystem),
+                Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(0), shooterSubsystem),
                 Commands.runOnce( ()->operatorJoystick.getHID().setRumble(RumbleType.kBothRumble, 0)),
                 Commands.runOnce( ()->driverJoystick.getHID().setRumble(RumbleType.kBothRumble, 0))
                 )
@@ -333,7 +340,8 @@ public class RobotContainer
         .onTrue(
             Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivot(ShooterPivotConstants.SHOOTER_PIVOT_START))
             .alongWith( Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition(ElevatorConstants.ELEVATOR_START ), elevatorSubsystem))
-            .until( elevatorSubsystem::isAtPosition)
+            .andThen( Commands.waitSeconds(10000) 
+                .until( elevatorSubsystem::isAtPosition))
             .andThen( Commands.runOnce( ()->operatorJoystick.getHID().setRumble(RumbleType.kBothRumble, 1)))
             .andThen( Commands.runOnce( ()->operatorJoystick.getHID().setRumble(RumbleType.kBothRumble, 0)))
             .andThen( Commands.waitSeconds(0.5 ))
@@ -345,13 +353,14 @@ public class RobotContainer
 
     public Command ShooterCommand() 
     {
-        return Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(ShooterConstants.SHOOTER_SPEED_SPEAKER), shooterSubsystem)
+        return Commands.runOnce( ()->System.out.println("ShooterCommand") )
+                .andThen( Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(ShooterConstants.SHOOTER_SPEED_SPEAKER), shooterSubsystem) )
                 .alongWith(
-                    Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivot(ShooterPivotConstants.SHOOTER_PIVOT_CLOSE)),
+                    Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivot(ShooterPivotConstants.SHOOTER_PIVOT_CLOSE), shooterPivotSubsystem),
                     Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition(ElevatorConstants.ELEVATOR_CLOSE), elevatorSubsystem)
                 )
-                .until( elevatorSubsystem::isAtPosition )
-                .until( shooterSubsystem::isAtSpeed )
+                .andThen( Commands.waitSeconds(10000)
+                    .until( elevatorSubsystem::isAtPosition ))
                 .andThen(IntakeRollersOutCommand())
                 .andThen(Commands.waitSeconds(1))
                 .andThen(IntakeRollersStopCommand());
@@ -359,27 +368,36 @@ public class RobotContainer
 
     public Command IntakeRetractCommand() 
     {
-        return Commands.runOnce( ()-> intakeSubsystem.setIntakeAngle( IntakeConstants.INTAKE_ANGLE_STOWED ), intakeSubsystem);
+        return Commands.runOnce( ()->System.out.println("IntakeRetractCommand") )
+            .andThen(Commands.runOnce( ()-> intakeSubsystem.setIntakeAngle( IntakeConstants.INTAKE_ANGLE_STOWED ), intakeSubsystem))
+            ;
     }
 
     public Command IntakeDeployCommand() 
     {
-        return Commands.runOnce( ()-> intakeSubsystem.setIntakeAngle(IntakeConstants.INTAKE_FLOOR_PICKUP ), intakeSubsystem);
+        return Commands.runOnce( ()->System.out.println("IntakeDeployCommand") )
+            .andThen(Commands.runOnce( ()-> intakeSubsystem.setIntakeAngle( IntakeConstants.INTAKE_FLOOR_PICKUP ), intakeSubsystem));
     }
 
     public Command IntakeRollersInCommand() 
     {
-        return Commands.runOnce( ()-> intakeSubsystem.setIntakeRoller( -1 ), intakeSubsystem);
+        return Commands.runOnce( ()->System.out.println("IntakeRollersInCommand") )
+            .andThen( Commands.runOnce( ()-> intakeSubsystem.setIntakeRoller( -0.7 ) ) )
+            .andThen( Commands.waitSeconds(10000)
+                .until(intakeSubsystem::isIntakeBeamBreakLoaded))
+            .andThen( Commands.runOnce( ()-> intakeSubsystem.setIntakeRoller( 0 )));
     }
 
     public Command IntakeRollersStopCommand() 
     {
-        return Commands.runOnce( ()-> intakeSubsystem.setIntakeRoller( 0 ), intakeSubsystem);
+        return Commands.runOnce( ()->System.out.println("IntakeRollersStopCommand") )
+            .andThen( Commands.runOnce( ()-> intakeSubsystem.setIntakeRoller( 0 )));
     }
 
     public Command IntakeRollersOutCommand() 
     {
-        return Commands.runOnce( ()-> intakeSubsystem.setIntakeRoller( 1 ), intakeSubsystem);
+        return Commands.runOnce( ()->System.out.println("IntakeRollersOutCommand") )
+            .andThen( Commands.runOnce( ()-> intakeSubsystem.setIntakeRoller(1 )));
     }
 
     /**
@@ -392,4 +410,12 @@ public class RobotContainer
         return m_autoChooser.getSelected();
     }
 
+    public void StopControls( boolean stopped)
+    {
+        System.out.println("StopControls");
+        shooterPivotSubsystem.setShooterPivotJog(0);
+        elevatorSubsystem.setElevatorJog(0);
+        intakeSubsystem.setIntakeRoller( 0.0 );
+        shooterSubsystem.setShooterSpeed(0);
+    };
  }

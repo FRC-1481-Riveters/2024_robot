@@ -16,6 +16,8 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.DigitalInput;
+
 
 import org.littletonrobotics.junction.Logger;
 
@@ -29,6 +31,8 @@ public class IntakeSubsystem extends SubsystemBase {
     private CANCoder m_intakeAngleCANcoder = new CANCoder(IntakeConstants.INTAKE_ANGLE_CANCODER);
     private boolean m_intakeAnglePid;
     private double m_intakeAngleSetpoint;
+    private DigitalInput m_intakeBeamBreakShooter = new DigitalInput(0);
+    private DigitalInput m_intakeBeamBreakLoaded = new DigitalInput(1);
 
     public IntakeSubsystem() 
     {
@@ -146,7 +150,16 @@ public class IntakeSubsystem extends SubsystemBase {
         Logger.recordOutput("IntakeAngleFollowCurrent", m_intakeAngleMotorFollower.getStatorCurrent());
         Logger.recordOutput("IntakeAngleFollowTemp", m_intakeAngleMotorFollower.getTemperature());
         Logger.recordOutput("IntakeAngleFollowSupplyA", m_intakeAngleMotorFollower.getSupplyCurrent());
+        Logger.recordOutput("IntakeBeamBreakShooter", !m_intakeBeamBreakShooter.get() );
+        Logger.recordOutput("IntakeBeamBreakLoaded", !m_intakeBeamBreakLoaded.get() );
     }
 
+    public boolean isIntakeBeamBreakLoaded()
+    {
+        if( m_intakeBeamBreakLoaded.get() )
+            return false;
+        else
+            return true;
+    }
 }
 

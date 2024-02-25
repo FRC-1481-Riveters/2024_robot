@@ -32,15 +32,15 @@ public final class Constants {
                 new Translation2d(-kWheelBase / 2, -kTrackWidth / 2));
 
         // FIXME: patch these motor IDs up to match the Swervie 2022 configuration
-        public static final int kFrontLeftDriveMotorPort = 19;
-        public static final int kFrontRightDriveMotorPort = 10;
-        public static final int kBackLeftDriveMotorPort = 18;
-        public static final int kBackRightDriveMotorPort = 13;
+        public static final int kFrontLeftDriveMotorPort = 13;
+        public static final int kFrontRightDriveMotorPort = 18;
+        public static final int kBackLeftDriveMotorPort = 10;
+        public static final int kBackRightDriveMotorPort = 19;
 
-        public static final int kFrontLeftTurningMotorPort = 12;
-        public static final int kFrontRightTurningMotorPort = 21;
-        public static final int kBackLeftTurningMotorPort = 15;     
-        public static final int kBackRightTurningMotorPort = 16;
+        public static final int kFrontLeftTurningMotorPort = 16;
+        public static final int kFrontRightTurningMotorPort = 15;
+        public static final int kBackLeftTurningMotorPort = 21;   
+        public static final int kBackRightTurningMotorPort = 12;
 
         public static final int gyroPort = 60;
 
@@ -55,10 +55,10 @@ public final class Constants {
         public static final boolean kBackRightDriveEncoderReversed = true;
 
         // CANCoder IDs
-        public static final int kFrontLeftDriveAbsoluteEncoderPort = 14;
-        public static final int kFrontRightDriveAbsoluteEncoderPort = 11;
-        public static final int kBackLeftDriveAbsoluteEncoderPort = 17;
-        public static final int kBackRightDriveAbsoluteEncoderPort = 20;
+        public static final int kFrontLeftDriveAbsoluteEncoderPort = 20;
+        public static final int kFrontRightDriveAbsoluteEncoderPort = 17;
+        public static final int kBackLeftDriveAbsoluteEncoderPort = 11;
+        public static final int kBackRightDriveAbsoluteEncoderPort = 14;
 
         public static final boolean kFrontLeftDriveAbsoluteEncoderReversed = false;
         public static final boolean kFrontRightDriveAbsoluteEncoderReversed = false;
@@ -98,9 +98,9 @@ public final class Constants {
         public static final int INTAKE_ANGLE_CANCODER = 61;
         public static final int TALON_TIMEOUT_MS = 5000;
         public static final double INTAKE_ANGLE_STOWED = 0;
-        public static final double INTAKE_FLOOR_PICKUP = 187;
+        public static final double INTAKE_FLOOR_PICKUP = 189;
         public static final double INTAKE_ANGLE_TOLERANCE = 2;
-        public static final double INTAKE_ANGLE_MOTOR_ACCELERATION = 4500;
+        public static final double INTAKE_ANGLE_MOTOR_ACCELERATION = 3000;
         public static final double INTAKE_ANGLE_MOTOR_CRUISE = 3000;
         public static final double INTAKE_ANGLE_MOTOR_KP = 0.5;
         public static final double INTAKE_ANGLE_MOTOR_KI = 0;
@@ -118,16 +118,16 @@ public final class Constants {
         public static final double SHOOTER_SPEED_WING = 6000;
         public static final double SHOOTER_SPEED_PODIUM = 6000;
         public static final double SHOOTER_SPEED_SPEAKER = 5000;
-        public static final double SHOOTER_SPEED_AMP = 500;
+        public static final double SHOOTER_SPEED_AMP = 2000;
 
     }
 
     public static final class ShooterPivotConstants{
-        public static final int SHOOTER_PIVOT_MOTOR = 35;
-        public static final int SHOOTER_PIVOT_MOTOR_FOLLOWER = 36;
+        public static final int SHOOTER_PIVOT_MOTOR = 36;
+        public static final int SHOOTER_PIVOT_MOTOR_FOLLOWER = 35;
         public static final int SHOOTER_PIVOT_CANCODER = 37;
         //fill out position values later
-        public static final double SHOOTER_PIVOT_START = 0;
+        public static final double SHOOTER_PIVOT_START = 60;
         public static final double SHOOTER_PIVOT_WING = 110;
         public static final double SHOOTER_PIVOT_PODIUM = 100;
         public static final double SHOOTER_PIVOT_CLOSE = 83;
@@ -144,16 +144,16 @@ public final class Constants {
         public static final double SHOOTER_PIVOT_0_KD = 0.0;
         public static final double SHOOTER_PIVOT_0_KF = 0.2;
         // slot 1 for amp/trap
-        public static final double SHOOTER_PIVOT_1_KP = 1.0;
-        public static final double SHOOTER_PIVOT_1_KI = 0.0;
-        public static final double SHOOTER_PIVOT_1_KD = 0.02;
+        public static final double SHOOTER_PIVOT_1_KP = 1.2;
+        public static final double SHOOTER_PIVOT_1_KI = 0.004;
+        public static final double SHOOTER_PIVOT_1_KD = 0.0;
         public static final double SHOOTER_PIVOT_1_KF = 0;
 
     }
 
     public static final class ElevatorConstants{
         public static final int ELEVATOR_MOTOR = 42;
-        public static final double ELEVATOR_POSITION_TOLERANCE = 0.2;
+        public static final double ELEVATOR_POSITION_TOLERANCE = 0.5;
         //fill out position values later
         public static final double ELEVATOR_START = 0;
         public static final double ELEVATOR_WING = -7.3;

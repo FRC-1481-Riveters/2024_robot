@@ -129,6 +129,7 @@ public class Robot extends LoggedRobot {
     @Override
     public void autonomousInit() 
     {
+        CommandScheduler.getInstance().cancelAll();
         m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
         // schedule the autonomous command (example)
@@ -152,6 +153,7 @@ public class Robot extends LoggedRobot {
         if (m_autonomousCommand != null) {
             m_autonomousCommand.cancel();
         }
+        CommandScheduler.getInstance().cancelAll();
     }
 
     /** This function is called periodically during operator control. */

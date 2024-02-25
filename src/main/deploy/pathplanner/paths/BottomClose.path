@@ -8,24 +8,24 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.8282392120339799,
-        "y": 5.54412553269551
+        "x": 1.6731175461339092,
+        "y": 4.441815740774339
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.3983292411029273,
-        "y": 4.631981486185195
+        "x": 2.5237490474980953,
+        "y": 4.280561703980552
       },
       "prevControl": {
-        "x": 2.2760964055698794,
-        "y": 4.7949586002292595
+        "x": 2.083582367063551,
+        "y": 4.59427410283392
       },
       "nextControl": {
-        "x": 2.4838427454632694,
-        "y": 4.517963480371405
+        "x": 2.640595097479135,
+        "y": 4.19728403607551
       },
       "isLocked": false,
       "linkedName": null
@@ -47,7 +47,7 @@
   "rotationTargets": [
     {
       "waypointRelativePos": 1,
-      "rotationDegrees": 132.1844433157888,
+      "rotationDegrees": 148.5591950328088,
       "rotateFast": false
     }
   ],
@@ -55,9 +55,9 @@
   "eventMarkers": [
     {
       "name": "Retract",
-      "waypointRelativePos": 1.2,
+      "waypointRelativePos": 0.85,
       "command": {
-        "type": "parallel",
+        "type": "sequential",
         "data": {
           "commands": [
             {
@@ -78,9 +78,9 @@
     },
     {
       "name": "Deploy",
-      "waypointRelativePos": 0.35,
+      "waypointRelativePos": 0.1,
       "command": {
-        "type": "parallel",
+        "type": "sequential",
         "data": {
           "commands": [
             {
@@ -101,8 +101,8 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 4.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 1.5,
+    "maxAcceleration": 1.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
@@ -117,5 +117,5 @@
     "rotation": 180.0,
     "velocity": 0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

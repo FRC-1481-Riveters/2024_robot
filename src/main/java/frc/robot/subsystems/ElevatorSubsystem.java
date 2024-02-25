@@ -51,6 +51,7 @@ public class ElevatorSubsystem extends SubsystemBase{
 
       // This method will be called once per scheduler run
       Logger.recordOutput("ElevatorPosition", position );
+      Logger.recordOutput("ElevatorBeamBreak", m_elevatorDownBeamBreak.get() );
 
       if( m_elevatorPid == true )
       {

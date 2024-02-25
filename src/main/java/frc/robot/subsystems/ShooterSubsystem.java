@@ -20,6 +20,8 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import static frc.robot.Constants.*;
 
+import org.littletonrobotics.junction.Logger;
+
 public class ShooterSubsystem extends SubsystemBase{
     private double m_shooterIntendedSpeed;
     private CANSparkMax m_shooterMotorTop = new CANSparkMax(ShooterConstants.SHOOTER_MOTOR_TOP, CANSparkLowLevel.MotorType.kBrushless );
@@ -65,7 +67,7 @@ public class ShooterSubsystem extends SubsystemBase{
       // This method will be called once per scheduler run
       shooterSpeedEntry.setDouble( m_encoder.getVelocity() );
       shooterSpeedEntry.setDouble( getSpeed() );
-      
+      Logger.recordOutput("Shooter Light Curtain", isLightCurtainBlocked() );
     }
 
     public void setShooterSpeed (double rpm){

@@ -109,7 +109,14 @@ public class ShooterPivotSubsystem extends SubsystemBase {
     }
 
     public boolean atSetpoint(){
-        return pidShooterPivot.atSetpoint();
+        boolean retval;
+
+        if( Math.abs( getShooterPivot() - m_shooterPivotSetpoint ) < 5 )
+            retval = true;
+        else   
+            retval = false;
+        Logger.recordOutput("ShooterPivotAtSetpoint", retval );
+        return retval;
     }
 
     public void shooterPivotDisable()
