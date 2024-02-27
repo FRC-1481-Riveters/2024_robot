@@ -19,9 +19,11 @@ public class ShooterPivotSubsystem extends SubsystemBase {
 
     private TalonSRX m_shooterPivotMotor;
     private TalonSRX m_shooterPivotMotorFollower;
-    private PIDController pidShooterPivot = new PIDController(0.007, 0, 0);
+    private PIDController pid = new PIDController(0.020, 0, 0);
     private CANCoder m_shooterPivotCANCoder = new CANCoder(ShooterPivotConstants.SHOOTER_PIVOT_CANCODER);
     private double m_shooterPivotSetpoint;
+    private double m_output;
+    private boolean m_pidEnable;
 
     public ShooterPivotSubsystem() 
     {
@@ -65,8 +67,8 @@ public class ShooterPivotSubsystem extends SubsystemBase {
         // Set acceleration and cruise velocity
         m_shooterPivotMotor.configMotionCruiseVelocity(ShooterPivotConstants.SHOOTER_PIVOT_CRUISE );
         m_shooterPivotMotor.configMotionAcceleration(ShooterPivotConstants.SHOOTER_PIVOT_ACCELERATION );
-        m_shooterPivotMotor.configPeakOutputForward(0.4);
-        m_shooterPivotMotor.configPeakOutputReverse(-0.4);
+        m_shooterPivotMotor.configPeakOutputForward(0.6);
+        m_shooterPivotMotor.configPeakOutputReverse(-0.6);
         // Set extend motion limits
         m_shooterPivotMotor.configForwardSoftLimitThreshold(ShooterPivotConstants.SHOOTER_PIVOT_MAX*(4096/360));
         m_shooterPivotMotor.configForwardSoftLimitEnable(true);
@@ -79,28 +81,19 @@ public class ShooterPivotSubsystem extends SubsystemBase {
 
     public void setShooterPivot( double angle )
     {
-        pidShooterPivot.reset();
+        m_pidEnable = true;
+        pid.reset();
         m_shooterPivotSetpoint = angle;
 
-        if( angle > ShooterPivotConstants.SHOOTER_PIVOT_SLOT1)
-        {
-            m_shooterPivotMotor.selectProfileSlot(1, 0);
-        }
-        else
-        {
-            m_shooterPivotMotor.selectProfileSlot(0, 0);
-        }
-        Logger.recordOutput("ShooterPivotSet", angle );
         System.out.println("setShooterPivot " + angle + ", current angle=" + getShooterPivot());
-        double sensorSetpoint;
-        sensorSetpoint = angle * (4096/360);
-        m_shooterPivotMotor.set(ControlMode.MotionMagic, sensorSetpoint );
     }
 
     public void setShooterPivotJog( double speed )
     {
-        m_shooterPivotMotor.set(ControlMode.PercentOutput, speed);
-        System.out.println("setShooterPivotJog " + speed );
+        m_pidEnable = false;
+        m_output = speed;
+        m_shooterPivotMotor.set(ControlMode.PercentOutput, m_output);
+        System.out.println("setShooterPivotJog " + m_output );
     }
 
     public double getShooterPivot ()
@@ -111,11 +104,11 @@ public class ShooterPivotSubsystem extends SubsystemBase {
     public boolean atSetpoint(){
         boolean retval;
 
-        if( Math.abs( getShooterPivot() - m_shooterPivotSetpoint ) < 5 )
+        if( Math.abs( getShooterPivot() - m_shooterPivotSetpoint ) < 1.5 )
             retval = true;
         else   
             retval = false;
-        Logger.recordOutput("ShooterPivotAtSetpoint", retval );
+        Logger.recordOutput("ShooterPivot/AtSetpoint", retval );
         return retval;
     }
 
@@ -128,8 +121,23 @@ public class ShooterPivotSubsystem extends SubsystemBase {
     @Override
     public void periodic() 
     {
-        Logger.recordOutput("ShooterPivot", m_shooterPivotCANCoder.getAbsolutePosition());
-        Logger.recordOutput("ShooterPivotOutput", m_shooterPivotMotor.getMotorOutputPercent());
+        double position;
+        double pidCalculate;
+
+        // This method will be called once per scheduler run
+
+        position = m_shooterPivotCANCoder.getAbsolutePosition();
+
+        Logger.recordOutput("ShooterPivot/Position", position);
+        m_shooterPivotMotorFollower.follow(m_shooterPivotMotor);
+
+        if( m_pidEnable == true )
+        {
+            pidCalculate = pid.calculate( position, m_shooterPivotSetpoint);
+            m_output = MathUtil.clamp( pidCalculate, -0.6, 0.6);
+            m_shooterPivotMotor.set(ControlMode.PercentOutput, m_output);
+        }
+        Logger.recordOutput("ShooterPivot/Output", m_output);
     }
 
 }

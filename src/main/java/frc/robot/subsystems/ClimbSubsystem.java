@@ -2,46 +2,74 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ClimbConstants;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.RemoteFeedbackDevice;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.networktables.NetworkTableEntry;
+import com.revrobotics.*;
+import com.revrobotics.CANSparkBase.IdleMode;
 
 import org.littletonrobotics.junction.Logger;
 
 public class ClimbSubsystem extends SubsystemBase {
 
-    private TalonSRX m_climbMotor;
+    private CANSparkMax m_climbMotor = new CANSparkMax(ClimbConstants.CLIMB_MOTOR, CANSparkLowLevel.MotorType.kBrushless );
+    private CANSparkMax m_climbMotorFollower = new CANSparkMax(ClimbConstants.CLIMB_MOTOR_FOLLOWER, CANSparkLowLevel.MotorType.kBrushless );
+    private SparkRelativeEncoder m_encoder = (SparkRelativeEncoder) m_climbMotor.getEncoder();
+    private PIDController pid = new PIDController(0.13, 0, 0.005);
+    private double m_setpoint;
+    private boolean m_pidEnabled;
 
     public ClimbSubsystem() 
     {
-     /*
-         m_climbMotor = new TalonSRX(ClimbConstants.CLIMB_MOTOR);
-          
-         m_climbMotor.configFactoryDefault();
-         // Configure Talon  SRX output and sensor direction
-         m_climbMotor.setSensorPhase(false);
-         // Set peak current
-         m_climbMotor.configPeakCurrentLimit(20, ClimbConstants.TALON_TIMEOUT_MS);
-         m_climbMotor.configPeakCurrentDuration(500, ClimbConstants.TALON_TIMEOUT_MS);
-         m_climbMotor.configContinuousCurrentLimit(15, ClimbConstants.TALON_TIMEOUT_MS);
-         m_climbMotor.enableCurrentLimit(true);
-         m_climbMotor.setNeutralMode(NeutralMode.Brake);
-         */
+        m_climbMotor.restoreFactoryDefaults();
+        m_climbMotor.setInverted(false);
+        m_climbMotor.setSmartCurrentLimit(80, 50);
+        m_climbMotor.setIdleMode(IdleMode.kBrake);
+        m_encoder.setPosition(0);
+        m_climbMotorFollower.restoreFactoryDefaults();
+        m_climbMotorFollower.setInverted(false);
+        m_climbMotorFollower.setSmartCurrentLimit(80, 50);
+        m_climbMotorFollower.setIdleMode(IdleMode.kBrake);
+//        m_climbMotorFollower.follow(m_climbMotor,false);
     }
 
-    public void setClimb( double minus_one_to_one )
+    @Override
+    public void periodic() 
     {
-         double output;
-         output = minus_one_to_one;
+        // This method will be called once per scheduler run
+        double position;
+        double pidCalculate;
+        double output;
+        position = m_encoder.getPosition();
 
-         //m_climbMotor.set(ControlMode.PercentOutput, output);
-         Logger.getInstance().recordOutput("ClimbMotor", output );
+        // This method will be called once per scheduler run
+        Logger.recordOutput("ClimbPosition", position );
+
+        if( m_pidEnabled == true )
+        {
+            pidCalculate = pid.calculate( position, m_setpoint);
+            output = MathUtil.clamp( pidCalculate, -0.4, 0.4);
+            m_climbMotor.set(output);
+            m_climbMotorFollower.set(output);
+            Logger.recordOutput("ClimbOutput", position );
+        }
     }
 
+    public void setClimb( double targetPosition )
+    {
+        m_pidEnabled = true;
+        m_setpoint = targetPosition;
+
+        Logger.recordOutput("ClimbSetpoint", m_setpoint );
+        Logger.recordOutput("ClimbJogOutput", 0 );
+    }
+
+    public void setClimbJog( double percentOutput )
+    {
+        m_pidEnabled = false;
+        m_climbMotor.set(percentOutput);
+        m_climbMotorFollower.set(percentOutput);
+        Logger.recordOutput("ClimbSetpoint", 0 );
+        Logger.recordOutput("ClimbJogOutput", percentOutput );
+    }
 }

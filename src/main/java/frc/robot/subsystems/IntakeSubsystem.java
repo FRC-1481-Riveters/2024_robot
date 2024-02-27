@@ -40,14 +40,15 @@ public class IntakeSubsystem extends SubsystemBase {
         m_intakeRollerMotor.setInverted(false);
         m_intakeRollerMotor.setSmartCurrentLimit(80, 30);
         m_intakeRollerMotor.setIdleMode(IdleMode.kCoast);
+        m_intakeAngleCANcoder.setPosition(m_intakeAngleCANcoder.getAbsolutePosition());
 
         m_intakeAngleMotor = new TalonSRX(IntakeConstants.INTAKE_ANGLE_MOTOR);
         m_intakeAngleMotor.configFactoryDefault();
         // Set peak current
         m_intakeAngleMotor.setInverted(true);
-        m_intakeAngleMotor.configPeakCurrentLimit(10, IntakeConstants.TALON_TIMEOUT_MS);
+        m_intakeAngleMotor.configPeakCurrentLimit(15, IntakeConstants.TALON_TIMEOUT_MS);
         m_intakeAngleMotor.configPeakCurrentDuration(500, IntakeConstants.TALON_TIMEOUT_MS);
-        m_intakeAngleMotor.configContinuousCurrentLimit(10, IntakeConstants.TALON_TIMEOUT_MS);
+        m_intakeAngleMotor.configContinuousCurrentLimit(15, IntakeConstants.TALON_TIMEOUT_MS);
         m_intakeAngleMotor.enableCurrentLimit(true);
         m_intakeAngleMotor.setNeutralMode(NeutralMode.Coast);
 
@@ -74,9 +75,9 @@ public class IntakeSubsystem extends SubsystemBase {
         m_intakeAngleMotorFollower = new TalonSRX(IntakeConstants.INTAKE_ANGLE_MOTOR_FOLLOWER);
         m_intakeAngleMotorFollower.configFactoryDefault();
         // Set peak current
-        m_intakeAngleMotorFollower.configPeakCurrentLimit(10, IntakeConstants.TALON_TIMEOUT_MS);
+        m_intakeAngleMotorFollower.configPeakCurrentLimit(15, IntakeConstants.TALON_TIMEOUT_MS);
         m_intakeAngleMotorFollower.configPeakCurrentDuration(500, IntakeConstants.TALON_TIMEOUT_MS);
-        m_intakeAngleMotorFollower.configContinuousCurrentLimit(10, IntakeConstants.TALON_TIMEOUT_MS);
+        m_intakeAngleMotorFollower.configContinuousCurrentLimit(15, IntakeConstants.TALON_TIMEOUT_MS);
         m_intakeAngleMotorFollower.enableCurrentLimit(true);
         m_intakeAngleMotorFollower.setNeutralMode(NeutralMode.Coast);
         m_intakeAngleMotorFollower.setInverted(false);
@@ -97,7 +98,7 @@ public class IntakeSubsystem extends SubsystemBase {
         double sensorSetpoint;
         sensorSetpoint = angle * (4096/360);
         m_intakeAngleSetpoint = angle;
-        Logger.recordOutput("IntakeAngleSet", angle );
+        Logger.recordOutput("Intake/AngleSet", angle );
         System.out.println("setIntakeAngle " + angle + ", current angle=" + getIntakeAngle());
         m_intakeAngleMotor.set(ControlMode.MotionMagic, sensorSetpoint );
     }
@@ -138,20 +139,20 @@ public class IntakeSubsystem extends SubsystemBase {
 
         // This method will be called once per scheduler run
         intakeSpeedEntry.setDouble( rpm );
-        Logger.recordOutput("IntakeRollerRPM", rpm );
+        Logger.recordOutput("Intake/RollerRPM", rpm );
         m_intakeAngleMotorFollower.follow(m_intakeAngleMotor);
 
-        Logger.recordOutput("IntakeAngle", m_intakeAngleCANcoder.getAbsolutePosition());
-        Logger.recordOutput("IntakeAngleOutput", m_intakeAngleMotor.getMotorOutputPercent());
-        Logger.recordOutput("IntakeAngleFollowOutput", m_intakeAngleMotorFollower.getMotorOutputPercent());
-        Logger.recordOutput("IntakeAngleCurrent", m_intakeAngleMotor.getStatorCurrent());
-        Logger.recordOutput("IntakeAngleSupplyA", m_intakeAngleMotor.getSupplyCurrent());
-        Logger.recordOutput("IntakeAngleTemp", m_intakeAngleMotor.getTemperature());
-        Logger.recordOutput("IntakeAngleFollowCurrent", m_intakeAngleMotorFollower.getStatorCurrent());
-        Logger.recordOutput("IntakeAngleFollowTemp", m_intakeAngleMotorFollower.getTemperature());
-        Logger.recordOutput("IntakeAngleFollowSupplyA", m_intakeAngleMotorFollower.getSupplyCurrent());
-        Logger.recordOutput("IntakeBeamBreakShooter", !m_intakeBeamBreakShooter.get() );
-        Logger.recordOutput("IntakeBeamBreakLoaded", !m_intakeBeamBreakLoaded.get() );
+        Logger.recordOutput("Intake/AnglePosition", m_intakeAngleCANcoder.getAbsolutePosition());
+        Logger.recordOutput("Intake/Output", m_intakeAngleMotor.getMotorOutputPercent());
+        Logger.recordOutput("Intake/FollowOutput", m_intakeAngleMotorFollower.getMotorOutputPercent());
+        Logger.recordOutput("Intake/Current", m_intakeAngleMotor.getStatorCurrent());
+        Logger.recordOutput("Intake/SupplyA", m_intakeAngleMotor.getSupplyCurrent());
+        Logger.recordOutput("Intake/Temp", m_intakeAngleMotor.getTemperature());
+        Logger.recordOutput("Intake/FollowCurrent", m_intakeAngleMotorFollower.getStatorCurrent());
+        Logger.recordOutput("Intake/FollowTemp", m_intakeAngleMotorFollower.getTemperature());
+        Logger.recordOutput("Intake/FollowSupplyA", m_intakeAngleMotorFollower.getSupplyCurrent());
+        Logger.recordOutput("Intake/BeamBreakShooter", !m_intakeBeamBreakShooter.get() );
+        Logger.recordOutput("Intake/BeamBreakLoaded", !m_intakeBeamBreakLoaded.get() );
     }
 
     public boolean isIntakeBeamBreakLoaded()

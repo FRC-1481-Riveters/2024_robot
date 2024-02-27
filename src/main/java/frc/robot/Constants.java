@@ -98,10 +98,11 @@ public final class Constants {
         public static final int INTAKE_ANGLE_CANCODER = 61;
         public static final int TALON_TIMEOUT_MS = 5000;
         public static final double INTAKE_ANGLE_STOWED = 0;
+        public static final double INTAKE_ANGLE_PODIUM = 10;
         public static final double INTAKE_FLOOR_PICKUP = 189;
         public static final double INTAKE_ANGLE_TOLERANCE = 2;
         public static final double INTAKE_ANGLE_MOTOR_ACCELERATION = 3000;
-        public static final double INTAKE_ANGLE_MOTOR_CRUISE = 3000;
+        public static final double INTAKE_ANGLE_MOTOR_CRUISE = 7000;
         public static final double INTAKE_ANGLE_MOTOR_KP = 0.5;
         public static final double INTAKE_ANGLE_MOTOR_KI = 0;
         public static final double INTAKE_ANGLE_MOTOR_KD = 0.06;
@@ -115,11 +116,10 @@ public final class Constants {
         public static final int SHOOTER_MOTOR_TOP = 3;
         public static final int SHOOTER_MOTOR_BOTTOM = 4;
         public static final double SHOOTER_SPEED_TOLERANCE = 100.0;
+        public static final double SHOOTER_SPEED_SPEAKER = 4000; //5000;
+        public static final double SHOOTER_SPEED_PODIUM = 4500;
         public static final double SHOOTER_SPEED_WING = 6000;
-        public static final double SHOOTER_SPEED_PODIUM = 6000;
-        public static final double SHOOTER_SPEED_SPEAKER = 5000;
         public static final double SHOOTER_SPEED_AMP = 2000;
-
     }
 
     public static final class ShooterPivotConstants{
@@ -127,19 +127,19 @@ public final class Constants {
         public static final int SHOOTER_PIVOT_MOTOR_FOLLOWER = 35;
         public static final int SHOOTER_PIVOT_CANCODER = 37;
         //fill out position values later
-        public static final double SHOOTER_PIVOT_START = 60;
-        public static final double SHOOTER_PIVOT_WING = 110;
-        public static final double SHOOTER_PIVOT_PODIUM = 100;
-        public static final double SHOOTER_PIVOT_CLOSE = 83;
+        public static final double SHOOTER_PIVOT_START = 10;
+        public static final double SHOOTER_PIVOT_CLOSE = 32;
+        public static final double SHOOTER_PIVOT_PODIUM = 48;
+        public static final double SHOOTER_PIVOT_WING = 60;
         // 63 degrees nominal
-        public static final double SHOOTER_PIVOT_SLOT1 = 120;
-        public static final double SHOOTER_PIVOT_AMP = 160;
-        public static final double SHOOTER_PIVOT_TRAP = 140;
-        public static final double SHOOTER_PIVOT_MAX = 270; // max travel
-        public static final double SHOOTER_PIVOT_MIN = 60;
+        public static final double SHOOTER_PIVOT_SLOT1 = 60;
+        public static final double SHOOTER_PIVOT_AMP = 110;
+        public static final double SHOOTER_PIVOT_TRAP = 90;
+        public static final double SHOOTER_PIVOT_MAX = 210; // max travel
+        public static final double SHOOTER_PIVOT_MIN = 10;
         public static final double SHOOTER_PIVOT_ACCELERATION = 500;
         public static final double SHOOTER_PIVOT_CRUISE = 500;
-        public static final double SHOOTER_PIVOT_0_KP = 1.5;
+        public static final double SHOOTER_PIVOT_0_KP = 1.4;
         public static final double SHOOTER_PIVOT_0_KI = 0.009;
         public static final double SHOOTER_PIVOT_0_KD = 0.0;
         public static final double SHOOTER_PIVOT_0_KF = 0.2;
@@ -156,16 +156,16 @@ public final class Constants {
         public static final double ELEVATOR_POSITION_TOLERANCE = 0.5;
         //fill out position values later
         public static final double ELEVATOR_START = 0;
-        public static final double ELEVATOR_WING = -7.3;
-        public static final double ELEVATOR_PODIUM = -8.3;
-        public static final double ELEVATOR_CLOSE = -9.3;
+        public static final double ELEVATOR_WING = -7.9;
+        public static final double ELEVATOR_PODIUM = -7.9;
+        public static final double ELEVATOR_CLOSE = -7.9;
         public static final double ELEVATOR_AMP = -12;
         public static final double ELEVATOR_TRAP = 0;
     }
 
      public static final class ClimbConstants {
         public static final int CLIMB_MOTOR = 24;
-        public static final int TALON_TIMEOUT_MS = 5000;
+        public static final int CLIMB_MOTOR_FOLLOWER = 25;
         public static final int CLIMB_MAX = 0;
         public static final int CLIMB_MIN = 0;
 

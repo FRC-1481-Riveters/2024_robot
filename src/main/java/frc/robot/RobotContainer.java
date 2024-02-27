@@ -82,7 +82,7 @@ public class RobotContainer
                 () -> getDriverMoveFwdBack(),
                 () -> getDriverMoveLeftRight(),
                 () -> getDriverRotate(),
-                () -> !driverJoystick.getHID().getBackButton() ));
+                () -> !driverJoystick.getHID().getRightBumper() ));
 
         configureButtonBindings();
 
@@ -211,10 +211,15 @@ public class RobotContainer
             .onFalse(IntakeRollersStopCommand())
             .onTrue( IntakeRollersOutCommand());
 
-        Trigger operatorLeftTrigger = operatorJoystick.leftTrigger( 0.7 );
+        Trigger operatorLeftTrigger = operatorJoystick.leftTrigger( 0.15 );
         operatorLeftTrigger
-            .onFalse(Commands.runOnce( ()-> climbSubsystem.setClimb( 0 ), climbSubsystem))
-            .onTrue( Commands.runOnce( ()-> climbSubsystem.setClimb( 0.5 ), climbSubsystem));
+            .onFalse(Commands.runOnce( ()-> climbSubsystem.setClimbJog( 0 ), climbSubsystem))
+            .onTrue( Commands.runOnce( ()-> climbSubsystem.setClimbJog( operatorJoystick.getLeftTriggerAxis() ), climbSubsystem));
+
+        Trigger operatorRightTrigger = operatorJoystick.rightTrigger( 0.15 );
+        operatorRightTrigger
+            .onFalse(Commands.runOnce( ()-> climbSubsystem.setClimbJog( 0 ), climbSubsystem))
+            .onTrue( Commands.runOnce( ()-> climbSubsystem.setClimbJog( -operatorJoystick.getRightTriggerAxis() ), climbSubsystem));
 
         Trigger operatorRightJoystickAxisUp = operatorJoystick.axisGreaterThan(5, 0.7 );
         operatorRightJoystickAxisUp
@@ -246,23 +251,6 @@ public class RobotContainer
             .onFalse( Commands.runOnce( ()->shooterSubsystem.setShooterJog(0), shooterSubsystem))
             .onTrue( Commands.runOnce( ()->shooterSubsystem.setShooterJog(1), shooterSubsystem));
         
-        //Podium
-        Trigger operatorDPadUp = operatorJoystick.povUp();
-        operatorDPadUp
-            .onFalse(
-                Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(0), shooterSubsystem)
-            .alongWith (
-                Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog(0), shooterPivotSubsystem),
-                Commands.runOnce( ()-> elevatorSubsystem.setElevatorJog(0), elevatorSubsystem)
-                )
-            )      
-            .onTrue(
-                Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(ShooterConstants.SHOOTER_SPEED_PODIUM), shooterSubsystem)
-                .alongWith(
-                    Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivot(ShooterPivotConstants.SHOOTER_PIVOT_PODIUM)),
-                    Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition(ElevatorConstants.ELEVATOR_PODIUM), elevatorSubsystem))
-                    );
-
         //Close
         Trigger operatorDPadLeft = operatorJoystick.povLeft();
         operatorDPadLeft
@@ -281,6 +269,23 @@ public class RobotContainer
                     Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition(ElevatorConstants.ELEVATOR_CLOSE), elevatorSubsystem))    
                 );
             
+
+        //Podium
+        Trigger operatorDPadUp = operatorJoystick.povUp();
+        operatorDPadUp
+            .onFalse(
+                Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(0), shooterSubsystem)
+            .alongWith (
+                Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog(0), shooterPivotSubsystem),
+                Commands.runOnce( ()-> elevatorSubsystem.setElevatorJog(0), elevatorSubsystem)
+                )
+            )      
+            .onTrue(
+                Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(ShooterConstants.SHOOTER_SPEED_PODIUM), shooterSubsystem)
+            .alongWith(
+                Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivot(ShooterPivotConstants.SHOOTER_PIVOT_PODIUM)),
+                Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition(ElevatorConstants.ELEVATOR_PODIUM), elevatorSubsystem))
+                );
 
         //Wing
         Trigger operatorDPadRight = operatorJoystick.povRight();
@@ -341,7 +346,7 @@ public class RobotContainer
             Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivot(ShooterPivotConstants.SHOOTER_PIVOT_START))
             .alongWith( Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition(ElevatorConstants.ELEVATOR_START ), elevatorSubsystem))
             .andThen( Commands.waitSeconds(10000) 
-                .until( elevatorSubsystem::isAtPosition))
+                .until( this::isAtAllPositions))
             .andThen( Commands.runOnce( ()->operatorJoystick.getHID().setRumble(RumbleType.kBothRumble, 1)))
             .andThen( Commands.runOnce( ()->operatorJoystick.getHID().setRumble(RumbleType.kBothRumble, 0)))
             .andThen( Commands.waitSeconds(0.5 ))
@@ -360,9 +365,9 @@ public class RobotContainer
                     Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition(ElevatorConstants.ELEVATOR_CLOSE), elevatorSubsystem)
                 )
                 .andThen( Commands.waitSeconds(10000)
-                    .until( elevatorSubsystem::isAtPosition ))
+                    .until( this::isAtAllPositions ))
                 .andThen(IntakeRollersOutCommand())
-                .andThen(Commands.waitSeconds(1))
+                .andThen(Commands.waitSeconds(1.5))
                 .andThen(IntakeRollersStopCommand());
     }
 
@@ -417,5 +422,15 @@ public class RobotContainer
         elevatorSubsystem.setElevatorJog(0);
         intakeSubsystem.setIntakeRoller( 0.0 );
         shooterSubsystem.setShooterSpeed(0);
-    };
+    }
+
+    public boolean isAtAllPositions()
+    {
+        if( elevatorSubsystem.isAtPosition() && 
+            shooterSubsystem.isAtSpeed() &&
+            shooterPivotSubsystem.atSetpoint() )
+            return true;
+        else
+            return false;
+    }
  }
