@@ -89,7 +89,7 @@ public class IntakeSubsystem extends SubsystemBase {
     public void setIntakeRoller( double minus_one_to_one )
     {
         m_intakeRollerMotor.set(minus_one_to_one);
-        Logger.recordOutput("IntakeRollerSet", minus_one_to_one );
+        Logger.recordOutput("Intake/RollerSet", minus_one_to_one );
         System.out.println("setIntakeRoller " + minus_one_to_one);
     }
 

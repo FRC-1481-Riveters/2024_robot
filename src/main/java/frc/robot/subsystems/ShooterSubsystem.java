@@ -65,13 +65,16 @@ public class ShooterSubsystem extends SubsystemBase{
     @Override
     public void periodic() {
       // This method will be called once per scheduler run
-      shooterSpeedEntry.setDouble( m_encoder.getVelocity() );
-      shooterSpeedEntry.setDouble( getSpeed() );
-      Logger.recordOutput("Shooter Light Curtain", isLightCurtainBlocked() );
+      double speed;
+      Logger.recordOutput("Shooter/Speed", getSpeed() );
+      Logger.recordOutput("Shooter/BeamBreak", isLightCurtainBlocked() );
     }
 
     public void setShooterSpeed (double rpm){
         System.out.println("setShooterSpeed " + rpm);
+        Logger.recordOutput("Shooter/Setpoint", rpm );
+        Logger.recordOutput("Shooter/Jog", 0 );
+
 
         m_shooterIntendedSpeed = rpm;
         shooterSetpointEntry.setDouble(m_shooterIntendedSpeed);
@@ -88,6 +91,8 @@ public class ShooterSubsystem extends SubsystemBase{
 
         m_shooterIntendedSpeed = 0;
         m_shooterMotorTop.set(speed);
+        Logger.recordOutput("Shooter/Setpoint", 0);
+        Logger.recordOutput("Shooter/Jog", speed );
    }
 
     public double getSpeed() {
