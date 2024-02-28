@@ -128,12 +128,12 @@ public final class Constants {
         public static final int SHOOTER_PIVOT_CANCODER = 37;
         //fill out position values later
         public static final double SHOOTER_PIVOT_START = 10;
-        public static final double SHOOTER_PIVOT_CLOSE = 32;
-        public static final double SHOOTER_PIVOT_PODIUM = 48;
-        public static final double SHOOTER_PIVOT_WING = 60;
+        public static final double SHOOTER_PIVOT_CLOSE = 22.0;
+        public static final double SHOOTER_PIVOT_PODIUM = 24.0;
+        public static final double SHOOTER_PIVOT_WING = 32;
         // 63 degrees nominal
         public static final double SHOOTER_PIVOT_SLOT1 = 60;
-        public static final double SHOOTER_PIVOT_AMP = 110;
+        public static final double SHOOTER_PIVOT_AMP = 100;
         public static final double SHOOTER_PIVOT_TRAP = 90;
         public static final double SHOOTER_PIVOT_MAX = 210; // max travel
         public static final double SHOOTER_PIVOT_MIN = 10;

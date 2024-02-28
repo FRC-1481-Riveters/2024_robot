@@ -19,11 +19,12 @@ public class ShooterPivotSubsystem extends SubsystemBase {
 
     private TalonSRX m_shooterPivotMotor;
     private TalonSRX m_shooterPivotMotorFollower;
-    private PIDController pid = new PIDController(0.020, 0, 0);
+    private PIDController pid = new PIDController(0.030, 0.012, 0.001);
     private CANCoder m_shooterPivotCANCoder = new CANCoder(ShooterPivotConstants.SHOOTER_PIVOT_CANCODER);
     private double m_shooterPivotSetpoint;
     private double m_output;
     private boolean m_pidEnable;
+    private boolean m_initialBangBang;
 
     public ShooterPivotSubsystem() 
     {
@@ -82,8 +83,18 @@ public class ShooterPivotSubsystem extends SubsystemBase {
     public void setShooterPivot( double angle )
     {
         m_pidEnable = true;
+        if( angle > 40 )
+        {
+            pid.setPID( 0.016, 0, 0);
+        }
+        else
+        {
+            pid.setPID( 0.05, 0.08, 0.001 );
+        }
         pid.reset();
+        m_initialBangBang = true;
         m_shooterPivotSetpoint = angle;
+        Logger.recordOutput("ShooterPivot/Setpoint", m_shooterPivotSetpoint );
 
         System.out.println("setShooterPivot " + angle + ", current angle=" + getShooterPivot());
     }
@@ -104,7 +115,7 @@ public class ShooterPivotSubsystem extends SubsystemBase {
     public boolean atSetpoint(){
         boolean retval;
 
-        if( Math.abs( getShooterPivot() - m_shooterPivotSetpoint ) < 1.5 )
+        if( Math.abs( getShooterPivot() - m_shooterPivotSetpoint ) < 0.5 )
             retval = true;
         else   
             retval = false;
@@ -133,8 +144,21 @@ public class ShooterPivotSubsystem extends SubsystemBase {
 
         if( m_pidEnable == true )
         {
-            pidCalculate = pid.calculate( position, m_shooterPivotSetpoint);
-            m_output = MathUtil.clamp( pidCalculate, -0.6, 0.6);
+            if( m_initialBangBang == true )
+            {
+                m_output = 0.23;
+                if( (position + 0.5) > m_shooterPivotSetpoint )
+                {
+                    m_initialBangBang = false;
+                }
+            }
+            else
+            {
+                pidCalculate = pid.calculate( position, m_shooterPivotSetpoint);
+                m_output = MathUtil.clamp( pidCalculate, -0.6, 0.6);
+                if( position < 40 )
+                    m_output += 0.15;
+            }
             m_shooterPivotMotor.set(ControlMode.PercentOutput, m_output);
         }
         Logger.recordOutput("ShooterPivot/Output", m_output);

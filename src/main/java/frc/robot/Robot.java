@@ -130,6 +130,8 @@ public class Robot extends LoggedRobot {
     public void autonomousInit() 
     {
         CommandScheduler.getInstance().cancelAll();
+        m_robotContainer.StopControls(true);
+
         m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
         // schedule the autonomous command (example)
@@ -153,6 +155,7 @@ public class Robot extends LoggedRobot {
         if (m_autonomousCommand != null) {
             m_autonomousCommand.cancel();
         }
+        m_robotContainer.StopControls(true);
         CommandScheduler.getInstance().cancelAll();
     }
 

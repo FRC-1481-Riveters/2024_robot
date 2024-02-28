@@ -4,40 +4,24 @@
     {
       "anchor": {
         "x": 1.4149239409589933,
-        "y": 5.558377783422233
+        "y": 5.660993988654644
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.6731175461339092,
-        "y": 4.441815740774339
+        "x": 2.0705274743882827,
+        "y": 5.629639037055852
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.5237490474980953,
-        "y": 4.280561703980552
+        "x": 2.5,
+        "y": 4.084695058278905
       },
       "prevControl": {
-        "x": 2.083582367063551,
-        "y": 4.59427410283392
-      },
-      "nextControl": {
-        "x": 2.640595097479135,
-        "y": 4.19728403607551
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 1.4149239409589933,
-        "y": 5.558377783422233
-      },
-      "prevControl": {
-        "x": 1.5004374453193354,
-        "y": 5.54412553269551
+        "x": 1.0586176727909014,
+        "y": 4.004882454209353
       },
       "nextControl": null,
       "isLocked": false,
@@ -47,35 +31,12 @@
   "rotationTargets": [
     {
       "waypointRelativePos": 1,
-      "rotationDegrees": 148.5591950328088,
+      "rotationDegrees": 180.0,
       "rotateFast": false
     }
   ],
   "constraintZones": [],
   "eventMarkers": [
-    {
-      "name": "Retract",
-      "waypointRelativePos": 0.85,
-      "command": {
-        "type": "sequential",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "IntakeRetractCommand"
-              }
-            },
-            {
-              "type": "named",
-              "data": {
-                "name": "IntakeRollersStop"
-              }
-            }
-          ]
-        }
-      }
-    },
     {
       "name": "Deploy",
       "waypointRelativePos": 0.0,
@@ -101,8 +62,8 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 1.5,
-    "maxAcceleration": 1.0,
+    "maxVelocity": 2.5,
+    "maxAcceleration": 2.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },

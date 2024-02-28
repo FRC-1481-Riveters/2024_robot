@@ -65,7 +65,7 @@ public class RobotContainer
         // Reuse buffer
         // Default to a length of 60, start empty output
         // Length is expensive to set, so only set it once, then just update data
-        m_ledBuffer = new AddressableLEDBuffer(60);
+        m_ledBuffer = new AddressableLEDBuffer(35);
         m_led.setLength(m_ledBuffer.getLength());
 
         for (var i = 0; i < m_ledBuffer.getLength(); i++) {
@@ -188,7 +188,11 @@ public class RobotContainer
         Trigger driverShootTrigger = driverJoystick.a();
         driverShootTrigger
             .onFalse(Commands.runOnce( ()-> intakeSubsystem.setIntakeRoller( 0 ), intakeSubsystem))
-            .onTrue( Commands.runOnce( ()-> intakeSubsystem.setIntakeRoller( 1 ), intakeSubsystem));
+            .onTrue( 
+                Commands.waitSeconds(2)
+                    .until(this::isAtAllPositions)
+                .andThen( Commands.runOnce( ()-> intakeSubsystem.setIntakeRoller( 1 ), intakeSubsystem)) 
+            );
 
         Trigger operatorIntakeDeployTrigger = operatorJoystick.y();
         operatorIntakeDeployTrigger
@@ -364,10 +368,10 @@ public class RobotContainer
                     Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivot(ShooterPivotConstants.SHOOTER_PIVOT_CLOSE), shooterPivotSubsystem),
                     Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition(ElevatorConstants.ELEVATOR_CLOSE), elevatorSubsystem)
                 )
-                .andThen( Commands.waitSeconds(10000)
+                .andThen( Commands.waitSeconds(10.0)
                     .until( this::isAtAllPositions ))
                 .andThen(IntakeRollersOutCommand())
-                .andThen(Commands.waitSeconds(1.5))
+                .andThen(Commands.waitSeconds(0.60))
                 .andThen(IntakeRollersStopCommand());
     }
 

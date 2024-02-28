@@ -75,23 +75,26 @@ public class ElevatorSubsystem extends SubsystemBase{
     }
     
     public boolean isAtPosition() {
+      boolean retval;
       if (Math.abs((getPosition() - m_elevatorSetpoint)) <= ElevatorConstants.ELEVATOR_POSITION_TOLERANCE) 
       {
         m_positionStable++;
         if (m_positionStable >= 10)
         {
-          return true; 
+          retval = true; 
         }
         else
         {
-          return false;
+          retval = false;
         } 
       } 
       else
       {
         m_positionStable = 0;
-        return false;
+        retval = false;
       }
+      Logger.recordOutput("Elevator/AtPosition", retval );
+      return retval;
     }
 
     public void elevatorDisable()

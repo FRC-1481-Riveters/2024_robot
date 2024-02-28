@@ -100,12 +100,15 @@ public class ShooterSubsystem extends SubsystemBase{
     }
     
     public boolean isAtSpeed() {
+      boolean retval;
       if (Math.abs(
           (getSpeed() - m_shooterIntendedSpeed) / m_shooterIntendedSpeed) <= ShooterConstants.SHOOTER_SPEED_TOLERANCE) {
-        return true;
+        retval = true;
       } else {
-        return false;
+        retval = false;
       }
+      Logger.recordOutput("Shooter/AtSpeed", retval );
+      return retval;
     }
     
     public boolean isLightCurtainBlocked(){

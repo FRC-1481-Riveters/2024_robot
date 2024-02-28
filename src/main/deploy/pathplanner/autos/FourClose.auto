@@ -3,7 +3,7 @@
   "startingPose": {
     "position": {
       "x": 1.4149239409589933,
-      "y": 5.558377783422233
+      "y": 5.65253571482042
     },
     "rotation": 180.0
   },
@@ -33,6 +33,12 @@
           "type": "path",
           "data": {
             "pathName": "BottomClose"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "BottomCloseReturn"
           }
         },
         {
