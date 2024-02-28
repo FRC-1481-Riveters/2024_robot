@@ -122,7 +122,7 @@ public class IntakeSubsystem extends SubsystemBase {
         }
     }
 
-    public void intakeAngleDisable()
+    public void intakeAngleDisable(boolean stopped)
     {
         m_intakeAngleMotor.set(ControlMode.PercentOutput, 0);
         m_intakeAnglePid = false;

@@ -100,7 +100,7 @@ public final class Constants {
         public static final double INTAKE_ANGLE_STOWED = 0;
         public static final double INTAKE_ANGLE_PODIUM = 10;
         public static final double INTAKE_FLOOR_PICKUP = 189;
-        public static final double INTAKE_ANGLE_TOLERANCE = 2;
+        public static final double INTAKE_ANGLE_TOLERANCE = 7;
         public static final double INTAKE_ANGLE_MOTOR_ACCELERATION = 3000;
         public static final double INTAKE_ANGLE_MOTOR_CRUISE = 7000;
         public static final double INTAKE_ANGLE_MOTOR_KP = 0.5;

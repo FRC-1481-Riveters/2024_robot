@@ -88,8 +88,8 @@ public class RobotContainer
 
         // Register named pathplanner commands
         NamedCommands.registerCommand("ShootCommand", ShooterCommand());
-        NamedCommands.registerCommand("IntakeRetractCommand", IntakeRetractCommand() );
-        NamedCommands.registerCommand("IntakeDeployCommand", IntakeDeployCommand() );
+        NamedCommands.registerCommand("IntakeRetractCommand", IntakeRetractAutoCommand() );
+        NamedCommands.registerCommand("IntakeDeployCommand", IntakeDeployAutoCommand() );
         NamedCommands.registerCommand("IntakeRollersIn", IntakeRollersInCommand() );
         NamedCommands.registerCommand("IntakeRollersStop", IntakeRollersStopCommand() );
         // A chooser for autonomous commands
@@ -196,12 +196,10 @@ public class RobotContainer
 
         Trigger operatorIntakeDeployTrigger = operatorJoystick.y();
         operatorIntakeDeployTrigger
-            .onFalse(Commands.runOnce( ()-> intakeSubsystem.intakeAngleDisable(), intakeSubsystem))
             .onTrue( IntakeDeployCommand() );
 
         Trigger operatorIntakeRetractTrigger = operatorJoystick.a();
         operatorIntakeRetractTrigger
-            .onFalse(Commands.runOnce( ()-> intakeSubsystem.intakeAngleDisable(), intakeSubsystem))
             .onTrue(IntakeRetractCommand());
 
 
@@ -379,12 +377,29 @@ public class RobotContainer
     {
         return Commands.runOnce( ()->System.out.println("IntakeRetractCommand") )
             .andThen(Commands.runOnce( ()-> intakeSubsystem.setIntakeAngle( IntakeConstants.INTAKE_ANGLE_STOWED ), intakeSubsystem))
-            ;
+            .andThen(Commands.waitSeconds(3))
+                .until(intakeSubsystem::atSetpoint)
+                .finallyDo( intakeSubsystem::intakeAngleDisable);
     }
 
     public Command IntakeDeployCommand() 
     {
         return Commands.runOnce( ()->System.out.println("IntakeDeployCommand") )
+            .andThen(Commands.runOnce( ()-> intakeSubsystem.setIntakeAngle( IntakeConstants.INTAKE_FLOOR_PICKUP ), intakeSubsystem))
+            .andThen(Commands.waitSeconds(3))
+                .until(intakeSubsystem::atSetpoint)
+                .finallyDo( intakeSubsystem::intakeAngleDisable);
+    }
+
+    public Command IntakeRetractAutoCommand() 
+    {
+        return Commands.runOnce( ()->System.out.println("IntakeRetractAutoCommand") )
+            .andThen(Commands.runOnce( ()-> intakeSubsystem.setIntakeAngle( IntakeConstants.INTAKE_ANGLE_STOWED ), intakeSubsystem));
+    }
+
+    public Command IntakeDeployAutoCommand() 
+    {
+        return Commands.runOnce( ()->System.out.println("IntakeDeployAutoCommand") )
             .andThen(Commands.runOnce( ()-> intakeSubsystem.setIntakeAngle( IntakeConstants.INTAKE_FLOOR_PICKUP ), intakeSubsystem));
     }
 
