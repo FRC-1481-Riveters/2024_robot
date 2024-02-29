@@ -85,7 +85,7 @@ public class ShooterPivotSubsystem extends SubsystemBase {
         m_pidEnable = true;
         if( angle > 40 )
         {
-            pid.setPID( 0.016, 0, 0);
+            pid.setPID( 0.015, 0, 0);
         }
         else
         {
@@ -114,8 +114,14 @@ public class ShooterPivotSubsystem extends SubsystemBase {
 
     public boolean atSetpoint(){
         boolean retval;
+        double tolerance;
 
-        if( Math.abs( getShooterPivot() - m_shooterPivotSetpoint ) < 0.5 )
+        if( m_shooterPivotSetpoint > 40 )
+            tolerance = 5;
+        else
+            tolerance = 0.5;
+
+        if( Math.abs( getShooterPivot() - m_shooterPivotSetpoint ) < tolerance )
             retval = true;
         else   
             retval = false;
@@ -146,7 +152,10 @@ public class ShooterPivotSubsystem extends SubsystemBase {
         {
             if( m_initialBangBang == true )
             {
-                m_output = 0.23;
+                if( m_shooterPivotSetpoint > 40 )
+                    m_output = 0.4;
+                else
+                    m_output = 0.24;
                 if( (position + 0.5) > m_shooterPivotSetpoint )
                 {
                     m_initialBangBang = false;

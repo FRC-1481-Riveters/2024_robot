@@ -1,25 +1,15 @@
 package frc.robot;
 
-import java.util.List;
-
-import org.w3c.dom.css.RGBColor;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.commands.PathPlannerAuto;
-import com.pathplanner.lib.path.GoalEndState;
-import com.pathplanner.lib.path.PathConstraints;
-import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.hal.AllianceStationID;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -37,7 +27,7 @@ import frc.robot.subsystems.ShooterPivotSubsystem;
 public class RobotContainer 
 {
     public final SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
-    private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
+    private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem( this );
     private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
     private final ClimbSubsystem climbSubsystem = new ClimbSubsystem();
     private final ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem();
@@ -48,8 +38,6 @@ public class RobotContainer
 
     SendableChooser<Command> m_autoChooser;
 
-
-    private Field2d m_field;
 
     double driveDivider = Constants.DriveConstants.DRIVE_DIVIDER_NORMAL;
 
@@ -65,7 +53,7 @@ public class RobotContainer
         // Reuse buffer
         // Default to a length of 60, start empty output
         // Length is expensive to set, so only set it once, then just update data
-        m_ledBuffer = new AddressableLEDBuffer(35);
+        m_ledBuffer = new AddressableLEDBuffer(36);
         m_led.setLength(m_ledBuffer.getLength());
 
         for (var i = 0; i < m_ledBuffer.getLength(); i++) {
@@ -97,17 +85,23 @@ public class RobotContainer
         //SmartDashboard.putData("Example Auto", new PathPlannerAuto("Example Auto"));
         m_autoChooser = AutoBuilder.buildAutoChooser(); // Default auto will be `Commands.none()`
         SmartDashboard.putData( "Auto Mode", m_autoChooser );
-
-        // Create and push Field2d to SmartDashboard.
-        m_field = new Field2d();
-        SmartDashboard.putData(m_field);
-
-        // FIXME MUST NOT BE ENABLED WITH FMS!!!
-        // FIXME DISABLE THIS BEFORE COMPETITION!
-        //PathPlannerServer.startServer(5811); // 5811 = port number. adjust this according to your needs
     }
 
-    private void setBling( int red, int green, int blue )
+    public void setRosie()
+    {
+        int i;
+        for( i=0; i<m_ledBuffer.getLength(); i += 3 )
+        {
+            m_ledBuffer.setRGB(i+0, 255, 0, 0);
+            m_ledBuffer.setRGB(i+1, 255, 0, 0);;
+            m_ledBuffer.setRGB(i+2, 255, 255, 255);
+        }
+        // Set the data
+        m_led.setData(m_ledBuffer);
+        m_led.start();
+    }
+
+     public void setBling( int red, int green, int blue )
     {
         int i;
         for( i=0; i<m_ledBuffer.getLength(); i++ )

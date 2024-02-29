@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.sensors.Pigeon2;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.PIDConstants;
@@ -20,6 +21,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.LocalADStarAK;
 import frc.robot.subsystems.SwerveModule;
 
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -86,29 +88,35 @@ public class SwerveSubsystem extends SubsystemBase {
 
         // Configure AutoBuilder
         AutoBuilder.configureHolonomic(
-        this::getPose, 
-        this::resetOdometry, 
-        () -> DriveConstants.kDriveKinematics.toChassisSpeeds(getModuleStates()),
-        this::driveRobotRelative, 
-        DriveConstants.pathFollowerConfig,
-        () -> {
-            // Boolean supplier that controls when the path will be mirrored for the red alliance
-            // This will flip the path being followed to the red side of the field.
-            // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+            this::getPose, 
+            this::resetOdometry, 
+            () -> DriveConstants.kDriveKinematics.toChassisSpeeds(getModuleStates()),
+            this::driveRobotRelative, 
+            DriveConstants.pathFollowerConfig,
+            () -> {
+                // Boolean supplier that controls when the path will be mirrored for the red alliance
+                // This will flip the path being followed to the red side of the field.
+                // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
 
-            var alliance = DriverStation.getAlliance();
-            if (alliance.isPresent()) {
-                return alliance.get() == DriverStation.Alliance.Red;
-            }
-            return false;
-        },
-        this
+                var alliance = DriverStation.getAlliance();
+                if (alliance.isPresent()) {
+                    return alliance.get() == DriverStation.Alliance.Red;
+                }
+                return false;
+            },
+            this
         );
 
-        // Set up custom logging to add the current path to a field 2d widget
-        PathPlannerLogging.setLogActivePathCallback((poses) -> m_field.getObject("path").setPoses(poses));
-
-        SmartDashboard.putData("Field", m_field);
+        Pathfinding.setPathfinder(new LocalADStarAK());
+        PathPlannerLogging.setLogActivePathCallback(
+            (activePath) -> {
+            Logger.recordOutput(
+                "Odometry/Trajectory", activePath.toArray(new Pose2d[activePath.size()]));
+            });
+        PathPlannerLogging.setLogTargetPoseCallback(
+            (targetPose) -> {
+            Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
+            });
     }
 
     public double getPitch()

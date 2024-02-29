@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeConstants;
+import frc.robot.RobotContainer;
 
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.sensors.CANCoder;
@@ -33,9 +34,12 @@ public class IntakeSubsystem extends SubsystemBase {
     private double m_intakeAngleSetpoint;
     private DigitalInput m_intakeBeamBreakShooter = new DigitalInput(0);
     private DigitalInput m_intakeBeamBreakLoaded = new DigitalInput(1);
+    private boolean m_intakeBeamBreakLoadedPrevious;
+    private RobotContainer m_robotContainer;
 
-    public IntakeSubsystem() 
+    public IntakeSubsystem( RobotContainer robotContainer ) 
     {
+        m_robotContainer = robotContainer;
         m_intakeRollerMotor.restoreFactoryDefaults();
         m_intakeRollerMotor.setInverted(false);
         m_intakeRollerMotor.setSmartCurrentLimit(80, 30);
@@ -136,6 +140,18 @@ public class IntakeSubsystem extends SubsystemBase {
         double angle;
         double pidCalculate;
         rpm = m_intakeRollerEncoder.getVelocity();
+        boolean m_intakeBeamBreakLoadedNew;
+
+        m_intakeBeamBreakLoadedNew = !m_intakeBeamBreakLoaded.get();
+       if (m_intakeBeamBreakLoadedPrevious != m_intakeBeamBreakLoadedNew){
+        if (m_intakeBeamBreakLoadedNew == true){
+            m_robotContainer.setBling(255, 25, 0 );
+        }
+        else{
+            m_robotContainer.setRosie();
+        }
+        m_intakeBeamBreakLoadedPrevious = m_intakeBeamBreakLoadedNew;
+       }
 
         // This method will be called once per scheduler run
         intakeSpeedEntry.setDouble( rpm );
@@ -152,7 +168,7 @@ public class IntakeSubsystem extends SubsystemBase {
         Logger.recordOutput("Intake/FollowTemp", m_intakeAngleMotorFollower.getTemperature());
         Logger.recordOutput("Intake/FollowSupplyA", m_intakeAngleMotorFollower.getSupplyCurrent());
         Logger.recordOutput("Intake/BeamBreakShooter", !m_intakeBeamBreakShooter.get() );
-        Logger.recordOutput("Intake/BeamBreakLoaded", !m_intakeBeamBreakLoaded.get() );
+        Logger.recordOutput("Intake/BeamBreakLoaded", m_intakeBeamBreakLoadedNew );
     }
 
     public boolean isIntakeBeamBreakLoaded()
