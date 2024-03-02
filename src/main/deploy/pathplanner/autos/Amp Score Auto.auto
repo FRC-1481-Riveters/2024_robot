@@ -1,0 +1,37 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.7470227511883603,
+      "y": 6.661257665372474
+    },
+    "rotation": -120.02497184790323
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "ShootCommand"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Amp Auto Fetch"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Amp Auto Return"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

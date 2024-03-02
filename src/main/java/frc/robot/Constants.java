@@ -98,8 +98,8 @@ public final class Constants {
         public static final int INTAKE_ANGLE_CANCODER = 61;
         public static final int TALON_TIMEOUT_MS = 5000;
         public static final double INTAKE_ANGLE_STOWED = 0;
-        public static final double INTAKE_ANGLE_PODIUM = 10;
         public static final double INTAKE_FLOOR_PICKUP = 189;
+        public static final double INTAKE_HALF = 94.5;
         public static final double INTAKE_ANGLE_TOLERANCE = 7;
         public static final double INTAKE_ANGLE_MOTOR_ACCELERATION = 3000;
         public static final double INTAKE_ANGLE_MOTOR_CRUISE = 7000;
@@ -117,22 +117,24 @@ public final class Constants {
         public static final int SHOOTER_MOTOR_BOTTOM = 4;
         public static final double SHOOTER_SPEED_TOLERANCE = 100.0;
         public static final double SHOOTER_SPEED_SPEAKER = 4000; //5000;
-        public static final double SHOOTER_SPEED_PODIUM = 4500;
-        public static final double SHOOTER_SPEED_WING = 6000;
+        public static final double SHOOTER_SPEED_PODIUM = 6000;
+        public static final double SHOOTER_SPEED_WING = 5000;
         public static final double SHOOTER_SPEED_AMP = 2000;
     }
 
-    public static final class ShooterPivotConstants{
+    public static final class ShooterPivotConstants
+    {
         public static final int SHOOTER_PIVOT_MOTOR = 36;
         public static final int SHOOTER_PIVOT_MOTOR_FOLLOWER = 35;
         public static final int SHOOTER_PIVOT_CANCODER = 37;
         //fill out position values later
         public static final double SHOOTER_PIVOT_START = 10;
         public static final double SHOOTER_PIVOT_CLOSE = 22.0;
-        public static final double SHOOTER_PIVOT_PODIUM = 24.0;
-        public static final double SHOOTER_PIVOT_WING = 32;
-        // 63 degrees nominal
+        public static final double SHOOTER_PIVOT_PODIUM = 45;
+        public static final double SHOOTER_PIVOT_WING = 53;
         public static final double SHOOTER_PIVOT_SLOT1 = 60;
+        public static final double SHOOTER_PIVOT_HIGH = 70;
+
         public static final double SHOOTER_PIVOT_AMP = 100;
         public static final double SHOOTER_PIVOT_TRAP = 90;
         public static final double SHOOTER_PIVOT_MAX = 210; // max travel
@@ -157,9 +159,11 @@ public final class Constants {
         //fill out position values later
         public static final double ELEVATOR_START = 0;
         public static final double ELEVATOR_WING = -7.9;
-        public static final double ELEVATOR_PODIUM = -7.9;
+        public static final double ELEVATOR_PODIUM = -9.5;
         public static final double ELEVATOR_CLOSE = -7.9;
+        public static final double ELEVATOR_AMP_START = -5.66;
         public static final double ELEVATOR_AMP = -12;
+        public static final double ELEVATOR_AMP_MAX = -12.5;
         public static final double ELEVATOR_TRAP = 0;
     }
 

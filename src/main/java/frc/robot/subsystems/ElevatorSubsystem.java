@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 
 import com.revrobotics.*;
 import com.revrobotics.CANSparkBase.IdleMode;
+import com.revrobotics.CANSparkBase.SoftLimitDirection;
 
 import static frc.robot.Constants.*;
 
@@ -29,6 +30,8 @@ public class ElevatorSubsystem extends SubsystemBase{
       m_elevatorMotor.setSmartCurrentLimit(20, 20);
       m_elevatorMotor.setIdleMode(IdleMode.kBrake);
       m_encoder.setPosition(0);
+      m_elevatorMotor.setSoftLimit(SoftLimitDirection.kReverse, (float) ElevatorConstants.ELEVATOR_AMP_MAX);
+      m_elevatorMotor.enableSoftLimit(SoftLimitDirection.kReverse, true);
     }
 
     @Override
@@ -79,7 +82,7 @@ public class ElevatorSubsystem extends SubsystemBase{
       if (Math.abs((getPosition() - m_elevatorSetpoint)) <= ElevatorConstants.ELEVATOR_POSITION_TOLERANCE) 
       {
         m_positionStable++;
-        if (m_positionStable >= 10)
+        if (m_positionStable >= 4)
         {
           retval = true; 
         }

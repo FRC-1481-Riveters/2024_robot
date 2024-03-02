@@ -102,9 +102,11 @@ public class IntakeSubsystem extends SubsystemBase {
         double sensorSetpoint;
         sensorSetpoint = angle * (4096/360);
         m_intakeAngleSetpoint = angle;
+        m_intakeAngleMotor.set(ControlMode.MotionMagic, sensorSetpoint );
+        if( angle > (0.9 * IntakeConstants.INTAKE_FLOOR_PICKUP) )
+           m_robotContainer.setBling(0, 0, 0);
         Logger.recordOutput("Intake/AngleSet", angle );
         System.out.println("setIntakeAngle " + angle + ", current angle=" + getIntakeAngle());
-        m_intakeAngleMotor.set(ControlMode.MotionMagic, sensorSetpoint );
     }
 
     public double getIntakeAngle ()
@@ -143,15 +145,15 @@ public class IntakeSubsystem extends SubsystemBase {
         boolean m_intakeBeamBreakLoadedNew;
 
         m_intakeBeamBreakLoadedNew = !m_intakeBeamBreakLoaded.get();
-       if (m_intakeBeamBreakLoadedPrevious != m_intakeBeamBreakLoadedNew){
-        if (m_intakeBeamBreakLoadedNew == true){
-            m_robotContainer.setBling(255, 25, 0 );
-        }
-        else{
-            m_robotContainer.setRosie();
-        }
+        if (m_intakeBeamBreakLoadedPrevious != m_intakeBeamBreakLoadedNew){
+            if (m_intakeBeamBreakLoadedNew == true){
+                m_robotContainer.setBling(255, 25, 0 );
+            }
+            else{
+                m_robotContainer.setRosie();
+            }
         m_intakeBeamBreakLoadedPrevious = m_intakeBeamBreakLoadedNew;
-       }
+        }
 
         // This method will be called once per scheduler run
         intakeSpeedEntry.setDouble( rpm );

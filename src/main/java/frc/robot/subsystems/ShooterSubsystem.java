@@ -73,7 +73,7 @@ public class ShooterSubsystem extends SubsystemBase{
     public void setShooterSpeed (double rpm){
         System.out.println("setShooterSpeed " + rpm);
         Logger.recordOutput("Shooter/Setpoint", rpm );
-        Logger.recordOutput("Shooter/Jog", 0 );
+        Logger.recordOutput("Shooter/Jog", 0.0 );
 
 
         m_shooterIntendedSpeed = rpm;
@@ -91,7 +91,7 @@ public class ShooterSubsystem extends SubsystemBase{
 
         m_shooterIntendedSpeed = 0;
         m_shooterMotorTop.set(speed);
-        Logger.recordOutput("Shooter/Setpoint", 0);
+        Logger.recordOutput("Shooter/Setpoint", 0.0);
         Logger.recordOutput("Shooter/Jog", speed );
    }
 
@@ -101,7 +101,9 @@ public class ShooterSubsystem extends SubsystemBase{
     
     public boolean isAtSpeed() {
       boolean retval;
-      if (Math.abs(
+      if( m_shooterIntendedSpeed == 0.0 )
+        retval = true;
+      else if (Math.abs(
           (getSpeed() - m_shooterIntendedSpeed) / m_shooterIntendedSpeed) <= ShooterConstants.SHOOTER_SPEED_TOLERANCE) {
         retval = true;
       } else {

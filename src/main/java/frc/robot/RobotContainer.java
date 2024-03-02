@@ -29,7 +29,7 @@ public class RobotContainer
     public final SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
     private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem( this );
     private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
-    private final ClimbSubsystem climbSubsystem = new ClimbSubsystem();
+ //   private final ClimbSubsystem climbSubsystem = new ClimbSubsystem();
     private final ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem();
     private final ShooterPivotSubsystem shooterPivotSubsystem = new ShooterPivotSubsystem();
 
@@ -188,6 +188,12 @@ public class RobotContainer
                 .andThen( Commands.runOnce( ()-> intakeSubsystem.setIntakeRoller( 1 ), intakeSubsystem)) 
             );
 
+        Trigger driverDPadLeft = driverJoystick.povLeft();
+        driverDPadLeft
+            .onTrue(Commands.runOnce( ()->System.out.println("IntakeHalf") )
+                .andThen(Commands.runOnce( ()-> intakeSubsystem.setIntakeAngle( IntakeConstants.INTAKE_HALF ), intakeSubsystem)))
+            .onFalse(IntakeRetractCommand());
+
         Trigger operatorIntakeDeployTrigger = operatorJoystick.y();
         operatorIntakeDeployTrigger
             .onTrue( IntakeDeployCommand() );
@@ -207,7 +213,7 @@ public class RobotContainer
             .onFalse(IntakeRollersStopCommand())
             .onTrue( IntakeRollersOutCommand());
 
-        Trigger operatorLeftTrigger = operatorJoystick.leftTrigger( 0.15 );
+       /*  Trigger operatorLeftTrigger = operatorJoystick.leftTrigger( 0.15 );
         operatorLeftTrigger
             .onFalse(Commands.runOnce( ()-> climbSubsystem.setClimbJog( 0 ), climbSubsystem))
             .onTrue( Commands.runOnce( ()-> climbSubsystem.setClimbJog( operatorJoystick.getLeftTriggerAxis() ), climbSubsystem));
@@ -216,27 +222,27 @@ public class RobotContainer
         operatorRightTrigger
             .onFalse(Commands.runOnce( ()-> climbSubsystem.setClimbJog( 0 ), climbSubsystem))
             .onTrue( Commands.runOnce( ()-> climbSubsystem.setClimbJog( -operatorJoystick.getRightTriggerAxis() ), climbSubsystem));
-
+   */
         Trigger operatorRightJoystickAxisUp = operatorJoystick.axisGreaterThan(5, 0.7 );
         operatorRightJoystickAxisUp
-            .onFalse(Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog( 0 ), climbSubsystem))
-            .onTrue( Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog( -0.25 ), climbSubsystem));
+            .onFalse(Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog( 0 ), shooterPivotSubsystem))
+            .onTrue( Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog( -0.25 ), shooterPivotSubsystem));
         
         Trigger operatorRightJoystickAxisDown = operatorJoystick.axisLessThan(5, -0.7 );
         operatorRightJoystickAxisDown
-            .onFalse(Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog( 0 ), climbSubsystem))
-            .onTrue( Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog( 0.25 ), climbSubsystem));
+            .onFalse(Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog( 0 ), shooterPivotSubsystem))
+            .onTrue( Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog( 0.25 ), shooterPivotSubsystem));
         
         Trigger operatorLeftJoystickAxisUp = operatorJoystick.axisGreaterThan(1, 0.7 );
         operatorLeftJoystickAxisUp 
-            .onFalse(Commands.runOnce( ()-> elevatorSubsystem.setElevatorJog( 0 ), climbSubsystem))
-            .onTrue( Commands.runOnce( ()-> elevatorSubsystem.setElevatorJog( 0.25 ), climbSubsystem));
+            .onFalse(Commands.runOnce( ()-> elevatorSubsystem.setElevatorJog( 0 ), elevatorSubsystem))
+            .onTrue( Commands.runOnce( ()-> elevatorSubsystem.setElevatorJog( 0.25 ), elevatorSubsystem));
         
         Trigger operatorLeftJoystickAxisDown = operatorJoystick.axisLessThan(1, -0.7 );
         operatorLeftJoystickAxisDown
-            .onFalse(Commands.runOnce( ()-> elevatorSubsystem.setElevatorJog( 0 ), climbSubsystem))
-            .onTrue( Commands.runOnce( ()-> elevatorSubsystem.setElevatorJog( -0.25 ), climbSubsystem));
-   
+            .onFalse(Commands.runOnce( ()-> elevatorSubsystem.setElevatorJog( 0 ), elevatorSubsystem))
+            .onTrue( Commands.runOnce( ()-> elevatorSubsystem.setElevatorJog( -0.25 ), elevatorSubsystem));
+
         Trigger operatorRightJoystickAxisLeft = operatorJoystick.axisLessThan(4, -0.7 );
         operatorRightJoystickAxisLeft
             .onFalse( Commands.runOnce( ()->shooterSubsystem.setShooterJog(0), shooterSubsystem))
@@ -258,7 +264,7 @@ public class RobotContainer
                 )
             )      
 
-        .onTrue(
+        .whileTrue(
             Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(ShooterConstants.SHOOTER_SPEED_SPEAKER), shooterSubsystem)
                 .alongWith(
                     Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivot(ShooterPivotConstants.SHOOTER_PIVOT_CLOSE)),
@@ -308,9 +314,11 @@ public class RobotContainer
         .whileTrue(
             Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog(0), shooterPivotSubsystem)
             .alongWith (
-                Commands.runOnce( ()-> elevatorSubsystem.setElevatorJog(0), elevatorSubsystem),
-                Commands.runOnce( ()-> intakeSubsystem.setIntakeRoller( 0.30 ), intakeSubsystem)
+                Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition(ElevatorConstants.ELEVATOR_AMP_START), elevatorSubsystem)
                 )
+            .andThen( Commands.waitSeconds(10000)
+                .until( elevatorSubsystem::isAtPosition))
+            .andThen( Commands.runOnce( ()-> intakeSubsystem.setIntakeRoller( 0.25 ), intakeSubsystem))
             .andThen( Commands.waitSeconds(10000)
                 .until( shooterSubsystem::isLightCurtainBlocked))
             .andThen(Commands.waitSeconds(0.5))
@@ -332,7 +340,7 @@ public class RobotContainer
             Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog(0), shooterPivotSubsystem)
             .alongWith (
                 Commands.runOnce( ()-> elevatorSubsystem.setElevatorJog(0), elevatorSubsystem),
-                Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(0), shooterSubsystem),
+                Commands.runOnce( ()-> shooterSubsystem.setShooterJog(0), shooterSubsystem),
                 Commands.runOnce( ()->operatorJoystick.getHID().setRumble(RumbleType.kBothRumble, 0)),
                 Commands.runOnce( ()->driverJoystick.getHID().setRumble(RumbleType.kBothRumble, 0))
                 )
@@ -343,11 +351,12 @@ public class RobotContainer
             .alongWith( Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition(ElevatorConstants.ELEVATOR_START ), elevatorSubsystem))
             .andThen( Commands.waitSeconds(10000) 
                 .until( this::isAtAllPositions))
-            .andThen( Commands.runOnce( ()->operatorJoystick.getHID().setRumble(RumbleType.kBothRumble, 1)))
-            .andThen( Commands.runOnce( ()->operatorJoystick.getHID().setRumble(RumbleType.kBothRumble, 0)))
-            .andThen( Commands.waitSeconds(0.5 ))
+            .andThen( Commands.runOnce( ()->setBling(0, 255, 0)))
             .andThen( Commands.runOnce( ()->driverJoystick.getHID().setRumble(RumbleType.kBothRumble, 1)))
+            .andThen( Commands.runOnce( ()->operatorJoystick.getHID().setRumble(RumbleType.kBothRumble, 1)))
+            .andThen( Commands.waitSeconds(0.5 ))
             .andThen( Commands.runOnce( ()->driverJoystick.getHID().setRumble(RumbleType.kBothRumble, 0)))
+            .andThen( Commands.runOnce( ()->operatorJoystick.getHID().setRumble(RumbleType.kBothRumble, 0)))
         );
     }
     
@@ -360,10 +369,13 @@ public class RobotContainer
                     Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivot(ShooterPivotConstants.SHOOTER_PIVOT_CLOSE), shooterPivotSubsystem),
                     Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition(ElevatorConstants.ELEVATOR_CLOSE), elevatorSubsystem)
                 )
-                .andThen( Commands.waitSeconds(10.0)
+                .andThen( Commands.runOnce( ()->setBling(255, 255, 0)))
+                .andThen( Commands.waitSeconds(3.0)
                     .until( this::isAtAllPositions ))
+                .andThen( Commands.runOnce( ()->setBling(255, 0, 0)))
                 .andThen(IntakeRollersOutCommand())
                 .andThen(Commands.waitSeconds(0.60))
+                .andThen( Commands.runOnce( ()->setBling(0, 0, 0)))
                 .andThen(IntakeRollersStopCommand());
     }
 
@@ -434,7 +446,7 @@ public class RobotContainer
         shooterPivotSubsystem.setShooterPivotJog(0);
         elevatorSubsystem.setElevatorJog(0);
         intakeSubsystem.setIntakeRoller( 0.0 );
-        shooterSubsystem.setShooterSpeed(0);
+        shooterSubsystem.setShooterJog(0);
     }
 
     public boolean isAtAllPositions()
