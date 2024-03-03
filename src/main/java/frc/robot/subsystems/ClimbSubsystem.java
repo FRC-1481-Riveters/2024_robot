@@ -31,6 +31,10 @@ public class ClimbSubsystem extends SubsystemBase {
         m_climbMotorFollower.setSmartCurrentLimit(80, 50);
         m_climbMotorFollower.setIdleMode(IdleMode.kBrake);
 //        m_climbMotorFollower.follow(m_climbMotor,false);
+        Logger.recordOutput("Climb/Position", position );
+        Logger.recordOutput("Climb/Output", position );
+        Logger.recordOutput("Climb/Setpoint", m_setpoint );
+        Logger.recordOutput("Climb/JogOutput", 0.0 );
     }
 
     @Override
@@ -43,7 +47,7 @@ public class ClimbSubsystem extends SubsystemBase {
         position = m_encoder.getPosition();
 
         // This method will be called once per scheduler run
-        Logger.recordOutput("ClimbPosition", position );
+        Logger.recordOutput("Climb/Position", position );
 
         if( m_pidEnabled == true )
         {
@@ -51,7 +55,7 @@ public class ClimbSubsystem extends SubsystemBase {
             output = MathUtil.clamp( pidCalculate, -0.4, 0.4);
             m_climbMotor.set(output);
             m_climbMotorFollower.set(output);
-            Logger.recordOutput("ClimbOutput", position );
+            Logger.recordOutput("Climb/Output", position );
         }
     }
 
@@ -60,8 +64,8 @@ public class ClimbSubsystem extends SubsystemBase {
         m_pidEnabled = true;
         m_setpoint = targetPosition;
 
-        Logger.recordOutput("ClimbSetpoint", m_setpoint );
-        Logger.recordOutput("ClimbJogOutput", 0 );
+        Logger.recordOutput("Climb/Setpoint", m_setpoint );
+        Logger.recordOutput("Climb/JogOutput", 0.0 );
     }
 
     public void setClimbJog( double percentOutput )
@@ -69,7 +73,7 @@ public class ClimbSubsystem extends SubsystemBase {
         m_pidEnabled = false;
         m_climbMotor.set(percentOutput);
         m_climbMotorFollower.set(percentOutput);
-        Logger.recordOutput("ClimbSetpoint", 0 );
-        Logger.recordOutput("ClimbJogOutput", percentOutput );
+        Logger.recordOutput("Climb/Setpoint", 0.0 );
+        Logger.recordOutput("Climb/JogOutput", percentOutput );
     }
 }
