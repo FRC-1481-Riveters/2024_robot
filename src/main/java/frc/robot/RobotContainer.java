@@ -8,10 +8,8 @@ import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.hal.AllianceStationID;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import frc.robot.commands.SwerveJoystickCmd;
@@ -151,23 +149,6 @@ public class RobotContainer
         driveDivider = divider;
     }
     
-    public void setCreep( double value )
-    {
-        m_dCreep = value;
-        AllianceStationID station;
-
-        station = DriverStation.getRawAllianceStation();
-
-        if( (station == AllianceStationID.Blue1) || 
-            (station == AllianceStationID.Blue2) ||
-            (station == AllianceStationID.Blue3) ) {
-            m_dCreep = m_dCreep * 1.10;
-            //juice blue side a little higher
-        }
-           
-        System.out.println("setCreep " + m_dCreep);
-    }
-
     private void configureButtonBindings() 
     {
         Trigger aButton = driverJoystick.start();
