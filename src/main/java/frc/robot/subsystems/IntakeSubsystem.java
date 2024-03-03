@@ -12,11 +12,6 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.RemoteFeedbackDevice;
 import com.revrobotics.*;
 
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.DigitalInput;
 
 
@@ -27,10 +22,8 @@ public class IntakeSubsystem extends SubsystemBase {
     private CANSparkMax m_intakeRollerMotor = new CANSparkMax(IntakeConstants.INTAKE_ROLLER_MOTOR, CANSparkLowLevel.MotorType.kBrushless );
     private TalonSRX m_intakeAngleMotor;
     private TalonSRX m_intakeAngleMotorFollower;
-    private NetworkTableEntry intakeSpeedEntry;
     private SparkRelativeEncoder m_intakeRollerEncoder = (SparkRelativeEncoder) m_intakeRollerMotor.getEncoder();
     private CANCoder m_intakeAngleCANcoder = new CANCoder(IntakeConstants.INTAKE_ANGLE_CANCODER);
-    private boolean m_intakeAnglePid;
     private double m_intakeAngleSetpoint;
     private DigitalInput m_intakeBeamBreakShooter = new DigitalInput(0);
     private DigitalInput m_intakeBeamBreakLoaded = new DigitalInput(1);
@@ -87,7 +80,14 @@ public class IntakeSubsystem extends SubsystemBase {
         m_intakeAngleMotorFollower.setInverted(false);
         m_intakeAngleMotorFollower.follow(m_intakeAngleMotor);
 
-        intakeSpeedEntry = NetworkTableInstance.getDefault().getTable("SmartDashboard").getEntry("Intake Roller Speed");
+        // Create an initial log entry so they all show up in AdvantageScope without having to enable anything
+        Logger.recordOutput("Intake/RollerSet", 0.0 );
+        Logger.recordOutput("Intake/RollerRPM", 0.0 );
+        Logger.recordOutput("Intake/AngleSet", 0.0 );
+        Logger.recordOutput("Intake/AnglePosition", 0.0 );
+        Logger.recordOutput("Intake/Output", 0.0 );
+        Logger.recordOutput("Intake/BeamBreakShooter", false );
+        Logger.recordOutput("Intake/BeamBreakLoaded", false );
     }
 
     public void setIntakeRoller( double minus_one_to_one )
@@ -131,7 +131,6 @@ public class IntakeSubsystem extends SubsystemBase {
     public void intakeAngleDisable(boolean stopped)
     {
         m_intakeAngleMotor.set(ControlMode.PercentOutput, 0);
-        m_intakeAnglePid = false;
         System.out.println("intakeAngleDisable current angle=" + getIntakeAngle());
     }
 
@@ -139,8 +138,6 @@ public class IntakeSubsystem extends SubsystemBase {
     public void periodic() 
     {
         double rpm;
-        double angle;
-        double pidCalculate;
         rpm = m_intakeRollerEncoder.getVelocity();
         boolean m_intakeBeamBreakLoadedNew;
 
@@ -156,19 +153,11 @@ public class IntakeSubsystem extends SubsystemBase {
         }
 
         // This method will be called once per scheduler run
-        intakeSpeedEntry.setDouble( rpm );
         Logger.recordOutput("Intake/RollerRPM", rpm );
-        m_intakeAngleMotorFollower.follow(m_intakeAngleMotor);
+        m_intakeAngleMotorFollower.follow(m_intakeAngleMotor);  // Recommended by CTRE in case follower loses power
 
         Logger.recordOutput("Intake/AnglePosition", m_intakeAngleCANcoder.getAbsolutePosition());
         Logger.recordOutput("Intake/Output", m_intakeAngleMotor.getMotorOutputPercent());
-        Logger.recordOutput("Intake/FollowOutput", m_intakeAngleMotorFollower.getMotorOutputPercent());
-        Logger.recordOutput("Intake/Current", m_intakeAngleMotor.getStatorCurrent());
-        Logger.recordOutput("Intake/SupplyA", m_intakeAngleMotor.getSupplyCurrent());
-        Logger.recordOutput("Intake/Temp", m_intakeAngleMotor.getTemperature());
-        Logger.recordOutput("Intake/FollowCurrent", m_intakeAngleMotorFollower.getStatorCurrent());
-        Logger.recordOutput("Intake/FollowTemp", m_intakeAngleMotorFollower.getTemperature());
-        Logger.recordOutput("Intake/FollowSupplyA", m_intakeAngleMotorFollower.getSupplyCurrent());
         Logger.recordOutput("Intake/BeamBreakShooter", !m_intakeBeamBreakShooter.get() );
         Logger.recordOutput("Intake/BeamBreakLoaded", m_intakeBeamBreakLoadedNew );
     }
@@ -181,4 +170,3 @@ public class IntakeSubsystem extends SubsystemBase {
             return true;
     }
 }
-

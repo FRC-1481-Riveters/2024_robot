@@ -3,10 +3,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.sensors.Pigeon2;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.pathfinding.Pathfinding;
-import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PathPlannerLogging;
-import com.pathplanner.lib.util.PIDConstants;
-import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -17,12 +14,10 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.LocalADStarAK;
-import frc.robot.subsystems.SwerveModule;
 
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -72,8 +67,6 @@ public class SwerveSubsystem extends SubsystemBase {
     private final SwerveDriveOdometry odometer = new SwerveDriveOdometry(DriveConstants.kDriveKinematics,
             new Rotation2d(0),new SwerveModulePosition[]{frontLeft.getPosition(),frontRight.getPosition(),backLeft.getPosition(),backRight.getPosition()});
     
-    private boolean isPracticeRobot;
-
     private final Field2d m_field = new Field2d();
 
     public SwerveSubsystem() {
@@ -118,18 +111,6 @@ public class SwerveSubsystem extends SubsystemBase {
             Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
             });
     }
-
-    public double getPitch()
-    {
-        return gyro.getPitch() - pitchOffset;
-    }
-
-    public void initialPitch()
-    {
-        pitchOffset = gyro.getPitch();
-        System.out.println("initialPitch: " + pitchOffset);
-    }
-
 
     public void zeroHeading(double heading) {
         //gyro.setAccumZAngle(0); //.setFusedHeading(0);

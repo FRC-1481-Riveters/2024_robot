@@ -10,8 +10,6 @@ import com.revrobotics.*;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkBase.SoftLimitDirection;
 
-import static frc.robot.Constants.*;
-
 import org.littletonrobotics.junction.Logger;
 
 public class ElevatorSubsystem extends SubsystemBase{
@@ -32,6 +30,12 @@ public class ElevatorSubsystem extends SubsystemBase{
       m_encoder.setPosition(0);
       m_elevatorMotor.setSoftLimit(SoftLimitDirection.kReverse, (float) ElevatorConstants.ELEVATOR_AMP_MAX);
       m_elevatorMotor.enableSoftLimit(SoftLimitDirection.kReverse, true);
+
+      // Create an initial log entry so they all show up in AdvantageScope without having to enable anything
+      Logger.recordOutput("Elevator/Position", 0.0 );
+      Logger.recordOutput("Elevator/Output", 0.0 );
+      Logger.recordOutput("Elevator/BeamBreak", false );
+      Logger.recordOutput("Elevator/AtPosition", false );
     }
 
     @Override
@@ -39,29 +43,34 @@ public class ElevatorSubsystem extends SubsystemBase{
       // This method will be called once per scheduler run
       double position;
       double pidCalculate;
+      double output;
       position = m_encoder.getPosition();
 
       // This method will be called once per scheduler run
-      Logger.recordOutput("Elevator/Position", position );
       Logger.recordOutput("Elevator/BeamBreak", m_elevatorDownBeamBreak.get() );
 
       if( m_elevatorPid == true )
       {
         pidCalculate = pidElevator.calculate( position, m_elevatorSetpoint);
-        m_elevatorMotor.set(MathUtil.clamp( pidCalculate, -0.4, 0.4));
+        output = MathUtil.clamp( pidCalculate, -0.4, 0.4);
+        m_elevatorMotor.set( output );
+        Logger.recordOutput("Elevator/Output", output);
       }
 
       // If the elevator is all the way down, zero the encoder
       if( m_elevatorDownBeamBreak.get() == false )
       {
-        m_encoder.setPosition(0);
+        position = 0;
+        m_encoder.setPosition(position);
       }
+      Logger.recordOutput("Elevator/Position", position );
     }
 
     public void setElevatorJog( double speed )
     {
       m_elevatorPid = false;
       m_elevatorMotor.set(speed);
+      Logger.recordOutput("Elevator/Output", speed);
       System.out.println("setElevatorJog " + speed );
     }
 
@@ -102,8 +111,9 @@ public class ElevatorSubsystem extends SubsystemBase{
 
     public void elevatorDisable()
     {
-        m_elevatorMotor.set(0);
+        m_elevatorMotor.set(0.0);
         m_elevatorPid = false;
-        System.out.println("elevatorDisable current angle=" + getPosition());
+        System.out.println("elevatorDisable current position=" + getPosition());
+        Logger.recordOutput("Elevator/Output", 0.0);
     }
 }

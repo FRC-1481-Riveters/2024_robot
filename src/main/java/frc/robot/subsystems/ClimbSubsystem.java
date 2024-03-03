@@ -31,6 +31,8 @@ public class ClimbSubsystem extends SubsystemBase {
         m_climbMotorFollower.setSmartCurrentLimit(80, 50);
         m_climbMotorFollower.setIdleMode(IdleMode.kBrake);
 //        m_climbMotorFollower.follow(m_climbMotor,false);
+
+        // Create an initial log entry so they all show up in AdvantageScope without having to enable anything
         Logger.recordOutput("Climb/Position", 0.0 );
         Logger.recordOutput("Climb/Output", 0.0 );
         Logger.recordOutput("Climb/Setpoint", 0.0 );

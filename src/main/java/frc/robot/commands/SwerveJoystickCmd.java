@@ -2,7 +2,6 @@ package frc.robot.commands;
 
 import java.util.function.Supplier;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -18,11 +17,6 @@ public class SwerveJoystickCmd extends Command {
     private final Supplier<Double> xSpdFunction, ySpdFunction, turningSpdFunction;
     private final Supplier<Boolean> fieldOrientedFunction;
     private final SlewRateLimiter xLimiter, yLimiter, turningLimiter;
-
-    private PIDController driftCorrectionPID = new PIDController(0.07, 0.00, 0.004);
-
-    private double pXY = 0;
-    private double desiredHeading;
 
     public SwerveJoystickCmd(SwerveSubsystem swerveSubsystem,
             Supplier<Double> xSpdFunction, Supplier<Double> ySpdFunction, Supplier<Double> turningSpdFunction,
