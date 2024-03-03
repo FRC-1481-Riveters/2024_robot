@@ -31,9 +31,9 @@ public class ClimbSubsystem extends SubsystemBase {
         m_climbMotorFollower.setSmartCurrentLimit(80, 50);
         m_climbMotorFollower.setIdleMode(IdleMode.kBrake);
 //        m_climbMotorFollower.follow(m_climbMotor,false);
-        Logger.recordOutput("Climb/Position", position );
-        Logger.recordOutput("Climb/Output", position );
-        Logger.recordOutput("Climb/Setpoint", m_setpoint );
+        Logger.recordOutput("Climb/Position", 0.0 );
+        Logger.recordOutput("Climb/Output", 0.0 );
+        Logger.recordOutput("Climb/Setpoint", 0.0 );
         Logger.recordOutput("Climb/JogOutput", 0.0 );
     }
 
