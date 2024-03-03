@@ -50,6 +50,7 @@ public class SwerveJoystickCmd extends Command {
 
         if( xSpeed > 0 )
         {
+            // the 2024 robot is always facing the driver, so controls are backwards
             xSpeed = -1 * xSpeed * xSpeed;
         }
         else
@@ -59,6 +60,7 @@ public class SwerveJoystickCmd extends Command {
       
         if( ySpeed > 0 )
         {
+            // the 2024 robot is always facing the driver, so controls are backwards
             ySpeed = -1 * ySpeed * ySpeed;
         }
         else

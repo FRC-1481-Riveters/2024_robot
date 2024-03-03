@@ -13,27 +13,27 @@ import org.littletonrobotics.junction.Logger;
 public class ShooterSubsystem extends SubsystemBase
 {
     private double m_intendedSpeed;
-    private CANSparkMax m_motorTop = new CANSparkMax(ShooterConstants.SHOOTER_MOTOR_TOP, CANSparkLowLevel.MotorType.kBrushless );
-    private CANSparkMax m_motorBottom = new CANSparkMax(ShooterConstants.SHOOTER_MOTOR_BOTTOM, CANSparkLowLevel.MotorType.kBrushless);
-    private SparkRelativeEncoder m_encoder = (SparkRelativeEncoder) m_motorTop.getEncoder();
-    private SparkPIDController m_pidController = m_motorTop.getPIDController();
+    private CANSparkMax m_motor = new CANSparkMax(ShooterConstants.SHOOTER_MOTOR_TOP, CANSparkLowLevel.MotorType.kBrushless );
+    private CANSparkMax m_motorFollower = new CANSparkMax(ShooterConstants.SHOOTER_MOTOR_BOTTOM, CANSparkLowLevel.MotorType.kBrushless);
+    private SparkRelativeEncoder m_encoder = (SparkRelativeEncoder) m_motor.getEncoder();
+    private SparkPIDController m_pid = m_motor.getPIDController();
     DigitalInput m_beamBreak = new DigitalInput(2);
     
     public ShooterSubsystem()
     {
-        m_motorTop.restoreFactoryDefaults();
-        m_motorTop.setInverted(false);
-        m_motorTop.setSmartCurrentLimit(50, 50);
-        m_motorTop.setIdleMode(IdleMode.kCoast);
-        m_motorBottom.restoreFactoryDefaults();
-        m_motorBottom.setInverted(false);
-        m_motorBottom.setSmartCurrentLimit(50, 50);
-        m_motorBottom.setIdleMode(IdleMode.kCoast);
-        m_motorBottom.follow(m_motorTop,true);
-        m_pidController.setP(0.00005);
-        m_pidController.setI(0.000000060);
-        m_pidController.setD(0.0001);
-        m_pidController.setFF(0.000145); //0.00018
+        m_motor.restoreFactoryDefaults();
+        m_motor.setInverted(false);
+        m_motor.setSmartCurrentLimit(50, 50);
+        m_motor.setIdleMode(IdleMode.kCoast);
+        m_motorFollower.restoreFactoryDefaults();
+        m_motorFollower.setInverted(false);
+        m_motorFollower.setSmartCurrentLimit(50, 50);
+        m_motorFollower.setIdleMode(IdleMode.kCoast);
+        m_motorFollower.follow(m_motor,true);
+        m_pid.setP(0.00005);
+        m_pid.setI(0.000000060);
+        m_pid.setD(0.0001);
+        m_pid.setFF(0.000145); //0.00018
 
         setShooterSpeed(0.0);
 
@@ -63,12 +63,12 @@ public class ShooterSubsystem extends SubsystemBase
         if (m_intendedSpeed > 10.0) 
         {
             // Spark MAX PID
-            m_pidController.setReference(rpm, ControlType.kVelocity);
+            m_pid.setReference(rpm, ControlType.kVelocity);
         }
         else 
         {
             // Turn shooter off
-            m_motorTop.set(0.0);
+            m_motor.set(0.0);
         }
         
     }
@@ -77,7 +77,7 @@ public class ShooterSubsystem extends SubsystemBase
         System.out.println("setShooterJog " + output);
 
         m_intendedSpeed = 0;
-        m_motorTop.set(output);
+        m_motor.set(output);
         Logger.recordOutput("Shooter/Setpoint", 0.0);
         Logger.recordOutput("Shooter/Jog", output );
    }

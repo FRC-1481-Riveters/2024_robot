@@ -16,7 +16,7 @@ public class ElevatorSubsystem extends SubsystemBase{
     private CANSparkMax m_motor = new CANSparkMax(ElevatorConstants.ELEVATOR_MOTOR, CANSparkLowLevel.MotorType.kBrushless );
     private SparkRelativeEncoder m_encoder = (SparkRelativeEncoder) m_motor.getEncoder();
     private PIDController pidElevator = new PIDController(0.13, 0, 0.005);
-    private DigitalInput m_DownBeamBreak = new DigitalInput(3);
+    private DigitalInput m_beamBreak = new DigitalInput(3);
 
     private boolean m_pid;
     private double m_setpoint;
@@ -47,7 +47,7 @@ public class ElevatorSubsystem extends SubsystemBase{
       position = m_encoder.getPosition();
 
       // This method will be called once per scheduler run
-      Logger.recordOutput("Elevator/BeamBreak", m_DownBeamBreak.get() );
+      Logger.recordOutput("Elevator/BeamBreak", m_beamBreak.get() );
 
       if( m_pid == true )
       {
@@ -58,7 +58,7 @@ public class ElevatorSubsystem extends SubsystemBase{
       }
 
       // If the elevator is all the way down, zero the encoder
-      if( m_DownBeamBreak.get() == false )
+      if( m_beamBreak.get() == false )
       {
         position = 0;
         m_encoder.setPosition(position);
