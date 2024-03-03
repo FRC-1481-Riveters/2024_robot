@@ -83,7 +83,7 @@ public class ShooterPivotSubsystem extends SubsystemBase {
     public void setShooterPivot( double angle )
     {
         m_pidEnable = true;
-        if( angle > 70 )
+        if( angle > ShooterPivotConstants.SHOOTER_PIVOT_HIGH )
         {
             pid.setPID( 0.015, 0, 0);
         }
@@ -118,7 +118,7 @@ public class ShooterPivotSubsystem extends SubsystemBase {
         boolean retval;
         double tolerance;
 
-        if( m_shooterPivotSetpoint > 70 )
+        if( m_shooterPivotSetpoint > ShooterPivotConstants.SHOOTER_PIVOT_HIGH )
             tolerance = 5;
         else
             tolerance = 0.5;
@@ -154,7 +154,7 @@ public class ShooterPivotSubsystem extends SubsystemBase {
         {
             if( m_initialBangBang == true )
             {
-                if( m_shooterPivotSetpoint > 70 )
+                if( m_shooterPivotSetpoint > ShooterPivotConstants.SHOOTER_PIVOT_HIGH )
                     m_output = 0.5; // going to amp
                 else
                     m_output = 0.26;  // regular shot
@@ -167,7 +167,7 @@ public class ShooterPivotSubsystem extends SubsystemBase {
             {
                 pidCalculate = pid.calculate( position, m_shooterPivotSetpoint);
                 m_output = MathUtil.clamp( pidCalculate, -0.6, 0.6);
-                if( position < 70 )
+                if( position < ShooterPivotConstants.SHOOTER_PIVOT_HIGH )
                     m_output += 0.07;  // feed forward
             }
             m_shooterPivotMotor.set(ControlMode.PercentOutput, m_output);
