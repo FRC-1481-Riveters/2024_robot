@@ -12,25 +12,25 @@ import org.littletonrobotics.junction.Logger;
 
 public class ClimbSubsystem extends SubsystemBase {
 
-    private CANSparkMax m_climbMotor = new CANSparkMax(ClimbConstants.CLIMB_MOTOR, CANSparkLowLevel.MotorType.kBrushless );
-    private CANSparkMax m_climbMotorFollower = new CANSparkMax(ClimbConstants.CLIMB_MOTOR_FOLLOWER, CANSparkLowLevel.MotorType.kBrushless );
-    private SparkRelativeEncoder m_encoder = (SparkRelativeEncoder) m_climbMotor.getEncoder();
+    private CANSparkMax m_Motor = new CANSparkMax(ClimbConstants.CLIMB_MOTOR, CANSparkLowLevel.MotorType.kBrushless );
+    private CANSparkMax m_MotorFollower = new CANSparkMax(ClimbConstants.CLIMB_MOTOR_FOLLOWER, CANSparkLowLevel.MotorType.kBrushless );
+    private SparkRelativeEncoder m_encoder = (SparkRelativeEncoder) m_Motor.getEncoder();
     private PIDController pid = new PIDController(0.13, 0, 0.005);
     private double m_setpoint;
     private boolean m_pidEnabled;
 
     public ClimbSubsystem() 
     {
-        m_climbMotor.restoreFactoryDefaults();
-        m_climbMotor.setInverted(false);
-        m_climbMotor.setSmartCurrentLimit(80, 50);
-        m_climbMotor.setIdleMode(IdleMode.kBrake);
+        m_Motor.restoreFactoryDefaults();
+        m_Motor.setInverted(false);
+        m_Motor.setSmartCurrentLimit(80, 50);
+        m_Motor.setIdleMode(IdleMode.kBrake);
         m_encoder.setPosition(0);
-        m_climbMotorFollower.restoreFactoryDefaults();
-        m_climbMotorFollower.setInverted(false);
-        m_climbMotorFollower.setSmartCurrentLimit(80, 50);
-        m_climbMotorFollower.setIdleMode(IdleMode.kBrake);
-//        m_climbMotorFollower.follow(m_climbMotor,false);
+        m_MotorFollower.restoreFactoryDefaults();
+        m_MotorFollower.setInverted(false);
+        m_MotorFollower.setSmartCurrentLimit(80, 50);
+        m_MotorFollower.setIdleMode(IdleMode.kBrake);
+//        m_MotorFollower.follow(m_Motor,false);
 
         // Create an initial log entry so they all show up in AdvantageScope without having to enable anything
         Logger.recordOutput("Climb/Position", 0.0 );
@@ -55,8 +55,8 @@ public class ClimbSubsystem extends SubsystemBase {
         {
             pidCalculate = pid.calculate( position, m_setpoint);
             output = MathUtil.clamp( pidCalculate, -0.4, 0.4);
-            m_climbMotor.set(output);
-            m_climbMotorFollower.set(output);
+            m_Motor.set(output);
+            m_MotorFollower.set(output);
             Logger.recordOutput("Climb/Output", position );
         }
     }
@@ -73,8 +73,8 @@ public class ClimbSubsystem extends SubsystemBase {
     public void setClimbJog( double percentOutput )
     {
         m_pidEnabled = false;
-        m_climbMotor.set(percentOutput);
-        m_climbMotorFollower.set(percentOutput);
+        m_Motor.set(percentOutput);
+        m_MotorFollower.set(percentOutput);
         Logger.recordOutput("Climb/Setpoint", 0.0 );
         Logger.recordOutput("Climb/JogOutput", percentOutput );
     }

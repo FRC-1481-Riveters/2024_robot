@@ -13,23 +13,23 @@ import com.revrobotics.CANSparkBase.SoftLimitDirection;
 import org.littletonrobotics.junction.Logger;
 
 public class ElevatorSubsystem extends SubsystemBase{
-    private CANSparkMax m_elevatorMotor = new CANSparkMax(ElevatorConstants.ELEVATOR_MOTOR, CANSparkLowLevel.MotorType.kBrushless );
-    private SparkRelativeEncoder m_encoder = (SparkRelativeEncoder) m_elevatorMotor.getEncoder();
+    private CANSparkMax m_motor = new CANSparkMax(ElevatorConstants.ELEVATOR_MOTOR, CANSparkLowLevel.MotorType.kBrushless );
+    private SparkRelativeEncoder m_encoder = (SparkRelativeEncoder) m_motor.getEncoder();
     private PIDController pidElevator = new PIDController(0.13, 0, 0.005);
-    private DigitalInput m_elevatorDownBeamBreak = new DigitalInput(3);
+    private DigitalInput m_DownBeamBreak = new DigitalInput(3);
 
-    private boolean m_elevatorPid;
-    private double m_elevatorSetpoint;
+    private boolean m_pid;
+    private double m_setpoint;
     private int m_positionStable;
 
     public ElevatorSubsystem(){
-      m_elevatorMotor.restoreFactoryDefaults();
-      m_elevatorMotor.setInverted(true);
-      m_elevatorMotor.setSmartCurrentLimit(20, 20);
-      m_elevatorMotor.setIdleMode(IdleMode.kBrake);
+      m_motor.restoreFactoryDefaults();
+      m_motor.setInverted(true);
+      m_motor.setSmartCurrentLimit(20, 20);
+      m_motor.setIdleMode(IdleMode.kBrake);
       m_encoder.setPosition(0);
-      m_elevatorMotor.setSoftLimit(SoftLimitDirection.kReverse, (float) ElevatorConstants.ELEVATOR_AMP_MAX);
-      m_elevatorMotor.enableSoftLimit(SoftLimitDirection.kReverse, true);
+      m_motor.setSoftLimit(SoftLimitDirection.kReverse, (float) ElevatorConstants.ELEVATOR_AMP_MAX);
+      m_motor.enableSoftLimit(SoftLimitDirection.kReverse, true);
 
       // Create an initial log entry so they all show up in AdvantageScope without having to enable anything
       Logger.recordOutput("Elevator/Position", 0.0 );
@@ -47,18 +47,18 @@ public class ElevatorSubsystem extends SubsystemBase{
       position = m_encoder.getPosition();
 
       // This method will be called once per scheduler run
-      Logger.recordOutput("Elevator/BeamBreak", m_elevatorDownBeamBreak.get() );
+      Logger.recordOutput("Elevator/BeamBreak", m_DownBeamBreak.get() );
 
-      if( m_elevatorPid == true )
+      if( m_pid == true )
       {
-        pidCalculate = pidElevator.calculate( position, m_elevatorSetpoint);
+        pidCalculate = pidElevator.calculate( position, m_setpoint);
         output = MathUtil.clamp( pidCalculate, -0.4, 0.4);
-        m_elevatorMotor.set( output );
+        m_motor.set( output );
         Logger.recordOutput("Elevator/Output", output);
       }
 
       // If the elevator is all the way down, zero the encoder
-      if( m_elevatorDownBeamBreak.get() == false )
+      if( m_DownBeamBreak.get() == false )
       {
         position = 0;
         m_encoder.setPosition(position);
@@ -68,8 +68,8 @@ public class ElevatorSubsystem extends SubsystemBase{
 
     public void setElevatorJog( double speed )
     {
-      m_elevatorPid = false;
-      m_elevatorMotor.set(speed);
+      m_pid = false;
+      m_motor.set(speed);
       Logger.recordOutput("Elevator/Output", speed);
       System.out.println("setElevatorJog " + speed );
     }
@@ -77,8 +77,8 @@ public class ElevatorSubsystem extends SubsystemBase{
     public void setElevatorPosition (double position){
         System.out.println("setElevatorPosition " + position);
 
-        m_elevatorSetpoint = position;    
-        m_elevatorPid = true;
+        m_setpoint = position;    
+        m_pid = true;
         m_positionStable = 0;
     }
 
@@ -88,7 +88,7 @@ public class ElevatorSubsystem extends SubsystemBase{
     
     public boolean isAtPosition() {
       boolean retval;
-      if (Math.abs((getPosition() - m_elevatorSetpoint)) <= ElevatorConstants.ELEVATOR_POSITION_TOLERANCE) 
+      if (Math.abs((getPosition() - m_setpoint)) <= ElevatorConstants.ELEVATOR_POSITION_TOLERANCE) 
       {
         m_positionStable++;
         if (m_positionStable >= 4)
@@ -111,8 +111,8 @@ public class ElevatorSubsystem extends SubsystemBase{
 
     public void elevatorDisable()
     {
-        m_elevatorMotor.set(0.0);
-        m_elevatorPid = false;
+        m_motor.set(0.0);
+        m_pid = false;
         System.out.println("elevatorDisable current position=" + getPosition());
         Logger.recordOutput("Elevator/Output", 0.0);
     }

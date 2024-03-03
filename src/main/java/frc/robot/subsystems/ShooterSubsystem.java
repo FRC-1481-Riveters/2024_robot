@@ -12,24 +12,24 @@ import org.littletonrobotics.junction.Logger;
 
 public class ShooterSubsystem extends SubsystemBase
 {
-    private double m_shooterIntendedSpeed;
-    private CANSparkMax m_shooterMotorTop = new CANSparkMax(ShooterConstants.SHOOTER_MOTOR_TOP, CANSparkLowLevel.MotorType.kBrushless );
-    private CANSparkMax m_shooterMotorBottom = new CANSparkMax(ShooterConstants.SHOOTER_MOTOR_BOTTOM, CANSparkLowLevel.MotorType.kBrushless);
-    private SparkRelativeEncoder m_encoder = (SparkRelativeEncoder) m_shooterMotorTop.getEncoder();
-    private SparkPIDController m_pidController = m_shooterMotorTop.getPIDController();
-    DigitalInput m_shooterBeamBreak = new DigitalInput(2);
+    private double m_intendedSpeed;
+    private CANSparkMax m_motorTop = new CANSparkMax(ShooterConstants.SHOOTER_MOTOR_TOP, CANSparkLowLevel.MotorType.kBrushless );
+    private CANSparkMax m_motorBottom = new CANSparkMax(ShooterConstants.SHOOTER_MOTOR_BOTTOM, CANSparkLowLevel.MotorType.kBrushless);
+    private SparkRelativeEncoder m_encoder = (SparkRelativeEncoder) m_motorTop.getEncoder();
+    private SparkPIDController m_pidController = m_motorTop.getPIDController();
+    DigitalInput m_beamBreak = new DigitalInput(2);
     
     public ShooterSubsystem()
     {
-        m_shooterMotorTop.restoreFactoryDefaults();
-        m_shooterMotorTop.setInverted(false);
-        m_shooterMotorTop.setSmartCurrentLimit(50, 50);
-        m_shooterMotorTop.setIdleMode(IdleMode.kCoast);
-        m_shooterMotorBottom.restoreFactoryDefaults();
-        m_shooterMotorBottom.setInverted(false);
-        m_shooterMotorBottom.setSmartCurrentLimit(50, 50);
-        m_shooterMotorBottom.setIdleMode(IdleMode.kCoast);
-        m_shooterMotorBottom.follow(m_shooterMotorTop,true);
+        m_motorTop.restoreFactoryDefaults();
+        m_motorTop.setInverted(false);
+        m_motorTop.setSmartCurrentLimit(50, 50);
+        m_motorTop.setIdleMode(IdleMode.kCoast);
+        m_motorBottom.restoreFactoryDefaults();
+        m_motorBottom.setInverted(false);
+        m_motorBottom.setSmartCurrentLimit(50, 50);
+        m_motorBottom.setIdleMode(IdleMode.kCoast);
+        m_motorBottom.follow(m_motorTop,true);
         m_pidController.setP(0.00005);
         m_pidController.setI(0.000000060);
         m_pidController.setD(0.0001);
@@ -59,8 +59,8 @@ public class ShooterSubsystem extends SubsystemBase
         Logger.recordOutput("Shooter/Setpoint", rpm );
         Logger.recordOutput("Shooter/Jog", 0.0 );
 
-        m_shooterIntendedSpeed = rpm;
-        if (m_shooterIntendedSpeed > 10.0) 
+        m_intendedSpeed = rpm;
+        if (m_intendedSpeed > 10.0) 
         {
             // Spark MAX PID
             m_pidController.setReference(rpm, ControlType.kVelocity);
@@ -68,7 +68,7 @@ public class ShooterSubsystem extends SubsystemBase
         else 
         {
             // Turn shooter off
-            m_shooterMotorTop.set(0.0);
+            m_motorTop.set(0.0);
         }
         
     }
@@ -76,8 +76,8 @@ public class ShooterSubsystem extends SubsystemBase
     public void setShooterJog (double output){
         System.out.println("setShooterJog " + output);
 
-        m_shooterIntendedSpeed = 0;
-        m_shooterMotorTop.set(output);
+        m_intendedSpeed = 0;
+        m_motorTop.set(output);
         Logger.recordOutput("Shooter/Setpoint", 0.0);
         Logger.recordOutput("Shooter/Jog", output );
    }
@@ -89,10 +89,10 @@ public class ShooterSubsystem extends SubsystemBase
     public boolean isAtSpeed() 
     {
         boolean retval;
-        if( m_shooterIntendedSpeed == 0.0 )
+        if( m_intendedSpeed == 0.0 )
             retval = true;
         else if (Math.abs(
-            (getSpeed() - m_shooterIntendedSpeed) / m_shooterIntendedSpeed) <= ShooterConstants.SHOOTER_SPEED_TOLERANCE) 
+            (getSpeed() - m_intendedSpeed) / m_intendedSpeed) <= ShooterConstants.SHOOTER_SPEED_TOLERANCE) 
         {
             // return TRUE if the shooter is at the right speed
             retval = true;
@@ -108,7 +108,7 @@ public class ShooterSubsystem extends SubsystemBase
     public boolean isLightCurtainBlocked()
     {
         // reverse logic for blocked
-        if ( m_shooterBeamBreak.get() == true )
+        if ( m_beamBreak.get() == true )
         {
             return false;
         }

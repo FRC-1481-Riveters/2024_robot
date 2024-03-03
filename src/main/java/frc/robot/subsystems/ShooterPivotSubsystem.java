@@ -17,71 +17,71 @@ import org.littletonrobotics.junction.Logger;
 
 public class ShooterPivotSubsystem extends SubsystemBase {
 
-    private TalonSRX m_shooterPivotMotor;
-    private TalonSRX m_shooterPivotMotorFollower;
+    private TalonSRX m_motor;
+    private TalonSRX m_motorFollower;
     private PIDController pid = new PIDController(0.030, 0.012, 0.001);
-    private CANCoder m_shooterPivotCANCoder = new CANCoder(ShooterPivotConstants.SHOOTER_PIVOT_CANCODER);
-    private double m_shooterPivotSetpoint;
+    private CANCoder m_CANCoder = new CANCoder(ShooterPivotConstants.SHOOTER_PIVOT_CANCODER);
+    private double m_Setpoint;
     private double m_output;
     private boolean m_pidEnable;
     private boolean m_initialBangBang;
 
     public ShooterPivotSubsystem() 
     {
-        m_shooterPivotMotor = new TalonSRX(ShooterPivotConstants.SHOOTER_PIVOT_MOTOR);
-        m_shooterPivotMotor.configFactoryDefault();
+        m_motor = new TalonSRX(ShooterPivotConstants.SHOOTER_PIVOT_MOTOR);
+        m_motor.configFactoryDefault();
         // Set peak current
-        m_shooterPivotMotor.setInverted(false);
-        m_shooterPivotMotor.configPeakCurrentLimit(20);
-        m_shooterPivotMotor.configPeakCurrentDuration(500);
-        m_shooterPivotMotor.configContinuousCurrentLimit(20);
-        m_shooterPivotMotor.enableCurrentLimit(true);
-        m_shooterPivotMotor.setNeutralMode(NeutralMode.Brake);
+        m_motor.setInverted(false);
+        m_motor.configPeakCurrentLimit(20);
+        m_motor.configPeakCurrentDuration(500);
+        m_motor.configContinuousCurrentLimit(20);
+        m_motor.enableCurrentLimit(true);
+        m_motor.setNeutralMode(NeutralMode.Brake);
 
-        m_shooterPivotMotorFollower = new TalonSRX(ShooterPivotConstants.SHOOTER_PIVOT_MOTOR_FOLLOWER);
-        m_shooterPivotMotorFollower.configFactoryDefault();
+        m_motorFollower = new TalonSRX(ShooterPivotConstants.SHOOTER_PIVOT_MOTOR_FOLLOWER);
+        m_motorFollower.configFactoryDefault();
         // Set peak current
-        m_shooterPivotMotor.setInverted(false);
-        m_shooterPivotMotorFollower.configPeakCurrentLimit(20);
-        m_shooterPivotMotorFollower.configPeakCurrentDuration(500);
-        m_shooterPivotMotorFollower.configContinuousCurrentLimit(20);
-        m_shooterPivotMotorFollower.enableCurrentLimit(true);
-        m_shooterPivotMotorFollower.setNeutralMode(NeutralMode.Brake);
-        m_shooterPivotMotorFollower.setInverted(InvertType.FollowMaster);
-        m_shooterPivotMotorFollower.follow(m_shooterPivotMotor);
-        m_shooterPivotMotor.configSelectedFeedbackSensor(RemoteFeedbackDevice.RemoteSensor0);
-        m_shooterPivotMotor.configRemoteFeedbackFilter(m_shooterPivotCANCoder, 0);
+        m_motor.setInverted(false);
+        m_motorFollower.configPeakCurrentLimit(20);
+        m_motorFollower.configPeakCurrentDuration(500);
+        m_motorFollower.configContinuousCurrentLimit(20);
+        m_motorFollower.enableCurrentLimit(true);
+        m_motorFollower.setNeutralMode(NeutralMode.Brake);
+        m_motorFollower.setInverted(InvertType.FollowMaster);
+        m_motorFollower.follow(m_motor);
+        m_motor.configSelectedFeedbackSensor(RemoteFeedbackDevice.RemoteSensor0);
+        m_motor.configRemoteFeedbackFilter(m_CANCoder, 0);
         // Configure Talon  SRX output and sensor direction
-        m_shooterPivotMotor.setSensorPhase(false);
+        m_motor.setSensorPhase(false);
         /* 
          * TRY AND FIX THESE SOMEDAY BUT THEY ARE NOT USED FOR NOW
          * SHOOTER PIVOT USES BANG-BANG CONTROL AND THEN WPILIB PID INSTEAD
          
             // Set Motion Magic gains in slot0
-            m_shooterPivotMotor.selectProfileSlot(0, 0);
-            m_shooterPivotMotor.config_kF(0, ShooterPivotConstants.SHOOTER_PIVOT_0_KF);
-            m_shooterPivotMotor.config_kP(0, ShooterPivotConstants.SHOOTER_PIVOT_0_KP);
-            m_shooterPivotMotor.config_kI(0, ShooterPivotConstants.SHOOTER_PIVOT_0_KI);
-            m_shooterPivotMotor.config_kD(0, ShooterPivotConstants.SHOOTER_PIVOT_0_KD);
+            m_motor.selectProfileSlot(0, 0);
+            m_motor.config_kF(0, ShooterPivotConstants.SHOOTER_PIVOT_0_KF);
+            m_motor.config_kP(0, ShooterPivotConstants.SHOOTER_PIVOT_0_KP);
+            m_motor.config_kI(0, ShooterPivotConstants.SHOOTER_PIVOT_0_KI);
+            m_motor.config_kD(0, ShooterPivotConstants.SHOOTER_PIVOT_0_KD);
             // Set Motion Magic gains in slot0
-            m_shooterPivotMotor.selectProfileSlot(1, 0);
-            m_shooterPivotMotor.config_kF(1, ShooterPivotConstants.SHOOTER_PIVOT_1_KF);
-            m_shooterPivotMotor.config_kP(1, ShooterPivotConstants.SHOOTER_PIVOT_1_KP);
-            m_shooterPivotMotor.config_kI(1, ShooterPivotConstants.SHOOTER_PIVOT_1_KI);
-            m_shooterPivotMotor.config_kD(1, ShooterPivotConstants.SHOOTER_PIVOT_1_KD);
+            m_motor.selectProfileSlot(1, 0);
+            m_motor.config_kF(1, ShooterPivotConstants.SHOOTER_PIVOT_1_KF);
+            m_motor.config_kP(1, ShooterPivotConstants.SHOOTER_PIVOT_1_KP);
+            m_motor.config_kI(1, ShooterPivotConstants.SHOOTER_PIVOT_1_KI);
+            m_motor.config_kD(1, ShooterPivotConstants.SHOOTER_PIVOT_1_KD);
             // Set acceleration and cruise velocity
-            m_shooterPivotMotor.configMotionCruiseVelocity(ShooterPivotConstants.SHOOTER_PIVOT_CRUISE );
-            m_shooterPivotMotor.configMotionAcceleration(ShooterPivotConstants.SHOOTER_PIVOT_ACCELERATION );
+            m_motor.configMotionCruiseVelocity(ShooterPivotConstants.SHOOTER_PIVOT_CRUISE );
+            m_motor.configMotionAcceleration(ShooterPivotConstants.SHOOTER_PIVOT_ACCELERATION );
         */
-        m_shooterPivotMotor.configPeakOutputForward(0.6);
-        m_shooterPivotMotor.configPeakOutputReverse(-0.6);
+        m_motor.configPeakOutputForward(0.6);
+        m_motor.configPeakOutputReverse(-0.6);
         // Set extend motion limits
-        m_shooterPivotMotor.configForwardSoftLimitThreshold(ShooterPivotConstants.SHOOTER_PIVOT_MAX*(4096/360));
-        m_shooterPivotMotor.configForwardSoftLimitEnable(true);
-        m_shooterPivotMotor.configReverseSoftLimitThreshold(ShooterPivotConstants.SHOOTER_PIVOT_MIN*(4096/360));
-        m_shooterPivotMotor.configReverseSoftLimitEnable(true);
+        m_motor.configForwardSoftLimitThreshold(ShooterPivotConstants.SHOOTER_PIVOT_MAX*(4096/360));
+        m_motor.configForwardSoftLimitEnable(true);
+        m_motor.configReverseSoftLimitThreshold(ShooterPivotConstants.SHOOTER_PIVOT_MIN*(4096/360));
+        m_motor.configReverseSoftLimitEnable(true);
 
-        m_shooterPivotCANCoder.setPosition(m_shooterPivotCANCoder.getAbsolutePosition());
+        m_CANCoder.setPosition(m_CANCoder.getAbsolutePosition());
 
         // Create an initial log entry so they all show up in AdvantageScope without having to enable anything
         Logger.recordOutput("ShooterPivot/Setpoint", 0.0 );
@@ -107,8 +107,8 @@ public class ShooterPivotSubsystem extends SubsystemBase {
         }
         pid.reset();
         m_initialBangBang = true;
-        m_shooterPivotSetpoint = angle;
-        Logger.recordOutput("ShooterPivot/Setpoint", m_shooterPivotSetpoint );
+        m_Setpoint = angle;
+        Logger.recordOutput("ShooterPivot/Setpoint", m_Setpoint );
 
         System.out.println("setShooterPivot " + angle + ", current angle=" + getShooterPivot());
     }
@@ -117,26 +117,26 @@ public class ShooterPivotSubsystem extends SubsystemBase {
     {
         m_pidEnable = false;
         m_output = speed;
-        m_shooterPivotMotor.set(ControlMode.PercentOutput, m_output);
-        Logger.recordOutput("ShooterPivot/Setpoint", m_shooterPivotSetpoint );
+        m_motor.set(ControlMode.PercentOutput, m_output);
+        Logger.recordOutput("ShooterPivot/Setpoint", m_Setpoint );
         System.out.println("setShooterPivotJog " + m_output );
     }
 
     public double getShooterPivot ()
     {
-        return (m_shooterPivotCANCoder.getAbsolutePosition());
+        return (m_CANCoder.getAbsolutePosition());
     }
 
     public boolean atSetpoint(){
         boolean retval;
         double tolerance;
 
-        if( m_shooterPivotSetpoint > ShooterPivotConstants.SHOOTER_PIVOT_HIGH )
+        if( m_Setpoint > ShooterPivotConstants.SHOOTER_PIVOT_HIGH )
             tolerance = 5;
         else
             tolerance = 0.5;
 
-        if( Math.abs( getShooterPivot() - m_shooterPivotSetpoint ) < tolerance )
+        if( Math.abs( getShooterPivot() - m_Setpoint ) < tolerance )
             retval = true;
         else   
             retval = false;
@@ -152,10 +152,10 @@ public class ShooterPivotSubsystem extends SubsystemBase {
 
         // This method will be called once per scheduler run
 
-        position = m_shooterPivotCANCoder.getAbsolutePosition();
+        position = m_CANCoder.getAbsolutePosition();
 
         Logger.recordOutput("ShooterPivot/Position", position);
-        m_shooterPivotMotorFollower.follow(m_shooterPivotMotor);   // Recommended by CTRE in case follower loses power
+        m_motorFollower.follow(m_motor);   // Recommended by CTRE in case follower loses power
 
 
         if( m_pidEnable == true )
@@ -164,11 +164,11 @@ public class ShooterPivotSubsystem extends SubsystemBase {
             // until it gets close to the final position, and then switch to PID
             if( m_initialBangBang == true )
             {
-                if( m_shooterPivotSetpoint > ShooterPivotConstants.SHOOTER_PIVOT_HIGH )
+                if( m_Setpoint > ShooterPivotConstants.SHOOTER_PIVOT_HIGH )
                     m_output = 0.5; // going to amp
                 else
                     m_output = 0.26;  // regular shot
-                if( position > (m_shooterPivotSetpoint - 2.0) )
+                if( position > (m_Setpoint - 2.0) )
                 {
                     // once the pivot is close to its position, turn off bang-bang control
                     m_initialBangBang = false;
@@ -177,12 +177,12 @@ public class ShooterPivotSubsystem extends SubsystemBase {
             else
             {
                 // after bang-bang is done, switch to PID
-                pidCalculate = pid.calculate( position, m_shooterPivotSetpoint);
+                pidCalculate = pid.calculate( position, m_Setpoint);
                 m_output = MathUtil.clamp( pidCalculate, -0.6, 0.6);
                 if( position < ShooterPivotConstants.SHOOTER_PIVOT_HIGH )
                     m_output += 0.07;  // feed forward
             }
-            m_shooterPivotMotor.set(ControlMode.PercentOutput, m_output);
+            m_motor.set(ControlMode.PercentOutput, m_output);
         }
         Logger.recordOutput("ShooterPivot/Output", m_output);
     }
