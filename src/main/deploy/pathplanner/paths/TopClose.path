@@ -55,9 +55,9 @@
   "eventMarkers": [
     {
       "name": "Retract",
-      "waypointRelativePos": 1.25,
+      "waypointRelativePos": 1.2,
       "command": {
-        "type": "sequential",
+        "type": "parallel",
         "data": {
           "commands": [
             {
@@ -80,7 +80,7 @@
       "name": "Deploy",
       "waypointRelativePos": 0.0,
       "command": {
-        "type": "sequential",
+        "type": "parallel",
         "data": {
           "commands": [
             {
