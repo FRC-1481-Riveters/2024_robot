@@ -27,7 +27,7 @@ public class RobotContainer
     public final SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
     private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem( this );
     private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
- //   private final ClimbSubsystem climbSubsystem = new ClimbSubsystem();
+    private final ClimbSubsystem climbSubsystem = new ClimbSubsystem();
     private final ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem();
     private final ShooterPivotSubsystem shooterPivotSubsystem = new ShooterPivotSubsystem();
 
@@ -194,7 +194,7 @@ public class RobotContainer
             .onFalse(IntakeRollersStopCommand())
             .onTrue( IntakeRollersOutCommand());
 
-       /*  Trigger operatorLeftTrigger = operatorJoystick.leftTrigger( 0.15 );
+        Trigger operatorLeftTrigger = operatorJoystick.leftTrigger( 0.15 );
         operatorLeftTrigger
             .onFalse(Commands.runOnce( ()-> climbSubsystem.setClimbJog( 0 ), climbSubsystem))
             .onTrue( Commands.runOnce( ()-> climbSubsystem.setClimbJog( operatorJoystick.getLeftTriggerAxis() ), climbSubsystem));
@@ -203,7 +203,7 @@ public class RobotContainer
         operatorRightTrigger
             .onFalse(Commands.runOnce( ()-> climbSubsystem.setClimbJog( 0 ), climbSubsystem))
             .onTrue( Commands.runOnce( ()-> climbSubsystem.setClimbJog( -operatorJoystick.getRightTriggerAxis() ), climbSubsystem));
-   */
+   
         Trigger operatorRightJoystickAxisUp = operatorJoystick.axisGreaterThan(5, 0.7 );
         operatorRightJoystickAxisUp
             .onFalse(Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog( 0 ), shooterPivotSubsystem))

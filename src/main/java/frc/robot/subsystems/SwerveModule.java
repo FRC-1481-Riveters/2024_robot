@@ -150,16 +150,20 @@ public class SwerveModule {
         return new SwerveModuleState(getDriveVelocity(), new Rotation2d(getTurningPosition()));
     }
 
-    public void setDesiredState(SwerveModuleState state) {
+    public void setDesiredState(SwerveModuleState state) 
+    {
+        double driveOutput;
+
         if (Math.abs(state.speedMetersPerSecond) < 0.001) {
             stop();
             return;
         }
         state = SwerveModuleState.optimize(state, getState().angle);
-        //double speed = m_feedForward.calculate( state.speedMetersPerSecond );
         double speed = state.speedMetersPerSecond;
         double turningPosition = getTurningPosition();
-        driveMotor.set( ControlMode.PercentOutput, speed / DriveConstants.kPhysicalMaxSpeedMetersPerSecond );
+        driveOutput = speed / DriveConstants.kPhysicalMaxSpeedMetersPerSecond;
+//        driveOutput = m_feedForward.calculate( driveOutput );
+        driveMotor.set( ControlMode.PercentOutput, driveOutput );
         turningMotor.set( ControlMode.PercentOutput, 
                           turningPidController.calculate( turningPosition, state.angle.getRadians() ) );
         SmartDashboard.putNumber("Turning Position[" + absoluteEncoder.getDeviceID() + "]", turningPosition );

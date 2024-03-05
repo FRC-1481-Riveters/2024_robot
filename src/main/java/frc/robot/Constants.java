@@ -99,8 +99,8 @@ public final class Constants {
         public static final double INTAKE_FLOOR_PICKUP = 189;
         public static final double INTAKE_HALF = 94.5;
         public static final double INTAKE_ANGLE_TOLERANCE = 7;
-        public static final double INTAKE_ANGLE_MOTOR_ACCELERATION = 3000;
-        public static final double INTAKE_ANGLE_MOTOR_CRUISE = 7000;
+        public static final double INTAKE_ANGLE_MOTOR_ACCELERATION = 3500;
+        public static final double INTAKE_ANGLE_MOTOR_CRUISE = 8000;
         public static final double INTAKE_ANGLE_MOTOR_KP = 0.5;
         public static final double INTAKE_ANGLE_MOTOR_KI = 0;
         public static final double INTAKE_ANGLE_MOTOR_KD = 0.06;
@@ -127,7 +127,7 @@ public final class Constants {
         public static final int SHOOTER_PIVOT_CANCODER = 37;
         //fill out position values later
         public static final double SHOOTER_PIVOT_START = 10;
-        public static final double SHOOTER_PIVOT_CLOSE = 22.0;
+        public static final double SHOOTER_PIVOT_CLOSE = 23.9; //22.0;
         public static final double SHOOTER_PIVOT_PODIUM = 45;
         public static final double SHOOTER_PIVOT_WING = 53;
         public static final double SHOOTER_PIVOT_SLOT1 = 60;
@@ -137,15 +137,15 @@ public final class Constants {
         public static final double SHOOTER_PIVOT_TRAP = 90;
         public static final double SHOOTER_PIVOT_MAX = 210; // max travel
         public static final double SHOOTER_PIVOT_MIN = 10;
-        public static final double SHOOTER_PIVOT_ACCELERATION = 500;
-        public static final double SHOOTER_PIVOT_CRUISE = 500;
-        public static final double SHOOTER_PIVOT_0_KP = 1.4;
-        public static final double SHOOTER_PIVOT_0_KI = 0.009;
+        public static final double SHOOTER_PIVOT_ACCELERATION = 200;
+        public static final double SHOOTER_PIVOT_CRUISE = 100;
+        public static final double SHOOTER_PIVOT_0_KP = 7.2;
+        public static final double SHOOTER_PIVOT_0_KI = 0.0;
         public static final double SHOOTER_PIVOT_0_KD = 0.0;
-        public static final double SHOOTER_PIVOT_0_KF = 0.2;
+        public static final double SHOOTER_PIVOT_0_KF = 0.0;
         // slot 1 for amp/trap
-        public static final double SHOOTER_PIVOT_1_KP = 1.2;
-        public static final double SHOOTER_PIVOT_1_KI = 0.004;
+        public static final double SHOOTER_PIVOT_1_KP = 1.0;
+        public static final double SHOOTER_PIVOT_1_KI = 0.003;
         public static final double SHOOTER_PIVOT_1_KD = 0.0;
         public static final double SHOOTER_PIVOT_1_KF = 0;
 
@@ -161,7 +161,7 @@ public final class Constants {
         public static final double ELEVATOR_CLOSE = -7.9;
         public static final double ELEVATOR_AMP_START = -5.66;
         public static final double ELEVATOR_AMP = -12;
-        public static final double ELEVATOR_AMP_MAX = -12.5;
+        public static final double ELEVATOR_MAX = -20.5;
         public static final double ELEVATOR_TRAP = 0;
     }
 

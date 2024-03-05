@@ -27,7 +27,7 @@ public class ClimbSubsystem extends SubsystemBase {
         m_motor.setIdleMode(IdleMode.kBrake);
         m_encoder.setPosition(0);
         m_motorFollower.restoreFactoryDefaults();
-        m_motorFollower.setInverted(false);
+        m_motorFollower.setInverted(true);
         m_motorFollower.setSmartCurrentLimit(80, 50);
         m_motorFollower.setIdleMode(IdleMode.kBrake);
 //        m_motorFollower.follow(m_motor,false);

@@ -28,7 +28,7 @@ public class ElevatorSubsystem extends SubsystemBase{
       m_motor.setSmartCurrentLimit(20, 20);
       m_motor.setIdleMode(IdleMode.kBrake);
       m_encoder.setPosition(0);
-      m_motor.setSoftLimit(SoftLimitDirection.kReverse, (float) ElevatorConstants.ELEVATOR_AMP_MAX);
+      m_motor.setSoftLimit(SoftLimitDirection.kReverse, (float) ElevatorConstants.ELEVATOR_MAX);
       m_motor.enableSoftLimit(SoftLimitDirection.kReverse, true);
 
       // Create an initial log entry so they all show up in AdvantageScope without having to enable anything
