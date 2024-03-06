@@ -97,6 +97,7 @@ public final class Constants {
         public static final int TALON_TIMEOUT_MS = 5000;
         public static final double INTAKE_ANGLE_STOWED = 0;
         public static final double INTAKE_FLOOR_PICKUP = 189;
+        public static final double INTAKE_SOURCE = 45.0;
         public static final double INTAKE_HALF = 94.5;
         public static final double INTAKE_ANGLE_TOLERANCE = 7;
         public static final double INTAKE_ANGLE_MOTOR_ACCELERATION = 3500;
@@ -161,14 +162,16 @@ public final class Constants {
         public static final double ELEVATOR_CLOSE = -7.9;
         public static final double ELEVATOR_AMP_START = -5.66;
         public static final double ELEVATOR_AMP = -12;
+        public static final double ELEVATOR_MAX_PIVOT = -14;
         public static final double ELEVATOR_MAX = -20.5;
         public static final double ELEVATOR_TRAP = 0;
+        public static final double ELEVATOR_CLIMB = -20.0;
     }
 
      public static final class ClimbConstants {
         public static final int CLIMB_MOTOR = 24;
         public static final int CLIMB_MOTOR_FOLLOWER = 25;
-        public static final int CLIMB_MAX = 0;
+        public static final double CLIMB_POSITION_MAX = 15.0;
         public static final int CLIMB_MIN = 0;
 
     }

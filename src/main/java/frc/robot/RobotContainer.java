@@ -172,16 +172,26 @@ public class RobotContainer
         Trigger driverDPadLeft = driverJoystick.povLeft();
         driverDPadLeft
             .onTrue(Commands.runOnce( ()->System.out.println("IntakeHalf") )
-                .andThen(Commands.runOnce( ()-> intakeSubsystem.setIntakeAngle( IntakeConstants.INTAKE_HALF ), intakeSubsystem)))
-            .onFalse(IntakeRetractCommand());
+                .andThen(Commands.runOnce( ()-> intakeSubsystem.setIntakeAngle( IntakeConstants.INTAKE_HALF ), intakeSubsystem))
+                .andThen(Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition( ElevatorConstants.ELEVATOR_CLIMB), elevatorSubsystem))
+            )
+            .onFalse(IntakeRetractCommand()
+                .andThen(Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition( ElevatorConstants.ELEVATOR_START), elevatorSubsystem))
+            );
 
         Trigger operatorIntakeDeployTrigger = operatorJoystick.y();
         operatorIntakeDeployTrigger
             .onTrue( IntakeDeployCommand() );
 
+    
         Trigger operatorIntakeRetractTrigger = operatorJoystick.a();
-        operatorIntakeRetractTrigger
-            .onTrue(IntakeRetractCommand());
+        operatorIntakeRetractTrigger.onTrue(IntakeRetractCommand());
+
+        Trigger operatorIntakeSourceTrigger = operatorJoystick.b();
+        operatorIntakeSourceTrigger
+                    .onTrue(Commands.runOnce( ()->System.out.println("Intake Source") )
+            .andThen(Commands.runOnce( ()-> intakeSubsystem.setIntakeAngle( IntakeConstants.INTAKE_SOURCE ), intakeSubsystem)));
+            
 
 
         Trigger operatorIntakeWheelsInTrigger = operatorJoystick.leftBumper();
@@ -270,23 +280,22 @@ public class RobotContainer
                 Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition(ElevatorConstants.ELEVATOR_PODIUM), elevatorSubsystem))
                 );
 
-        //Wing
+        //Amp shot 2
         Trigger operatorDPadRight = operatorJoystick.povRight();
         operatorDPadRight
             .onFalse(
                 Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(0), shooterSubsystem)
-                .alongWith (
-                Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog(0), shooterPivotSubsystem),
-                Commands.runOnce( ()-> elevatorSubsystem.setElevatorJog(0), elevatorSubsystem)
-                )
-            )                     
+                    .andThen(Commands.runOnce( ()-> intakeSubsystem.setIntakeRoller(0), intakeSubsystem)
+                    ))
             .onTrue(
-                Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(ShooterConstants.SHOOTER_SPEED_WING), shooterSubsystem)
-                .alongWith(
-                    Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivot(ShooterPivotConstants.SHOOTER_PIVOT_WING)),
-                    Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition(ElevatorConstants.ELEVATOR_WING), elevatorSubsystem))
+                Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(700), shooterSubsystem) 
+                    .andThen(
+                        Commands.waitSeconds(1.0),
+                        Commands.runOnce( ()-> intakeSubsystem.setIntakeRoller(1), intakeSubsystem),
+                        Commands.waitSeconds(2.0),
+                        Commands.runOnce( ()-> intakeSubsystem.setIntakeRoller(0), intakeSubsystem)
                     )
-         ;
+            );
         
         //Amp
         Trigger operatorDPadDown = operatorJoystick.povDown();
@@ -326,7 +335,6 @@ public class RobotContainer
                 Commands.runOnce( ()->driverJoystick.getHID().setRumble(RumbleType.kBothRumble, 0))
                 )
             )      
-
         .onTrue(
             Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivot(ShooterPivotConstants.SHOOTER_PIVOT_START))
             .alongWith( Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition(ElevatorConstants.ELEVATOR_START ), elevatorSubsystem))
@@ -339,6 +347,11 @@ public class RobotContainer
             .andThen( Commands.runOnce( ()->driverJoystick.getHID().setRumble(RumbleType.kBothRumble, 0)))
             .andThen( Commands.runOnce( ()->operatorJoystick.getHID().setRumble(RumbleType.kBothRumble, 0)))
         );
+
+        Trigger operatorStart = operatorJoystick.start();
+        operatorStart  
+        .onTrue(
+            Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition(ElevatorConstants.ELEVATOR_CLIMB ), elevatorSubsystem));
     }
     
 

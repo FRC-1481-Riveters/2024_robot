@@ -18,6 +18,7 @@ public class ClimbSubsystem extends SubsystemBase {
     private PIDController pid = new PIDController(0.13, 0, 0.005);
     private double m_setpoint;
     private boolean m_pidEnabled;
+    private double m_position;
 
     public ClimbSubsystem() 
     {
@@ -59,6 +60,11 @@ public class ClimbSubsystem extends SubsystemBase {
             m_motorFollower.set(output);
             Logger.recordOutput("Climb/Output", position );
         }
+        if (m_position > ClimbConstants.CLIMB_POSITION_MAX)
+        {
+            m_motor.set(0);
+            Logger.recordOutput("Climb/Output", position );
+        }
     }
 
     public void setClimb( double targetPosition )
@@ -73,8 +79,19 @@ public class ClimbSubsystem extends SubsystemBase {
     public void setClimbJog( double percentOutput )
     {
         m_pidEnabled = false;
-        m_motor.set(percentOutput);
-        m_motorFollower.set(percentOutput);
+
+        if( (percentOutput > 0) &&
+            (m_position < ClimbConstants.CLIMB_POSITION_MAX) )
+        {
+            m_motor.set(percentOutput);
+            m_motorFollower.set(percentOutput);
+        }
+        else if( (percentOutput < 0) &&
+            (m_position > 0) )
+        {
+            m_motor.set(percentOutput);
+            m_motorFollower.set(percentOutput);
+        }
         Logger.recordOutput("Climb/Setpoint", 0.0 );
         Logger.recordOutput("Climb/JogOutput", percentOutput );
     }

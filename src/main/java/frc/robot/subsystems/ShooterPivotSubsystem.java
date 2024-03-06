@@ -84,13 +84,17 @@ public class ShooterPivotSubsystem extends SubsystemBase {
     public void setShooterPivot( double angle )
     {
         double sensorSetpoint;
-        if( angle > ShooterPivotConstants.SHOOTER_PIVOT_HIGH )
+        if( angle > ShooterPivotConstants.SHOOTER_PIVOT_HIGH || (angle < 11))
         {
             m_motor.selectProfileSlot(1, 0);
+            m_motor.configMotionCruiseVelocity(400 );
+            m_motor.configMotionAcceleration(800 );
         }
         else
         {
             m_motor.selectProfileSlot(0, 0);
+            m_motor.configMotionCruiseVelocity(ShooterPivotConstants.SHOOTER_PIVOT_CRUISE );
+            m_motor.configMotionAcceleration(ShooterPivotConstants.SHOOTER_PIVOT_ACCELERATION );
         }
         m_Setpoint = angle;
         sensorSetpoint = angle * (4096/360);
