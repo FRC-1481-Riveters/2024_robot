@@ -78,8 +78,8 @@ public final class Constants {
         public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 6;
 
         public static final HolonomicPathFollowerConfig pathFollowerConfig = new HolonomicPathFollowerConfig(
-            new PIDConstants(5.0, 0, 0), // Translation constants 
-            new PIDConstants(5.0, 0, 0), // Rotation constants 
+            new PIDConstants(6.5, 0.240, 0), // Translation constants 
+            new PIDConstants(6.5, 0.240, 0), // Rotation constants 
             kPhysicalMaxSpeedMetersPerSecond, 
             new Translation2d(kWheelBase / 2, kTrackWidth / 2).getNorm(), // Drive base radius (distance from center to furthest module) 
             new ReplanningConfig()
@@ -163,9 +163,9 @@ public final class Constants {
         public static final double ELEVATOR_AMP_START = -5.66;
         public static final double ELEVATOR_AMP = -12;
         public static final double ELEVATOR_MAX_PIVOT = -14;
-        public static final double ELEVATOR_MAX = -20.5;
+        public static final double ELEVATOR_MAX = -17.5;
         public static final double ELEVATOR_TRAP = 0;
-        public static final double ELEVATOR_CLIMB = -20.0;
+        public static final double ELEVATOR_CLIMB = -17.2;
     }
 
      public static final class ClimbConstants {

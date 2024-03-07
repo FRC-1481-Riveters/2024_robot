@@ -27,8 +27,8 @@ public class RobotContainer
     public final SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
     private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem( this );
     private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
-    private final ClimbSubsystem climbSubsystem = new ClimbSubsystem();
     private final ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem();
+    private final ClimbSubsystem climbSubsystem = new ClimbSubsystem( elevatorSubsystem );
     private final ShooterPivotSubsystem shooterPivotSubsystem = new ShooterPivotSubsystem();
 
     public final CommandXboxController driverJoystick = new CommandXboxController(OIConstants.kDriverControllerPort);
@@ -38,8 +38,6 @@ public class RobotContainer
 
 
     double driveDivider = Constants.DriveConstants.DRIVE_DIVIDER_NORMAL;
-
-    double m_dCreep=0;
 
     public AddressableLED m_led;
     public AddressableLEDBuffer m_ledBuffer;
@@ -113,34 +111,23 @@ public class RobotContainer
 
     private double getDriverMoveFwdBack()
     {
-        // Handle creeping forward if the driver is pressing D-pad up
         double pos;
-        if( m_dCreep != 0 )
-            // Use a fixed value to creep forward
-            pos = m_dCreep;
-        else
-            // Use the joystick axis
-            pos = driverJoystick.getRawAxis(OIConstants.kDriverYAxis) / driveDivider;
+        // Use the joystick axis
+        pos = driverJoystick.getRawAxis(OIConstants.kDriverYAxis) / driveDivider;
         return pos;
     }
 
     private double getDriverMoveLeftRight()
     {
         double pos;
-        if( m_dCreep != 0 )
-            pos = 0;
-        else
-            pos = driverJoystick.getRawAxis(OIConstants.kDriverXAxis) / driveDivider;
+        pos = driverJoystick.getRawAxis(OIConstants.kDriverXAxis) / driveDivider;
         return pos;
     }
 
     private double getDriverRotate()
     {
         double pos;
-        if( m_dCreep != 0 )
-            pos = 0;
-        else
-            pos = -driverJoystick.getRawAxis(OIConstants.kDriverRotAxis) / driveDivider;
+        pos = -driverJoystick.getRawAxis(OIConstants.kDriverRotAxis) / driveDivider;
         return pos;
     }
 
@@ -206,13 +193,15 @@ public class RobotContainer
 
         Trigger operatorLeftTrigger = operatorJoystick.leftTrigger( 0.15 );
         operatorLeftTrigger
+            // spool climb
             .onFalse(Commands.runOnce( ()-> climbSubsystem.setClimbJog( 0 ), climbSubsystem))
-            .onTrue( Commands.runOnce( ()-> climbSubsystem.setClimbJog( operatorJoystick.getLeftTriggerAxis() ), climbSubsystem));
+            .whileTrue( Commands.run( ()-> climbSubsystem.setClimbJog( -operatorJoystick.getLeftTriggerAxis() ), climbSubsystem));
 
         Trigger operatorRightTrigger = operatorJoystick.rightTrigger( 0.15 );
         operatorRightTrigger
+            // unspool climb
             .onFalse(Commands.runOnce( ()-> climbSubsystem.setClimbJog( 0 ), climbSubsystem))
-            .onTrue( Commands.runOnce( ()-> climbSubsystem.setClimbJog( -operatorJoystick.getRightTriggerAxis() ), climbSubsystem));
+            .whileTrue( Commands.run( ()-> climbSubsystem.setClimbJog( operatorJoystick.getRightTriggerAxis() ), climbSubsystem));
    
         Trigger operatorRightJoystickAxisUp = operatorJoystick.axisGreaterThan(5, 0.7 );
         operatorRightJoystickAxisUp

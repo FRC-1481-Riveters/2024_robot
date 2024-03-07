@@ -65,12 +65,6 @@
               "data": {
                 "name": "IntakeRetractCommand"
               }
-            },
-            {
-              "type": "named",
-              "data": {
-                "name": "IntakeRollersStop"
-              }
             }
           ]
         }
@@ -93,6 +87,23 @@
               "type": "named",
               "data": {
                 "name": "IntakeRollersIn"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Roller Stop",
+      "waypointRelativePos": 1.45,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "IntakeRollersStop"
               }
             }
           ]

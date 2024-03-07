@@ -1,12 +1,16 @@
 package frc.robot.subsystems;
+import frc.robot.subsystems.ElevatorSubsystem;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ClimbConstants;
+import frc.robot.Constants.ElevatorConstants;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 
 import com.revrobotics.*;
 import com.revrobotics.CANSparkBase.IdleMode;
+
+import javax.lang.model.util.ElementScanner14;
 
 import org.littletonrobotics.junction.Logger;
 
@@ -15,13 +19,13 @@ public class ClimbSubsystem extends SubsystemBase {
     private CANSparkMax m_motor = new CANSparkMax(ClimbConstants.CLIMB_MOTOR, CANSparkLowLevel.MotorType.kBrushless );
     private CANSparkMax m_motorFollower = new CANSparkMax(ClimbConstants.CLIMB_MOTOR_FOLLOWER, CANSparkLowLevel.MotorType.kBrushless );
     private SparkRelativeEncoder m_encoder = (SparkRelativeEncoder) m_motor.getEncoder();
-    private PIDController pid = new PIDController(0.13, 0, 0.005);
     private double m_setpoint;
-    private boolean m_pidEnabled;
     private double m_position;
+    private ElevatorSubsystem m_elevatorSubsystem;
 
-    public ClimbSubsystem() 
+    public ClimbSubsystem( ElevatorSubsystem elevatorSubsystem ) 
     {
+        m_elevatorSubsystem = elevatorSubsystem;
         m_motor.restoreFactoryDefaults();
         m_motor.setInverted(false);
         m_motor.setSmartCurrentLimit(80, 50);
@@ -36,8 +40,6 @@ public class ClimbSubsystem extends SubsystemBase {
         // Create an initial log entry so they all show up in AdvantageScope without having to enable anything
         Logger.recordOutput("Climb/Position", 0.0 );
         Logger.recordOutput("Climb/Output", 0.0 );
-        Logger.recordOutput("Climb/Setpoint", 0.0 );
-        Logger.recordOutput("Climb/JogOutput", 0.0 );
     }
 
     @Override
@@ -45,54 +47,50 @@ public class ClimbSubsystem extends SubsystemBase {
     {
         // This method will be called once per scheduler run
         double position;
-        double pidCalculate;
-        double output;
         position = m_encoder.getPosition();
+        double elevator_position = m_elevatorSubsystem.getPosition();
 
         // This method will be called once per scheduler run
         Logger.recordOutput("Climb/Position", position );
 
-        if( m_pidEnabled == true )
+        if( (m_setpoint < 0) &&
+            (elevator_position > (ElevatorConstants.ELEVATOR_START - 0.5) ) )
         {
-            pidCalculate = pid.calculate( position, m_setpoint);
-            output = MathUtil.clamp( pidCalculate, -0.4, 0.4);
-            m_motor.set(output);
-            m_motorFollower.set(output);
-            Logger.recordOutput("Climb/Output", position );
+            // spooling - operator left trigger        {
+            m_setpoint = 0.0;
+            m_motor.set(m_setpoint);
+            m_motorFollower.set(m_setpoint);
+            Logger.recordOutput("Climb/Output", m_setpoint );
         }
-        if (m_position > ClimbConstants.CLIMB_POSITION_MAX)
-        {
-            m_motor.set(0);
-            Logger.recordOutput("Climb/Output", position );
-        }
-    }
-
-    public void setClimb( double targetPosition )
-    {
-        m_pidEnabled = true;
-        m_setpoint = targetPosition;
-
-        Logger.recordOutput("Climb/Setpoint", m_setpoint );
-        Logger.recordOutput("Climb/JogOutput", 0.0 );
     }
 
     public void setClimbJog( double percentOutput )
     {
-        m_pidEnabled = false;
+        double elevator_position = m_elevatorSubsystem.getPosition();
 
-        if( (percentOutput > 0) &&
-            (m_position < ClimbConstants.CLIMB_POSITION_MAX) )
+        System.out.println("setClimbJog: output=" + percentOutput + " elevator_position=" + elevator_position);
+        if( percentOutput > 0 )
         {
+            // unspooling - operator right trigger
+            m_setpoint = percentOutput;
             m_motor.set(percentOutput);
             m_motorFollower.set(percentOutput);
         }
         else if( (percentOutput < 0) &&
-            (m_position > 0) )
+            (elevator_position < (ElevatorConstants.ELEVATOR_START - 0.5) ) )
         {
+            // spooling - operator left trigger
+            m_setpoint = percentOutput;
             m_motor.set(percentOutput);
             m_motorFollower.set(percentOutput);
         }
-        Logger.recordOutput("Climb/Setpoint", 0.0 );
-        Logger.recordOutput("Climb/JogOutput", percentOutput );
+        else 
+        {
+            m_setpoint = 0.0;
+            m_motor.set(m_setpoint);
+            m_motorFollower.set(m_setpoint);
+        }
+
+        Logger.recordOutput("Climb/Output", m_setpoint );
     }
 }

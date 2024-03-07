@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.7470227511883603,
-      "y": 6.661257665372474
+      "x": 0.7,
+      "y": 6.67
     },
-    "rotation": -120.02497184790323
+    "rotation": -119.70266009910912
   },
   "command": {
     "type": "sequential",
@@ -20,13 +20,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Amp Auto Fetch"
+            "pathName": "Outer Close Outer"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ShootCommand"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Amp Auto Return"
+            "pathName": "Outer Far Outer"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ShootCommand"
           }
         }
       ]
