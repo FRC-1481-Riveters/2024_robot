@@ -78,8 +78,8 @@ public final class Constants {
         public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 6;
 
         public static final HolonomicPathFollowerConfig pathFollowerConfig = new HolonomicPathFollowerConfig(
-            new PIDConstants(6.5, 0.240, 0), // Translation constants 
-            new PIDConstants(6.5, 0.240, 0), // Rotation constants 
+            new PIDConstants(5, 0.0, 0.00), // Translation constants 
+            new PIDConstants(5, 0.0, 0.0), // Rotation constants 
             kPhysicalMaxSpeedMetersPerSecond, 
             new Translation2d(kWheelBase / 2, kTrackWidth / 2).getNorm(), // Drive base radius (distance from center to furthest module) 
             new ReplanningConfig()
@@ -115,7 +115,7 @@ public final class Constants {
         public static final int SHOOTER_MOTOR_TOP = 3;
         public static final int SHOOTER_MOTOR_BOTTOM = 4;
         public static final double SHOOTER_SPEED_TOLERANCE = 100.0;
-        public static final double SHOOTER_SPEED_SPEAKER = 4000; //5000;
+        public static final double SHOOTER_SPEED_SPEAKER = 3600; //5000;
         public static final double SHOOTER_SPEED_PODIUM = 6000;
         public static final double SHOOTER_SPEED_WING = 5000;
         public static final double SHOOTER_SPEED_AMP = 2000;
@@ -140,7 +140,7 @@ public final class Constants {
         public static final double SHOOTER_PIVOT_MIN = 10;
         public static final double SHOOTER_PIVOT_ACCELERATION = 200;
         public static final double SHOOTER_PIVOT_CRUISE = 100;
-        public static final double SHOOTER_PIVOT_0_KP = 7.2;
+        public static final double SHOOTER_PIVOT_0_KP = 5.0;
         public static final double SHOOTER_PIVOT_0_KI = 0.0;
         public static final double SHOOTER_PIVOT_0_KD = 0.0;
         public static final double SHOOTER_PIVOT_0_KF = 0.0;

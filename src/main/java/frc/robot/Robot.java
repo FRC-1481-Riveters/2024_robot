@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.wpilibj.PowerDistribution;
 
 /**
@@ -61,8 +62,14 @@ public class Robot extends LoggedRobot {
 
         System.out.println(" " + 1481);
         m_robotContainer = new RobotContainer();
-
+        
         //CameraServer.startAutomaticCapture();
+        PortForwarder.add(5800,"limelight.local",5800);
+        PortForwarder.add(5801,"limelight.local",5801);
+        PortForwarder.add(5802,"limelight.local",5802);
+        PortForwarder.add(5803,"limelight.local",5803);
+        PortForwarder.add(5804,"limelight.local",5804);
+        PortForwarder.add(5805,"limelight.local",5805);
     }
 
     /**

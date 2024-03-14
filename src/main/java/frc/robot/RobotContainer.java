@@ -3,6 +3,7 @@ package frc.robot;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -99,6 +100,13 @@ public class RobotContainer
 
      public void setBling( int red, int green, int blue )
     {
+        if(red == 0 && blue == 0 && green == 255){
+            NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(3);
+        }else if(red == 255 && green == 255 && blue == 0 ){
+            NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(2);
+        }else if(red == 0 && green == 0 && blue == 0){
+            NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(1);
+        }
         int i;
         for( i=0; i<m_ledBuffer.getLength(); i++ )
         {

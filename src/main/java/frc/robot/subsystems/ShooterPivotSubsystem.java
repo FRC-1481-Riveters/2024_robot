@@ -124,7 +124,7 @@ public class ShooterPivotSubsystem extends SubsystemBase {
         if( m_Setpoint > ShooterPivotConstants.SHOOTER_PIVOT_HIGH )
             tolerance = 5;
         else
-            tolerance = 3.0;
+            tolerance = 3.5; //3.0
 
         if( Math.abs( getShooterPivot() - m_Setpoint ) < tolerance )
             retval = true;

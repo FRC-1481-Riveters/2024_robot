@@ -20,18 +20,6 @@
         {
           "type": "path",
           "data": {
-            "pathName": "TopClose"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ShootCommand"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
             "pathName": "BottomClose"
           }
         },

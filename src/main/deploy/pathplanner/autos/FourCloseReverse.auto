@@ -20,7 +20,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "TopClose"
+            "pathName": "BottomClose"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "BottomCloseReturn"
           }
         },
         {
@@ -32,13 +38,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "BottomClose"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "BottomCloseReturn"
+            "pathName": "TopClose"
           }
         },
         {
