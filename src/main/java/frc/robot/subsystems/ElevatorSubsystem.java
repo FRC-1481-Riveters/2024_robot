@@ -21,6 +21,7 @@ public class ElevatorSubsystem extends SubsystemBase{
     private boolean m_pid;
     private double m_setpoint;
     private int m_positionStable;
+    public boolean m_beamBreakState;
 
     public ElevatorSubsystem(){
       m_motor.restoreFactoryDefaults();
@@ -62,9 +63,13 @@ public class ElevatorSubsystem extends SubsystemBase{
       {
         position = 0;
         m_encoder.setPosition(position);
+        m_beamBreakState = true;
+      }
+      else{
+        m_beamBreakState = false;
       }
       Logger.recordOutput("Elevator/Position", position );
-    }
+    } // end of method
 
     public void setElevatorJog( double speed )
     {

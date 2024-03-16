@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj.PowerDistribution;
  */
 public class Robot extends LoggedRobot {
     private Command m_autonomousCommand;
+    private Command m_testCommand;
 
     private RobotContainer m_robotContainer;
 
@@ -169,10 +170,25 @@ public class Robot extends LoggedRobot {
     public void testInit() {
         // Cancels all running commands at the start of test mode.
         CommandScheduler.getInstance().cancelAll();
+
+        m_testCommand = m_robotContainer.getTestCommand();
+        m_robotContainer.m_allTestsPassed = true;
+
+        // schedule the autonomous command (example)
+        if (m_testCommand != null) 
+        {
+            m_testCommand.schedule();
+        }
     }
 
     /** This function is called periodically during test mode. */
     @Override
     public void testPeriodic() {
+    }
+
+    @Override
+    public void testExit(){
+        CommandScheduler.getInstance().cancelAll();
+        m_robotContainer.StopControls(true);
     }
 }

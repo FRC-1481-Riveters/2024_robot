@@ -21,6 +21,7 @@ public class ShooterPivotSubsystem extends SubsystemBase {
     private CANCoder m_CANCoder = new CANCoder(ShooterPivotConstants.SHOOTER_PIVOT_CANCODER);
     private double m_Setpoint;
     private double m_output;
+    private double m_position;
 
     public ShooterPivotSubsystem() 
     {
@@ -137,15 +138,19 @@ public class ShooterPivotSubsystem extends SubsystemBase {
     @Override
     public void periodic() 
     {
-        double position;
+        
         double pidCalculate;
 
         // This method will be called once per scheduler run
 
-        position = m_CANCoder.getAbsolutePosition();
+        m_position = m_CANCoder.getAbsolutePosition();
 
-        Logger.recordOutput("ShooterPivot/Position", position);
+        Logger.recordOutput("ShooterPivot/Position", m_position);
         m_motorFollower.follow(m_motor);   // Recommended by CTRE in case follower loses power
+    }
+
+    public double getPosition(){
+        return m_position;
     }
 
 }

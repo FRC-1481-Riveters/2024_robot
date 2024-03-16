@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -42,6 +43,7 @@ public class RobotContainer
 
     public AddressableLED m_led;
     public AddressableLEDBuffer m_ledBuffer;
+    public boolean m_allTestsPassed;
 
     public RobotContainer() 
     {
@@ -448,5 +450,150 @@ public class RobotContainer
             return true;
         else
             return false;
+    }
+
+    public void testElevatorBeamBreak(boolean intendedState){
+        String status;
+        if(intendedState == true){
+            status = "Pressed";}
+        else{
+            status = "not Pressed";}
+        if (elevatorSubsystem.m_beamBreakState == intendedState){
+            System.out.println("PASS: Elevator Beam Break is " + status);
+        }
+        else{
+            System.out.println("FAIL: Elevator Beam Break is " + status);
+            m_allTestsPassed = false;
+        }
+    }
+
+    public void testElevatorEncoder(boolean intendedZero){
+        String zero;
+        if(intendedZero == true){
+            zero = "at zero";}
+        else{
+            zero = "not at zero";}
+        if(intendedZero == true){
+            if (elevatorSubsystem.getPosition() == 0){
+                System.out.println("PASS: Elevator Encoder is " + zero);
+            }
+            else{
+                System.out.println("FAIL: Elevator Encoder is " + zero);
+                m_allTestsPassed = false;
+            }
+        }
+        else{
+            if (elevatorSubsystem.getPosition() == 0){
+                System.out.println("FAIL: Elevator Encoder is " + zero);
+            }
+            else{
+                System.out.println("PASS: Elevator Encoder is " + zero);
+                m_allTestsPassed = false;
+            }
+        }
+    }
+
+    public void testShooterEncoder(){
+        if(shooterSubsystem.getSpeed() > 0){
+            System.out.println("PASS: Shooter Wheels rotated");}
+        else{
+            System.out.println("FAIL: Shooter Wheels did not rotate");}
+            m_allTestsPassed = false;
+    }
+
+    public void testShooterPivotEncoder(boolean intendedStartSpot){
+        if(intendedStartSpot == true){
+            if (shooterPivotSubsystem.getPosition() < ShooterPivotConstants.SHOOTER_PIVOT_START + 0.5 && 
+                shooterPivotSubsystem.getPosition() > ShooterPivotConstants.SHOOTER_PIVOT_START - 0.5 ){
+                System.out.println("PASS: Shooter Pivot Encoder is at start spot");
+            }
+            else{
+                System.out.println("FAIL: Shooter Pivot Encoder is not at start spot");
+                m_allTestsPassed = false;
+            }
+        }
+        else{
+            if (shooterPivotSubsystem.getPosition() > ShooterPivotConstants.SHOOTER_PIVOT_START + 0.5){
+                System.out.println("PASS: Shooter Pivot Encoder has moved from start spot");
+            }
+            else{
+                System.out.println("FAIL: Shooter Pivot Encoder has not moved from start spot");
+                m_allTestsPassed = false;
+            }
+        }
+    }
+
+    public void testIntakeAngle(boolean intendedStartSpot){
+        if(intendedStartSpot == true){
+            if (intakeSubsystem.getIntakeAngle() < IntakeConstants.INTAKE_ANGLE_STOWED + 10){
+                System.out.println("PASS: Intake is at start spot");
+            }
+            else{
+                System.out.println("FAIL: Intake is not at start spot");
+                m_allTestsPassed = false;
+            }
+        }
+        else{
+            if (intakeSubsystem.getIntakeAngle() > ShooterPivotConstants.SHOOTER_PIVOT_START + 10){
+                System.out.println("PASS: Intake has moved from start spot");
+            }
+            else{
+                System.out.println("FAIL: Intake has not moved from start spot");
+                m_allTestsPassed = false;
+            }
+        }
+    }
+        
+    public void testIntakeRollers(){
+        if(intakeSubsystem.getRollerSpeed() > 0){
+            System.out.println("PASS: Intake Wheels rotated");}
+        else{
+            System.out.println("FAIL: Intake Wheels did not rotate");
+            m_allTestsPassed = false;
+        }
+    }
+
+    public void testResult(){
+        if(m_allTestsPassed == true ){
+            System.out.println("PASS: Passed all tests");}
+        else{
+            System.out.println("FAIL: Some tests failed");
+        }
+    }
+
+
+    public Command getTestCommand(){
+        return Commands.runOnce( ()-> testElevatorBeamBreak(true))
+        .andThen(
+            Commands.runOnce( ()-> testElevatorEncoder(true)),
+            Commands.runOnce( ()-> elevatorSubsystem.setElevatorJog(0.25), elevatorSubsystem),
+            Commands.waitSeconds(0.25),
+            Commands.runOnce( ()-> testElevatorEncoder(false)),
+            Commands.runOnce( ()-> testElevatorBeamBreak(false)),
+            Commands.runOnce( ()-> elevatorSubsystem.setElevatorJog(-0.25), elevatorSubsystem),
+            Commands.waitSeconds(0.3),
+            Commands.runOnce( ()-> elevatorSubsystem.setElevatorJog(0), elevatorSubsystem),
+            Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(100), shooterSubsystem),
+            Commands.waitSeconds(0.25),
+            Commands.runOnce( ()-> testShooterEncoder()),
+            Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(0), shooterSubsystem),
+            Commands.runOnce( ()-> testShooterPivotEncoder(true)),
+            Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog(0.25), shooterPivotSubsystem),
+            Commands.waitSeconds(0.25),
+            Commands.runOnce( ()-> testShooterPivotEncoder(false)),
+            Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog(-0.25), shooterPivotSubsystem),
+            Commands.waitSeconds(0.25),
+            Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog(0), shooterPivotSubsystem),
+            Commands.runOnce( ()-> testIntakeAngle(true)),
+            Commands.runOnce( ()-> intakeSubsystem.setIntakeAngle(IntakeConstants.INTAKE_SOURCE), intakeSubsystem),
+            Commands.waitSeconds(0.25),
+            Commands.runOnce( ()-> testIntakeAngle(false)),
+            Commands.runOnce( ()-> intakeSubsystem.setIntakeAngle(IntakeConstants.INTAKE_ANGLE_STOWED), intakeSubsystem),
+            Commands.runOnce( ()-> intakeSubsystem.setIntakeRoller(0.1)),
+            Commands.waitSeconds(0.25),
+            Commands.runOnce( ()-> testIntakeRollers()),
+            Commands.runOnce( ()-> intakeSubsystem.setIntakeRoller(0.0)),
+            Commands.runOnce( ()-> testResult())
+        );
     }
  }

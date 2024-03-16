@@ -29,6 +29,7 @@ public class IntakeSubsystem extends SubsystemBase {
     private DigitalInput m_BeamBreakLoaded = new DigitalInput(1);
     private boolean m_BeamBreakLoadedPrevious;
     private RobotContainer m_robotContainer;
+    public double m_rollerRpm;
 
     public IntakeSubsystem( RobotContainer robotContainer ) 
     {
@@ -134,11 +135,14 @@ public class IntakeSubsystem extends SubsystemBase {
         System.out.println("intakeAngleDisable current angle=" + getIntakeAngle());
     }
 
+    public double getRollerSpeed(){
+        return m_rollerRpm;
+    }
+
     @Override
     public void periodic() 
     {
-        double rpm;
-        rpm = m_rollerEncoder.getVelocity();
+        m_rollerRpm = m_rollerEncoder.getVelocity();
         boolean m_BeamBreakLoadedNew;
 
         m_BeamBreakLoadedNew = !m_BeamBreakLoaded.get();
@@ -153,7 +157,7 @@ public class IntakeSubsystem extends SubsystemBase {
         }
 
         // This method will be called once per scheduler run
-        Logger.recordOutput("Intake/RollerRPM", rpm );
+        Logger.recordOutput("Intake/RollerRPM", m_rollerRpm );
         m_angleMotorFollower.follow(m_angleMotor);  // Recommended by CTRE in case follower loses power
 
         Logger.recordOutput("Intake/AnglePosition", m_angleCANcoder.getAbsolutePosition());
