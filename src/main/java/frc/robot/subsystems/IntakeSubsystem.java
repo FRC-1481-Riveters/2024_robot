@@ -10,6 +10,7 @@ import com.revrobotics.CANSparkBase.IdleMode;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.RemoteFeedbackDevice;
+import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.revrobotics.*;
 
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -22,6 +23,10 @@ public class IntakeSubsystem extends SubsystemBase {
     private CANSparkMax m_rollerMotor = new CANSparkMax(IntakeConstants.INTAKE_ROLLER_MOTOR, CANSparkLowLevel.MotorType.kBrushless );
     private TalonSRX m_angleMotor;
     private TalonSRX m_angleMotorFollower;
+    private TalonSRX m_camMotor;
+    private CANCoder m_camCANCoder;
+    private boolean m_camPid;
+    private double m_camSetPoint;
     private SparkRelativeEncoder m_rollerEncoder = (SparkRelativeEncoder) m_rollerMotor.getEncoder();
     private CANCoder m_angleCANcoder = new CANCoder(IntakeConstants.INTAKE_ANGLE_CANCODER);
     private double m_angleSetpoint;
@@ -39,6 +44,9 @@ public class IntakeSubsystem extends SubsystemBase {
         m_rollerMotor.setSmartCurrentLimit(80, 30);
         m_rollerMotor.setIdleMode(IdleMode.kCoast);
         m_angleCANcoder.setPosition(m_angleCANcoder.getAbsolutePosition());
+
+        m_camMotor = new TalonSRX(IntakeConstants.INTAKE_CAM_MOTOR);
+        m_camCANCoder = new CANCoder(IntakeConstants.INTAKE_CAM_CANCODER);
 
         m_angleMotor = new TalonSRX(IntakeConstants.INTAKE_ANGLE_MOTOR);
         m_angleMotor.configFactoryDefault();
@@ -138,6 +146,24 @@ public class IntakeSubsystem extends SubsystemBase {
     public double getRollerSpeed(){
         return m_rollerRpm;
     }
+
+
+    public void setCamJog( double speed )
+    {
+      m_camPid = false;
+      m_camMotor.set(TalonSRXControlMode.PercentOutput,speed);
+      Logger.recordOutput("Intake/CamOutput", speed);
+      System.out.println("setCamJog " + speed );
+    }
+
+    public void setCamPosition (double position){
+        System.out.println("setCamPosition " + position);
+
+        m_camSetPoint = position;    
+        m_camPid = true;
+    }
+
+
 
     @Override
     public void periodic() 

@@ -90,6 +90,8 @@ public final class Constants {
     }
 
     public static final class IntakeConstants {
+        public static final int INTAKE_CAM_MOTOR = 56;
+        public static final int INTAKE_CAM_CANCODER = 57;
         public static final int INTAKE_ROLLER_MOTOR = 58;
         public static final int INTAKE_ANGLE_MOTOR = 59;
         public static final int INTAKE_ANGLE_MOTOR_FOLLOWER = 62;
@@ -109,16 +111,20 @@ public final class Constants {
         public static final double INTAKE_ANGLE_MOTOR_MAX = 191;
         public static final double INTAKE_ANGLE_MOTOR_MIN = 0;
 
+
     }
 
     public static final class ShooterConstants{
-        public static final int SHOOTER_MOTOR_TOP = 3;
-        public static final int SHOOTER_MOTOR_BOTTOM = 4;
+        public static final int SHOOTER_MOTOR_LEFT = 3;
+        public static final int SHOOTER_MOTOR_RIGHT = 4;
+        public static final int SHOOTER_OUTER_MOTOR_LEFT = 5;
+        public static final int SHOOTER_OUTER_MOTOR_RIGHT = 6;
         public static final double SHOOTER_SPEED_TOLERANCE = 100.0;
         public static final double SHOOTER_SPEED_SPEAKER = 3600; //5000;
         public static final double SHOOTER_SPEED_PODIUM = 6000;
         public static final double SHOOTER_SPEED_WING = 5000;
         public static final double SHOOTER_SPEED_AMP = 2000;
+
     }
 
     public static final class ShooterPivotConstants

@@ -201,6 +201,20 @@ public class RobotContainer
             .onFalse(IntakeRollersStopCommand())
             .onTrue( IntakeRollersOutCommand());
 
+
+        Trigger operatorLeftAxisLeft = operatorJoystick.axisLessThan(0, -0.15);
+        operatorLeftAxisLeft
+            // intake cam
+            .onFalse(Commands.runOnce( ()-> intakeSubsystem.setCamJog( 0 ), intakeSubsystem))
+            .whileTrue( Commands.run( ()-> intakeSubsystem.setCamJog( operatorJoystick.getLeftX() ), intakeSubsystem));
+
+        Trigger operatorLeftAxisRight = operatorJoystick.axisGreaterThan(0, 0.15);
+        operatorLeftAxisRight
+            // intake cam
+            .onFalse(Commands.runOnce( ()-> intakeSubsystem.setCamJog( 0 ), intakeSubsystem))
+            .whileTrue( Commands.run( ()-> intakeSubsystem.setCamJog( operatorJoystick.getLeftX() ), intakeSubsystem));
+
+
         Trigger operatorLeftTrigger = operatorJoystick.leftTrigger( 0.15 );
         operatorLeftTrigger
             // spool climb
