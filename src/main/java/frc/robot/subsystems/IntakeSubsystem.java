@@ -5,8 +5,10 @@ import frc.robot.Constants.IntakeConstants;
 import frc.robot.RobotContainer;
 
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.revrobotics.CANSparkBase.IdleMode;
+import com.ctre.phoenix.motion.MotionProfileStatus;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.RemoteFeedbackDevice;
@@ -25,16 +27,22 @@ public class IntakeSubsystem extends SubsystemBase {
     private TalonSRX m_angleMotorFollower;
     private TalonSRX m_camMotor;
     private CANCoder m_camCANCoder;
-    private boolean m_camPid;
     private double m_camSetPoint;
+    private boolean m_camPidEnabled;   
+    private double m_camPosition; 
+
     private SparkRelativeEncoder m_rollerEncoder = (SparkRelativeEncoder) m_rollerMotor.getEncoder();
+    private SparkPIDController m_rollerPid = m_rollerMotor.getPIDController();
     private CANCoder m_angleCANcoder = new CANCoder(IntakeConstants.INTAKE_ANGLE_CANCODER);
     private double m_angleSetpoint;
     private DigitalInput m_BeamBreakShooter = new DigitalInput(0);
     private DigitalInput m_BeamBreakLoaded = new DigitalInput(1);
     private boolean m_BeamBreakLoadedPrevious;
     private RobotContainer m_robotContainer;
+
+    private boolean m_rollerPidEnabled;
     public double m_rollerRpm;
+    public double m_rollerRpmSetpoint;
 
     public IntakeSubsystem( RobotContainer robotContainer ) 
     {
@@ -43,11 +51,35 @@ public class IntakeSubsystem extends SubsystemBase {
         m_rollerMotor.setInverted(false);
         m_rollerMotor.setSmartCurrentLimit(80, 30);
         m_rollerMotor.setIdleMode(IdleMode.kCoast);
-        m_angleCANcoder.setPosition(m_angleCANcoder.getAbsolutePosition());
+        m_rollerPid.setP(0.0005);
+        m_rollerPid.setI(0.00000060);
+        m_rollerPid.setD(0.0001);
+        m_rollerPid.setFF(0.000145); //0.00018
 
         m_camMotor = new TalonSRX(IntakeConstants.INTAKE_CAM_MOTOR);
-        m_camCANCoder = new CANCoder(IntakeConstants.INTAKE_CAM_CANCODER);
+        m_camCANCoder = new CANCoder(IntakeConstants.INTAKE_CAM_CANCODER);        
+        m_camMotor.configSelectedFeedbackSensor(RemoteFeedbackDevice.RemoteSensor0);
+        m_camCANCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
+        m_camCANCoder.setPosition(m_camCANCoder.getAbsolutePosition());
+        m_camMotor.configRemoteFeedbackFilter(m_camCANCoder, 0);
+        // Configure Talon SRX output and sensor direction
+        m_camMotor.setSensorPhase(true);
+        // Set Motion Magic gains in slot0
+        m_camMotor.selectProfileSlot(0, 0);
+        m_camMotor.config_kF(0, IntakeConstants.INTAKE_CAM_MOTOR_KF);
+        m_camMotor.config_kP(0, IntakeConstants.INTAKE_CAM_MOTOR_KP);
+        m_camMotor.config_kI(0, IntakeConstants.INTAKE_CAM_MOTOR_KI);
+        m_camMotor.config_kD(0, IntakeConstants.INTAKE_CAM_MOTOR_KD);
+        // Set acceleration and cruise velocity
+        m_camMotor.configMotionCruiseVelocity(IntakeConstants.INTAKE_CAM_MOTOR_CRUISE );
+        m_camMotor.configMotionAcceleration(IntakeConstants.INTAKE_CAM_MOTOR_ACCELERATION );
+        // Set extend motion limits
+        m_camMotor.configForwardSoftLimitThreshold(IntakeConstants.INTAKE_CAM_MOTOR_MAX*(4096/360));
+        m_camMotor.configForwardSoftLimitEnable(true);
+        m_camMotor.configReverseSoftLimitThreshold(IntakeConstants.INTAKE_CAM_MOTOR_MIN*(4096/360));
+        m_camMotor.configReverseSoftLimitEnable(true);
 
+        m_angleCANcoder.setPosition(m_angleCANcoder.getAbsolutePosition());
         m_angleMotor = new TalonSRX(IntakeConstants.INTAKE_ANGLE_MOTOR);
         m_angleMotor.configFactoryDefault();
         // Set peak current
@@ -60,7 +92,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
         m_angleMotor.configSelectedFeedbackSensor(RemoteFeedbackDevice.RemoteSensor0);
         m_angleMotor.configRemoteFeedbackFilter(m_angleCANcoder, 0);
-        // Configure Talon  SRX output and sensor direction
+        // Configure Talon SRX output and sensor direction
         m_angleMotor.setSensorPhase(true);
         // Set Motion Magic gains in slot0
         m_angleMotor.selectProfileSlot(0, 0);
@@ -90,10 +122,14 @@ public class IntakeSubsystem extends SubsystemBase {
         m_angleMotorFollower.follow(m_angleMotor);
 
         // Create an initial log entry so they all show up in AdvantageScope without having to enable anything
-        Logger.recordOutput("Intake/RollerSet", 0.0 );
+        Logger.recordOutput("Intake/RollerJog", 0.0 );
+        Logger.recordOutput("Intake/RollerSetRPM", 0.0 );
         Logger.recordOutput("Intake/RollerRPM", 0.0 );
         Logger.recordOutput("Intake/AngleSet", 0.0 );
         Logger.recordOutput("Intake/AnglePosition", 0.0 );
+        Logger.recordOutput("Intake/CamJog", 0.0 );
+        Logger.recordOutput("Intake/CamSetpoint", 0.0 );
+        Logger.recordOutput("Intake/CamPosition", 0.0 );
         Logger.recordOutput("Intake/Output", 0.0 );
         Logger.recordOutput("Intake/BeamBreakShooter", false );
         Logger.recordOutput("Intake/BeamBreakLoaded", false );
@@ -101,10 +137,25 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public void setIntakeRoller( double minus_one_to_one )
     {
+        m_rollerPidEnabled = false;
         m_rollerMotor.set(minus_one_to_one);
-        Logger.recordOutput("Intake/RollerSet", minus_one_to_one );
+        Logger.recordOutput("Intake/RollerJog", minus_one_to_one );
         System.out.println("setIntakeRoller " + minus_one_to_one);
     }
+
+    public void setIntakeRollerSpeed( double rpm )
+    {
+        m_rollerPid.setReference(rpm, ControlType.kVelocity);
+        m_rollerRpmSetpoint = rpm;
+        if( rpm > 10 )
+            m_rollerPidEnabled = true;
+        else
+            m_rollerPidEnabled = true;
+
+        Logger.recordOutput("Intake/RollerSetRPM", rpm );
+        System.out.println( "setIntakeRollerSpeed " + rpm );
+    }
+
 
     public void setIntakeAngle( double angle )
     {
@@ -125,16 +176,32 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public boolean atSetpoint(){
         double intended, current;
+        boolean retval;
         intended = m_angleSetpoint;
         current = m_angleCANcoder.getAbsolutePosition();
         if( Math.abs(intended - current ) < IntakeConstants.INTAKE_ANGLE_TOLERANCE )
         {
-            return true;
+            retval = true;
         }
         else
         {
-            return false;
+            retval = false;
         }
+        if( m_rollerPidEnabled == true )
+        {
+            if( Math.abs( m_rollerRpm - m_rollerRpmSetpoint ) < IntakeConstants.INTAKE_ROLLER_SPEED_TOLERANCE)
+            {
+                retval = false;
+            }
+        }
+        if( m_camPidEnabled == true )
+        {
+            if( Math.abs( m_camSetPoint - m_camPosition) < IntakeConstants.INTAKE_CAM_ANGLE_TOLERANCE)
+            {
+                retval = false;
+            }
+        }
+        return retval;
     }
 
     public void intakeAngleDisable(boolean stopped)
@@ -150,17 +217,19 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public void setCamJog( double speed )
     {
-      m_camPid = false;
+      m_camPidEnabled = false;    
       m_camMotor.set(TalonSRXControlMode.PercentOutput,speed);
-      Logger.recordOutput("Intake/CamOutput", speed);
+      Logger.recordOutput("Intake/CamJog", speed);
       System.out.println("setCamJog " + speed );
     }
 
-    public void setCamPosition (double position){
+    public void setCamPosition (double position)
+    {
+        m_camSetPoint = position;
+        m_camPidEnabled = true;    
+        m_camMotor.set(TalonSRXControlMode.MotionMagic,position);
+        Logger.recordOutput("Intake/CamSetpoint", position);
         System.out.println("setCamPosition " + position);
-
-        m_camSetPoint = position;    
-        m_camPid = true;
     }
 
 
@@ -169,17 +238,21 @@ public class IntakeSubsystem extends SubsystemBase {
     public void periodic() 
     {
         m_rollerRpm = m_rollerEncoder.getVelocity();
+        m_camPosition = m_camCANCoder.getAbsolutePosition();
         boolean m_BeamBreakLoadedNew;
 
         m_BeamBreakLoadedNew = !m_BeamBreakLoaded.get();
-        if (m_BeamBreakLoadedPrevious != m_BeamBreakLoadedNew){
-            if (m_BeamBreakLoadedNew == true){
+        if (m_BeamBreakLoadedPrevious != m_BeamBreakLoadedNew)
+        {
+            if (m_BeamBreakLoadedNew == true)
+            {
                 m_robotContainer.setBling(255, 25, 0 );
             }
-            else{
+            else
+            {
                 m_robotContainer.setRosie();
             }
-        m_BeamBreakLoadedPrevious = m_BeamBreakLoadedNew;
+            m_BeamBreakLoadedPrevious = m_BeamBreakLoadedNew;
         }
 
         // This method will be called once per scheduler run
@@ -187,6 +260,7 @@ public class IntakeSubsystem extends SubsystemBase {
         m_angleMotorFollower.follow(m_angleMotor);  // Recommended by CTRE in case follower loses power
 
         Logger.recordOutput("Intake/AnglePosition", m_angleCANcoder.getAbsolutePosition());
+        Logger.recordOutput("Intake/CamPosition", m_camPosition);
         Logger.recordOutput("Intake/Output", m_angleMotor.getMotorOutputPercent());
         Logger.recordOutput("Intake/BeamBreakShooter", !m_BeamBreakShooter.get() );
         Logger.recordOutput("Intake/BeamBreakLoaded", m_BeamBreakLoadedNew );

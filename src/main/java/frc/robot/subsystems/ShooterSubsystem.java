@@ -28,25 +28,25 @@ public class ShooterSubsystem extends SubsystemBase
         m_motor.restoreFactoryDefaults();
         m_motor.setInverted(false);
         m_motor.setSmartCurrentLimit(50, 50);
-        m_motor.setIdleMode(IdleMode.kCoast);
+        m_motor.setIdleMode(IdleMode.kBrake);
 
         m_outerMotor.restoreFactoryDefaults();
         m_outerMotor.setInverted(false);
         m_outerMotor.setSmartCurrentLimit(50, 50);
-        m_outerMotor.setIdleMode(IdleMode.kCoast);
+        m_outerMotor.setIdleMode(IdleMode.kBrake);
 
 
 
         m_motorFollower.restoreFactoryDefaults();
         m_motorFollower.setInverted(false);
         m_motorFollower.setSmartCurrentLimit(50, 50);
-        m_motorFollower.setIdleMode(IdleMode.kCoast);
+        m_motorFollower.setIdleMode(IdleMode.kBrake);
         m_motorFollower.follow(m_motor,true);
 
         m_outerMotorFollower.restoreFactoryDefaults();
         m_outerMotorFollower.setInverted(false);
         m_outerMotorFollower.setSmartCurrentLimit(50, 50);
-        m_outerMotorFollower.setIdleMode(IdleMode.kCoast);
+        m_outerMotorFollower.setIdleMode(IdleMode.kBrake);
         m_outerMotorFollower.follow(m_outerMotor,true);
 
         m_pid.setP(0.00005);
@@ -90,7 +90,6 @@ public class ShooterSubsystem extends SubsystemBase
             // Spark MAX PID
             m_pid.setReference(rpm, ControlType.kVelocity);
             m_outerPid.setReference(rpm, ControlType.kVelocity);
-
         }
         else 
         {
