@@ -35,17 +35,8 @@ public class ShooterPivotSubsystem extends SubsystemBase {
         m_motor.enableCurrentLimit(true);
         m_motor.setNeutralMode(NeutralMode.Coast);
 
-        m_motorFollower = new TalonSRX(ShooterPivotConstants.SHOOTER_PIVOT_MOTOR_FOLLOWER);
-        m_motorFollower.configFactoryDefault();
         // Set peak current
         m_motor.setInverted(false);
-        m_motorFollower.configPeakCurrentLimit(20);
-        m_motorFollower.configPeakCurrentDuration(500);
-        m_motorFollower.configContinuousCurrentLimit(20);
-        m_motorFollower.enableCurrentLimit(true);
-        m_motorFollower.setNeutralMode(NeutralMode.Coast);
-        m_motorFollower.setInverted(InvertType.FollowMaster);
-        m_motorFollower.follow(m_motor);
         m_motor.configSelectedFeedbackSensor(RemoteFeedbackDevice.RemoteSensor0);
         m_motor.configRemoteFeedbackFilter(m_CANCoder, 0);
         // Configure Talon  SRX output and sensor direction
@@ -56,12 +47,6 @@ public class ShooterPivotSubsystem extends SubsystemBase {
         m_motor.config_kP(0, ShooterPivotConstants.SHOOTER_PIVOT_0_KP);
         m_motor.config_kI(0, ShooterPivotConstants.SHOOTER_PIVOT_0_KI);
         m_motor.config_kD(0, ShooterPivotConstants.SHOOTER_PIVOT_0_KD);
-        // Set Motion Magic gains in slot0
-        m_motor.selectProfileSlot(1, 0);
-        m_motor.config_kF(1, ShooterPivotConstants.SHOOTER_PIVOT_1_KF);
-        m_motor.config_kP(1, ShooterPivotConstants.SHOOTER_PIVOT_1_KP);
-        m_motor.config_kI(1, ShooterPivotConstants.SHOOTER_PIVOT_1_KI);
-        m_motor.config_kD(1, ShooterPivotConstants.SHOOTER_PIVOT_1_KD);
         // Set acceleration and cruise velocity
         m_motor.configMotionCruiseVelocity(ShooterPivotConstants.SHOOTER_PIVOT_CRUISE );
         m_motor.configMotionAcceleration(ShooterPivotConstants.SHOOTER_PIVOT_ACCELERATION );
@@ -85,18 +70,6 @@ public class ShooterPivotSubsystem extends SubsystemBase {
     public void setShooterPivot( double angle )
     {
         double sensorSetpoint;
-        if( angle > ShooterPivotConstants.SHOOTER_PIVOT_HIGH || (angle < 11))
-        {
-            m_motor.selectProfileSlot(1, 0);
-            m_motor.configMotionCruiseVelocity(400 );
-            m_motor.configMotionAcceleration(800 );
-        }
-        else
-        {
-            m_motor.selectProfileSlot(0, 0);
-            m_motor.configMotionCruiseVelocity(ShooterPivotConstants.SHOOTER_PIVOT_CRUISE );
-            m_motor.configMotionAcceleration(ShooterPivotConstants.SHOOTER_PIVOT_ACCELERATION );
-        }
         m_Setpoint = angle;
         sensorSetpoint = angle * (4096/360);
         m_motor.set(ControlMode.MotionMagic, sensorSetpoint);
@@ -120,14 +93,8 @@ public class ShooterPivotSubsystem extends SubsystemBase {
 
     public boolean atSetpoint(){
         boolean retval;
-        double tolerance;
-
-        if( m_Setpoint > ShooterPivotConstants.SHOOTER_PIVOT_HIGH )
-            tolerance = 5;
-        else
-            tolerance = 3.5; //3.0
-
-        if( Math.abs( getShooterPivot() - m_Setpoint ) < tolerance )
+        
+        if( Math.abs( getShooterPivot() - m_Setpoint ) < ShooterPivotConstants.SHOOTER_PIVOT_TOLERANCE )
             retval = true;
         else   
             retval = false;
@@ -146,7 +113,6 @@ public class ShooterPivotSubsystem extends SubsystemBase {
         m_position = m_CANCoder.getAbsolutePosition();
 
         Logger.recordOutput("ShooterPivot/Position", m_position);
-        m_motorFollower.follow(m_motor);   // Recommended by CTRE in case follower loses power
     }
 
     public double getPosition(){

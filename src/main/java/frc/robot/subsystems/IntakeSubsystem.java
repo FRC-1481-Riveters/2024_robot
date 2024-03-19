@@ -187,13 +187,6 @@ public class IntakeSubsystem extends SubsystemBase {
         {
             retval = false;
         }
-        if( m_rollerPidEnabled == true )
-        {
-            if( Math.abs( m_rollerRpm - m_rollerRpmSetpoint ) < IntakeConstants.INTAKE_ROLLER_SPEED_TOLERANCE)
-            {
-                retval = false;
-            }
-        }
         if( m_camPidEnabled == true )
         {
             if( Math.abs( m_camSetPoint - m_camPosition) < IntakeConstants.INTAKE_CAM_ANGLE_TOLERANCE)
@@ -225,8 +218,9 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public void setCamPosition (double position)
     {
+        position = position * (4096/360);
         m_camSetPoint = position;
-        m_camPidEnabled = true;    
+        m_camPidEnabled = true;
         m_camMotor.set(TalonSRXControlMode.MotionMagic,position);
         Logger.recordOutput("Intake/CamSetpoint", position);
         System.out.println("setCamPosition " + position);
