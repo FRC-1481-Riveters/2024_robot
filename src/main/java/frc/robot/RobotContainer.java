@@ -186,7 +186,7 @@ public class RobotContainer
 
         Trigger operatorIntakeSourceTrigger = operatorJoystick.b();
         operatorIntakeSourceTrigger
-                    .onTrue(Commands.runOnce( ()->System.out.println("Intake Source") )
+            .onTrue(Commands.runOnce( ()->System.out.println("Intake Source") )
             .andThen(Commands.runOnce( ()-> intakeSubsystem.setIntakeAngle( IntakeConstants.INTAKE_SOURCE ), intakeSubsystem)));
             
 
@@ -206,13 +206,13 @@ public class RobotContainer
         operatorLeftAxisLeft
             // intake cam
             .onFalse(Commands.runOnce( ()-> intakeSubsystem.setCamJog( 0 ), intakeSubsystem))
-            .whileTrue( Commands.run( ()-> intakeSubsystem.setCamJog( operatorJoystick.getLeftX() ), intakeSubsystem));
+            .whileTrue( Commands.run( ()-> intakeSubsystem.setCamJog( operatorJoystick.getRawAxis(0) ), intakeSubsystem));
 
         Trigger operatorLeftAxisRight = operatorJoystick.axisGreaterThan(0, 0.15);
         operatorLeftAxisRight
             // intake cam
             .onFalse(Commands.runOnce( ()-> intakeSubsystem.setCamJog( 0 ), intakeSubsystem))
-            .whileTrue( Commands.run( ()-> intakeSubsystem.setCamJog( operatorJoystick.getLeftX() ), intakeSubsystem));
+            .whileTrue( Commands.run( ()-> intakeSubsystem.setCamJog( operatorJoystick.getRawAxis(0) ), intakeSubsystem));
 
 
         Trigger operatorLeftTrigger = operatorJoystick.leftTrigger( 0.15 );
@@ -230,12 +230,12 @@ public class RobotContainer
         Trigger operatorRightJoystickAxisUp = operatorJoystick.axisGreaterThan(5, 0.7 );
         operatorRightJoystickAxisUp
             .onFalse(Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog( 0 ), shooterPivotSubsystem))
-            .onTrue( Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog( -0.25 ), shooterPivotSubsystem));
+            .onTrue( Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog( -0.7 ), shooterPivotSubsystem));
         
         Trigger operatorRightJoystickAxisDown = operatorJoystick.axisLessThan(5, -0.7 );
         operatorRightJoystickAxisDown
             .onFalse(Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog( 0 ), shooterPivotSubsystem))
-            .onTrue( Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog( 0.25 ), shooterPivotSubsystem));
+            .onTrue( Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog( 0.7 ), shooterPivotSubsystem));
         
         Trigger operatorLeftJoystickAxisUp = operatorJoystick.axisGreaterThan(1, 0.7 );
         operatorLeftJoystickAxisUp 
@@ -250,7 +250,7 @@ public class RobotContainer
         Trigger operatorRightJoystickAxisLeft = operatorJoystick.axisLessThan(4, -0.7 );
         operatorRightJoystickAxisLeft
             .onFalse( Commands.runOnce( ()->shooterSubsystem.setShooterJog(0), shooterSubsystem))
-            .onTrue( Commands.runOnce( ()->shooterSubsystem.setShooterJog(1), shooterSubsystem));
+            .onTrue( Commands.runOnce( ()->shooterSubsystem.setShooterJog(-1), shooterSubsystem));
         
         Trigger operatorRightJoystickAxisRight = operatorJoystick.axisGreaterThan(4, 0.7 );
         operatorRightJoystickAxisRight
@@ -264,18 +264,26 @@ public class RobotContainer
             Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(0), shooterSubsystem)
             .alongWith (
                 Commands.runOnce( ()-> intakeSubsystem.setCamJog(0), intakeSubsystem),
-                Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog(0), shooterPivotSubsystem),
-                Commands.runOnce( ()-> elevatorSubsystem.setElevatorJog(0), elevatorSubsystem)
-                )
-            )      
+                Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog(0), shooterPivotSubsystem)
+//                Commands.runOnce( ()-> elevatorSubsystem.setElevatorJog(0), elevatorSubsystem)
+            )
+        )      
 
         .whileTrue(
-            Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(ShooterConstants.SHOOTER_SPEED_SPEAKER), shooterSubsystem)
-                .alongWith(
-                    Commands.runOnce( ()-> intakeSubsystem.setCamPosition(IntakeConstants.INTAKE_CAM_SPEAKER), intakeSubsystem),
-                    Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivot(ShooterPivotConstants.SHOOTER_PIVOT_CLOSE)),
-                    Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition(ElevatorConstants.ELEVATOR_CLOSE), elevatorSubsystem))    
-                );
+            Commands.runOnce( ()->System.out.println("Close Sequence") ) 
+            .andThen( 
+                Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition(ElevatorConstants.ELEVATOR_PIVOT_CLEAR), elevatorSubsystem)
+            )
+            .andThen( 
+                Commands.waitSeconds(10000)
+                    .until( elevatorSubsystem::isAtPosition)
+            )
+            .andThen(   
+                Commands.runOnce(()-> shooterSubsystem.setShooterSpeed(ShooterConstants.SHOOTER_SPEED_SPEAKER), shooterSubsystem),
+                Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivot(ShooterPivotConstants.SHOOTER_PIVOT_CLOSE), shooterPivotSubsystem)
+    //                    Commands.runOnce( ()-> intakeSubsystem.setCamPosition(IntakeConstants.INTAKE_CAM_SPEAKER), intakeSubsystem),
+            )
+        );
             
 
         //3 foot
@@ -285,17 +293,25 @@ public class RobotContainer
                 Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(0), shooterSubsystem)
             .alongWith (
                 Commands.runOnce( ()-> intakeSubsystem.setCamJog(0), intakeSubsystem),
-                Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog(0), shooterPivotSubsystem),
-                Commands.runOnce( ()-> elevatorSubsystem.setElevatorJog(0), elevatorSubsystem)
+                Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog(0), shooterPivotSubsystem)
+//                Commands.runOnce( ()-> elevatorSubsystem.setElevatorJog(0), elevatorSubsystem)
                 )
             )      
-            .onTrue(
-                Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(ShooterConstants.SHOOTER_SPEED_PODIUM), shooterSubsystem)
-            .alongWith(
-                Commands.runOnce( ()-> intakeSubsystem.setCamPosition(IntakeConstants.INTAKE_CAM_3FOOT), intakeSubsystem),
-                Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivot(ShooterPivotConstants.SHOOTER_PIVOT_3FOOT)),
-                Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition(ElevatorConstants.ELEVATOR_PODIUM), elevatorSubsystem))
-                );
+        .whileTrue(
+            Commands.runOnce( ()->System.out.println("3Foot Sequence") ) 
+            .andThen( 
+                Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition(ElevatorConstants.ELEVATOR_PIVOT_CLEAR), elevatorSubsystem)
+            )
+            .andThen( 
+                Commands.waitSeconds(10000)
+                    .until( elevatorSubsystem::isAtPosition)
+            )
+            .andThen(   
+                Commands.runOnce(()-> shooterSubsystem.setShooterSpeed(ShooterConstants.SHOOTER_SPEED_PODIUM), shooterSubsystem),
+                Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivot(ShooterPivotConstants.SHOOTER_PIVOT_3FOOT), shooterPivotSubsystem)
+    //                    Commands.runOnce( ()-> intakeSubsystem.setCamPosition(IntakeConstants.INTAKE_CAM_3FOOT), intakeSubsystem),
+            )
+        );
 
         //Amp
         Trigger operatorDPadDown = operatorJoystick.povDown();
@@ -328,6 +344,19 @@ public class RobotContainer
         operatorDPadRight
             .onFalse(
                 Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(0), shooterSubsystem)
+            .alongWith (
+                Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog(0), shooterPivotSubsystem)
+                )
+            )      
+        .whileTrue(
+            Commands.runOnce( ()->System.out.println("Travel sequence") ) 
+            .andThen(   
+               Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivot(ShooterPivotConstants.SHOOTER_PIVOT_TRAVEL), shooterPivotSubsystem)
+            )
+        );
+/*
+            .onFalse(
+                Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(0), shooterSubsystem)
                     .andThen(Commands.runOnce( ()-> intakeSubsystem.setIntakeRoller(0), intakeSubsystem)
                     ))
             .onTrue(
@@ -339,7 +368,9 @@ public class RobotContainer
                         Commands.runOnce( ()-> intakeSubsystem.setIntakeRoller(0), intakeSubsystem)
                     )
             );
-        
+*/
+
+
         //Stow
         Trigger operatorBack = operatorJoystick.back();
         operatorBack
@@ -352,17 +383,26 @@ public class RobotContainer
                 Commands.runOnce( ()->driverJoystick.getHID().setRumble(RumbleType.kBothRumble, 0))
                 )
             )      
-        .onTrue(
-            Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivot(ShooterPivotConstants.SHOOTER_PIVOT_START))
-            .alongWith( Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition(ElevatorConstants.ELEVATOR_START ), elevatorSubsystem))
+        .whileTrue(
+            Commands.runOnce( ()->System.out.println("Stow Sequence") ) 
+            .andThen( 
+                Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivot(ShooterPivotConstants.SHOOTER_PIVOT_TRAVEL), shooterPivotSubsystem)
+            )
+            .andThen( Commands.waitSeconds(10000)
+                .until( shooterPivotSubsystem::atSetpoint)
+            .andThen( Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition(ElevatorConstants.ELEVATOR_START ), elevatorSubsystem)
+            )
             .andThen( Commands.waitSeconds(10000) 
-                .until( this::isAtAllPositions))
-            .andThen( Commands.runOnce( ()->setBling(0, 255, 0)))
-            .andThen( Commands.runOnce( ()->driverJoystick.getHID().setRumble(RumbleType.kBothRumble, 1)))
-            .andThen( Commands.runOnce( ()->operatorJoystick.getHID().setRumble(RumbleType.kBothRumble, 1)))
-            .andThen( Commands.waitSeconds(0.5 ))
-            .andThen( Commands.runOnce( ()->driverJoystick.getHID().setRumble(RumbleType.kBothRumble, 0)))
-            .andThen( Commands.runOnce( ()->operatorJoystick.getHID().setRumble(RumbleType.kBothRumble, 0)))
+                .until( elevatorSubsystem::isAtPosition ))
+            )
+            .andThen(
+                Commands.runOnce( ()->setBling(0, 255, 0) ),
+                Commands.runOnce( ()->driverJoystick.getHID().setRumble(RumbleType.kBothRumble, 1) ),
+                Commands.runOnce( ()->operatorJoystick.getHID().setRumble(RumbleType.kBothRumble, 1) ),
+                Commands.waitSeconds(0.5 ),
+                Commands.runOnce( ()->driverJoystick.getHID().setRumble(RumbleType.kBothRumble, 0) ),
+                Commands.runOnce( ()->operatorJoystick.getHID().setRumble(RumbleType.kBothRumble, 0) )
+            )
         );
 
         Trigger operatorStart = operatorJoystick.start();
@@ -523,8 +563,8 @@ public class RobotContainer
 
     public void testShooterPivotEncoder(boolean intendedStartSpot){
         if(intendedStartSpot == true){
-            if (shooterPivotSubsystem.getPosition() < ShooterPivotConstants.SHOOTER_PIVOT_START + 0.5 && 
-                shooterPivotSubsystem.getPosition() > ShooterPivotConstants.SHOOTER_PIVOT_START - 0.5 ){
+            if (shooterPivotSubsystem.getPosition() < ShooterPivotConstants.SHOOTER_PIVOT_TRAVEL + 0.5 && 
+                shooterPivotSubsystem.getPosition() > ShooterPivotConstants.SHOOTER_PIVOT_TRAVEL - 0.5 ){
                 System.out.println("PASS: Shooter Pivot Encoder is at start spot");
             }
             else{
@@ -533,7 +573,7 @@ public class RobotContainer
             }
         }
         else{
-            if (shooterPivotSubsystem.getPosition() > ShooterPivotConstants.SHOOTER_PIVOT_START + 0.5){
+            if (shooterPivotSubsystem.getPosition() > ShooterPivotConstants.SHOOTER_PIVOT_TRAVEL + 0.5){
                 System.out.println("PASS: Shooter Pivot Encoder has moved from start spot");
             }
             else{
@@ -554,7 +594,7 @@ public class RobotContainer
             }
         }
         else{
-            if (intakeSubsystem.getIntakeAngle() > ShooterPivotConstants.SHOOTER_PIVOT_START + 10){
+            if (intakeSubsystem.getIntakeAngle() > ShooterPivotConstants.SHOOTER_PIVOT_TRAVEL + 10){
                 System.out.println("PASS: Intake has moved from start spot");
             }
             else{

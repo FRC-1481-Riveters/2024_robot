@@ -56,11 +56,11 @@ public class IntakeSubsystem extends SubsystemBase {
         m_rollerPid.setD(0.0001);
         m_rollerPid.setFF(0.000145); //0.00018
 
-        m_camMotor = new TalonSRX(IntakeConstants.INTAKE_CAM_MOTOR);
         m_camCANCoder = new CANCoder(IntakeConstants.INTAKE_CAM_CANCODER);        
-        m_camMotor.configSelectedFeedbackSensor(RemoteFeedbackDevice.RemoteSensor0);
         m_camCANCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
         m_camCANCoder.setPosition(m_camCANCoder.getAbsolutePosition());
+        m_camMotor = new TalonSRX(IntakeConstants.INTAKE_CAM_MOTOR);
+        m_camMotor.configSelectedFeedbackSensor(RemoteFeedbackDevice.RemoteSensor0);
         m_camMotor.configRemoteFeedbackFilter(m_camCANCoder, 0);
         // Configure Talon SRX output and sensor direction
         m_camMotor.setSensorPhase(true);

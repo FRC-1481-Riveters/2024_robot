@@ -25,10 +25,10 @@ public class ShooterPivotSubsystem extends SubsystemBase {
 
     public ShooterPivotSubsystem() 
     {
+        m_CANCoder.setPosition(m_CANCoder.getAbsolutePosition());
         m_motor = new TalonSRX(ShooterPivotConstants.SHOOTER_PIVOT_MOTOR);
         m_motor.configFactoryDefault();
         // Set peak current
-        m_motor.setInverted(false);
         m_motor.configPeakCurrentLimit(20);
         m_motor.configPeakCurrentDuration(500);
         m_motor.configContinuousCurrentLimit(20);
@@ -36,11 +36,11 @@ public class ShooterPivotSubsystem extends SubsystemBase {
         m_motor.setNeutralMode(NeutralMode.Coast);
 
         // Set peak current
-        m_motor.setInverted(false);
+        m_motor.setInverted(true);
         m_motor.configSelectedFeedbackSensor(RemoteFeedbackDevice.RemoteSensor0);
         m_motor.configRemoteFeedbackFilter(m_CANCoder, 0);
         // Configure Talon  SRX output and sensor direction
-        m_motor.setSensorPhase(false);
+        m_motor.setSensorPhase(true);
         //Set Motion Magic gains in slot0
         m_motor.selectProfileSlot(0, 0);
         m_motor.config_kF(0, ShooterPivotConstants.SHOOTER_PIVOT_0_KF);
@@ -58,7 +58,6 @@ public class ShooterPivotSubsystem extends SubsystemBase {
         m_motor.configReverseSoftLimitThreshold(ShooterPivotConstants.SHOOTER_PIVOT_MIN*(4096/360));
         m_motor.configReverseSoftLimitEnable(true);
 
-        m_CANCoder.setPosition(m_CANCoder.getAbsolutePosition());
 
         // Create an initial log entry so they all show up in AdvantageScope without having to enable anything
         Logger.recordOutput("ShooterPivot/Setpoint", 0.0 );
