@@ -64,6 +64,7 @@ public class IntakeSubsystem extends SubsystemBase {
         m_camMotor.configRemoteFeedbackFilter(m_camCANCoder, 0);
         // Configure Talon SRX output and sensor direction
         m_camMotor.setSensorPhase(true);
+        m_camMotor.setInverted(true);
         // Set Motion Magic gains in slot0
         m_camMotor.selectProfileSlot(0, 0);
         m_camMotor.config_kF(0, IntakeConstants.INTAKE_CAM_MOTOR_KF);

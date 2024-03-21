@@ -22,6 +22,7 @@ public class ShooterPivotSubsystem extends SubsystemBase {
     private double m_Setpoint;
     private double m_output;
     private double m_position;
+    private double m_tolerance;
 
     public ShooterPivotSubsystem() 
     {
@@ -69,6 +70,33 @@ public class ShooterPivotSubsystem extends SubsystemBase {
     public void setShooterPivot( double angle )
     {
         double sensorSetpoint;
+
+        if( (angle > (ShooterPivotConstants.SHOOTER_PIVOT_AMP - 0.1) ) &&
+            (angle < (ShooterPivotConstants.SHOOTER_PIVOT_AMP + 0.1) ) )
+        {
+            m_tolerance = 6.0;
+        }
+        else if( (angle > (ShooterPivotConstants.SHOOTER_PIVOT_TRAVEL - 0.1) ) &&
+            (angle < (ShooterPivotConstants.SHOOTER_PIVOT_TRAVEL + 0.1) ) )
+        {
+            m_tolerance = 1.5;
+        }
+        else if( (angle > (ShooterPivotConstants.SHOOTER_PIVOT_CLOSE - 0.1) ) &&
+            (angle < (ShooterPivotConstants.SHOOTER_PIVOT_CLOSE + 0.1) ) )
+        {
+            m_tolerance = 6.5;
+        }
+        else if( (angle > (ShooterPivotConstants.SHOOTER_PIVOT_3FOOT - 0.1) ) &&
+            (angle < (ShooterPivotConstants.SHOOTER_PIVOT_3FOOT + 0.1) ) )
+        {
+            m_tolerance = 5.5;
+        }
+        else if( (angle > (ShooterPivotConstants.SHOOTER_PIVOT_AMP_LOAD - 0.1) ) &&
+            (angle < (ShooterPivotConstants.SHOOTER_PIVOT_AMP_LOAD + 0.1) ) )
+        {
+            m_tolerance = 6.0;
+        }
+        
         m_Setpoint = angle;
         sensorSetpoint = angle * (4096/360);
         m_motor.set(ControlMode.MotionMagic, sensorSetpoint);
@@ -93,7 +121,7 @@ public class ShooterPivotSubsystem extends SubsystemBase {
     public boolean atSetpoint(){
         boolean retval;
         
-        if( Math.abs( getShooterPivot() - m_Setpoint ) < ShooterPivotConstants.SHOOTER_PIVOT_TOLERANCE )
+        if( Math.abs( getShooterPivot() - m_Setpoint ) < m_tolerance )
             retval = true;
         else   
             retval = false;

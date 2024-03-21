@@ -75,6 +75,7 @@ public class RobotContainer
 
         // Register named pathplanner commands
         NamedCommands.registerCommand("ShootCommand", ShooterCommand());
+        NamedCommands.registerCommand("Shoot3FootCommand", Shooter3FootCommand());
         NamedCommands.registerCommand("IntakeRetractCommand", IntakeRetractAutoCommand() );
         NamedCommands.registerCommand("IntakeDeployCommand", IntakeDeployAutoCommand() );
         NamedCommands.registerCommand("IntakeRollersIn", IntakeRollersInCommand() );
@@ -161,9 +162,14 @@ public class RobotContainer
         driverShootTrigger
             .onFalse(Commands.runOnce( ()-> intakeSubsystem.setIntakeRoller( 0 ), intakeSubsystem))
             .onTrue( 
-                Commands.waitSeconds(2)
-                    .until(this::isAtAllPositions)
-                .andThen( Commands.runOnce( ()-> intakeSubsystem.setIntakeRoller( 1 ), intakeSubsystem)) 
+                ShooterCommand()
+            );
+
+        Trigger driverShoot3FootTrigger = driverJoystick.y();
+        driverShoot3FootTrigger
+            .onFalse(Commands.runOnce( ()-> intakeSubsystem.setIntakeRoller( 0 ), intakeSubsystem))
+            .onTrue( 
+                Shooter3FootCommand()
             );
 
         Trigger driverDPadLeft = driverJoystick.povLeft();
@@ -183,12 +189,12 @@ public class RobotContainer
     
         Trigger operatorIntakeRetractTrigger = operatorJoystick.a();
         operatorIntakeRetractTrigger.onTrue(IntakeRetractCommand());
-
+/*
         Trigger operatorIntakeSourceTrigger = operatorJoystick.b();
         operatorIntakeSourceTrigger
             .onTrue(Commands.runOnce( ()->System.out.println("Intake Source") )
             .andThen(Commands.runOnce( ()-> intakeSubsystem.setIntakeAngle( IntakeConstants.INTAKE_SOURCE ), intakeSubsystem)));
-            
+*/            
 
 
         Trigger operatorIntakeWheelsInTrigger = operatorJoystick.leftBumper();
@@ -262,11 +268,6 @@ public class RobotContainer
         operatorDPadLeft
          .onFalse(
             Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(0), shooterSubsystem)
-            .alongWith (
-                Commands.runOnce( ()-> intakeSubsystem.setCamJog(0), intakeSubsystem),
-                Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog(0), shooterPivotSubsystem)
-//                Commands.runOnce( ()-> elevatorSubsystem.setElevatorJog(0), elevatorSubsystem)
-            )
         )      
 
         .whileTrue(
@@ -286,17 +287,13 @@ public class RobotContainer
         );
             
 
-        //3 foot
+        //3foot
         Trigger operatorDPadUp = operatorJoystick.povUp();
         operatorDPadUp
-            .onFalse(
-                Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(0), shooterSubsystem)
-            .alongWith (
-                Commands.runOnce( ()-> intakeSubsystem.setCamJog(0), intakeSubsystem),
-                Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog(0), shooterPivotSubsystem)
-//                Commands.runOnce( ()-> elevatorSubsystem.setElevatorJog(0), elevatorSubsystem)
-                )
-            )      
+         .onFalse(
+            Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(0), shooterSubsystem)
+        )      
+
         .whileTrue(
             Commands.runOnce( ()->System.out.println("3Foot Sequence") ) 
             .andThen( 
@@ -307,78 +304,78 @@ public class RobotContainer
                     .until( elevatorSubsystem::isAtPosition)
             )
             .andThen(   
-                Commands.runOnce(()-> shooterSubsystem.setShooterSpeed(ShooterConstants.SHOOTER_SPEED_PODIUM), shooterSubsystem),
+                Commands.runOnce(()-> shooterSubsystem.setShooterSpeed(ShooterConstants.SHOOTER_SPEED_3FOOT), shooterSubsystem),
                 Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivot(ShooterPivotConstants.SHOOTER_PIVOT_3FOOT), shooterPivotSubsystem)
-    //                    Commands.runOnce( ()-> intakeSubsystem.setCamPosition(IntakeConstants.INTAKE_CAM_3FOOT), intakeSubsystem),
+    //                    Commands.runOnce( ()-> intakeSubsystem.setCamPosition(IntakeConstants.INTAKE_CAM_SPEAKER), intakeSubsystem),
+            )
+        );
+        
+        Trigger operatorXTrigger = operatorJoystick.x();
+        operatorXTrigger
+         .onFalse(
+                Commands.runOnce( ()-> intakeSubsystem.setCamJog(0), intakeSubsystem)
+                  )
+        .whileTrue(
+            Commands.runOnce( ()->System.out.println("CAM Close Sequence") )
+            .andThen( 
+                         Commands.runOnce( ()-> intakeSubsystem.setCamPosition(IntakeConstants.INTAKE_CAM_SPEAKER), intakeSubsystem)
+            )
+        );
+        Trigger operatorBTrigger = operatorJoystick.b();
+        operatorBTrigger
+         .onFalse(
+                Commands.runOnce( ()-> intakeSubsystem.setCamJog(0), intakeSubsystem)
+                  )
+        .whileTrue(
+            Commands.runOnce( ()->System.out.println("CAM 3foot Sequence") )
+            .andThen( 
+                         Commands.runOnce( ()-> intakeSubsystem.setCamPosition(IntakeConstants.INTAKE_CAM_3FOOT), intakeSubsystem)
             )
         );
 
-        //Amp
+        //Amp OPERATOR HALF
         Trigger operatorDPadDown = operatorJoystick.povDown();
         operatorDPadDown
         .onFalse( Commands.runOnce( ()->StopControls(true) ) )
         .whileTrue(
-            Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog(0), shooterPivotSubsystem)
-            .alongWith (
-                Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition(ElevatorConstants.ELEVATOR_AMP_START), elevatorSubsystem)
-                )
+            Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition(ElevatorConstants.ELEVATOR_PIVOT_CLEAR), elevatorSubsystem)
             .andThen( Commands.waitSeconds(10000)
                 .until( elevatorSubsystem::isAtPosition))
-            .andThen( Commands.runOnce( ()-> intakeSubsystem.setIntakeRoller( 0.25 ), intakeSubsystem))
-            .andThen( Commands.waitSeconds(10000)
-                .until( shooterSubsystem::isLightCurtainBlocked))
-            .andThen(Commands.waitSeconds(0.5))
-            .andThen(Commands.runOnce( ()-> intakeSubsystem.setIntakeRoller( 0 ), intakeSubsystem))
-            .andThen( Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition(Constants.ElevatorConstants.ELEVATOR_AMP), elevatorSubsystem) )
-            .andThen( Commands.waitSeconds(10000)
-                .until( elevatorSubsystem::isAtPosition))
-            .andThen( Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivot(ShooterPivotConstants.SHOOTER_PIVOT_AMP), shooterPivotSubsystem))
-            .andThen( Commands.waitSeconds(10000) 
+            .andThen( Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivot(ShooterPivotConstants.SHOOTER_PIVOT_AMP_LOAD), shooterPivotSubsystem))
+            .andThen( Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(ShooterConstants.SHOOTER_SPEED_AMP_LOAD), shooterSubsystem))
+            .andThen( Commands.waitSeconds(10) 
                 .until( shooterPivotSubsystem::atSetpoint))
-            .andThen( Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(ShooterConstants.SHOOTER_SPEED_AMP), shooterSubsystem))
-            .andThen( Commands.waitSeconds(1000))
+            .andThen( Commands.runOnce( ()-> intakeSubsystem.setIntakeRoller( 0.50 ), intakeSubsystem))
+            .andThen( Commands.waitSeconds(10)
+                .until( shooterSubsystem::isLightCurtainBlocked))
+            .andThen( Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(0), shooterSubsystem))
+            .andThen(Commands.runOnce( ()-> intakeSubsystem.setIntakeRoller( 0 ), intakeSubsystem))
         );
 
-        //puff Amp shot
-        Trigger operatorDPadRight = operatorJoystick.povRight();
-        operatorDPadRight
-            .onFalse(
-                Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(0), shooterSubsystem)
-            .alongWith (
-                Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog(0), shooterPivotSubsystem)
-                )
-            )      
-        .whileTrue(
-            Commands.runOnce( ()->System.out.println("Travel sequence") ) 
-            .andThen(   
-               Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivot(ShooterPivotConstants.SHOOTER_PIVOT_TRAVEL), shooterPivotSubsystem)
-            )
-        );
-/*
-            .onFalse(
-                Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(0), shooterSubsystem)
-                    .andThen(Commands.runOnce( ()-> intakeSubsystem.setIntakeRoller(0), intakeSubsystem)
-                    ))
-            .onTrue(
-                Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(700), shooterSubsystem) 
-                    .andThen(
-                        Commands.waitSeconds(1.0),
-                        Commands.runOnce( ()-> intakeSubsystem.setIntakeRollerSpeed(IntakeConstants.INTAKE_ROLLER_SPEED_AMP), intakeSubsystem),
-                        Commands.waitSeconds(2.0),
-                        Commands.runOnce( ()-> intakeSubsystem.setIntakeRoller(0), intakeSubsystem)
-                    )
+
+        //amp DRIVER HALF
+        Trigger driverXTrigger = driverJoystick.x();
+        driverXTrigger
+            .onFalse( Commands.runOnce( ()->StopControls(true) ) )
+            .whileTrue( Commands.runOnce( ()->System.out.println("AMP Driver Sequence") )
+                .andThen( Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition(Constants.ElevatorConstants.ELEVATOR_AMP), elevatorSubsystem) )
+                .andThen( Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivot(ShooterPivotConstants.SHOOTER_PIVOT_AMP), shooterPivotSubsystem))
+                .andThen( Commands.waitSeconds(10)
+                    .until( elevatorSubsystem::isAtPosition))
+                .andThen( Commands.waitSeconds(10) 
+                    .until( shooterPivotSubsystem::atSetpoint))
+                .andThen( Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(ShooterConstants.SHOOTER_SPEED_AMP), shooterSubsystem))
+                .andThen( Commands.waitSeconds(2))
+                .andThen( Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(0), shooterSubsystem))
             );
-*/
 
 
         //Stow
         Trigger operatorBack = operatorJoystick.back();
         operatorBack
          .onFalse(
-            Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog(0), shooterPivotSubsystem)
+            Commands.runOnce( ()-> shooterSubsystem.setShooterJog(0), shooterSubsystem)
             .alongWith (
-                Commands.runOnce( ()-> elevatorSubsystem.setElevatorJog(0), elevatorSubsystem),
-                Commands.runOnce( ()-> shooterSubsystem.setShooterJog(0), shooterSubsystem),
                 Commands.runOnce( ()->operatorJoystick.getHID().setRumble(RumbleType.kBothRumble, 0)),
                 Commands.runOnce( ()->driverJoystick.getHID().setRumble(RumbleType.kBothRumble, 0))
                 )
@@ -419,6 +416,24 @@ public class RobotContainer
                 .alongWith(
                     Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivot(ShooterPivotConstants.SHOOTER_PIVOT_CLOSE), shooterPivotSubsystem),
                     Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition(ElevatorConstants.ELEVATOR_CLOSE), elevatorSubsystem)
+                )
+                .andThen( Commands.runOnce( ()->setBling(255, 255, 0)))
+                .andThen( Commands.waitSeconds(3.0)
+                    .until( this::isAtAllPositions ))
+                .andThen( Commands.runOnce( ()->setBling(255, 0, 0)))
+                .andThen(IntakeRollersOutCommand())
+                .andThen(Commands.waitSeconds(0.60))
+                .andThen( Commands.runOnce( ()->setBling(0, 0, 0)))
+                .andThen(IntakeRollersStopCommand());
+    }
+
+    public Command Shooter3FootCommand() 
+    {
+        return Commands.runOnce( ()->System.out.println("Shooter3FootCommand") )
+                .andThen( Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(ShooterConstants.SHOOTER_SPEED_3FOOT), shooterSubsystem) )
+                .alongWith(
+                    Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivot(ShooterPivotConstants.SHOOTER_PIVOT_3FOOT), shooterPivotSubsystem),
+                    Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition(ElevatorConstants.ELEVATOR_3FOOT), elevatorSubsystem)
                 )
                 .andThen( Commands.runOnce( ()->setBling(255, 255, 0)))
                 .andThen( Commands.waitSeconds(3.0)
@@ -494,8 +509,8 @@ public class RobotContainer
     public void StopControls( boolean stopped)
     {
         System.out.println("StopControls");
-        shooterPivotSubsystem.setShooterPivotJog(0);
-        elevatorSubsystem.setElevatorJog(0);
+//        shooterPivotSubsystem.setShooterPivotJog(0);
+//        elevatorSubsystem.setElevatorJog(0);
         intakeSubsystem.setIntakeRoller( 0.0 );
         intakeSubsystem.setCamJog(0);
         shooterSubsystem.setShooterJog(0);
