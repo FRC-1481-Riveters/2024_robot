@@ -14,12 +14,14 @@ public class ShooterSubsystem extends SubsystemBase
 {
     private double m_intendedSpeed;
     private CANSparkMax m_bottomMotor = new CANSparkMax(ShooterConstants.SHOOTER_MOTOR_BOTTOM_FORWARD, CANSparkLowLevel.MotorType.kBrushless );
-    private CANSparkMax m_bottomMotorFollower = new CANSparkMax(ShooterConstants.SHOOTER_MOTOR_BOTTOM_BACK, CANSparkLowLevel.MotorType.kBrushless);
+    private CANSparkMax m_bottomBackMotor = new CANSparkMax(ShooterConstants.SHOOTER_MOTOR_BOTTOM_BACK, CANSparkLowLevel.MotorType.kBrushless);
     private CANSparkMax m_topMotor = new CANSparkMax(ShooterConstants.SHOOTER_MOTOR_TOP_FORWARD, CANSparkLowLevel.MotorType.kBrushless );
-    private CANSparkMax m_topMotorFollower = new CANSparkMax(ShooterConstants.SHOOTER_MOTOR_TOP_BACK, CANSparkLowLevel.MotorType.kBrushless);
+    private CANSparkMax m_topBackMotor = new CANSparkMax(ShooterConstants.SHOOTER_MOTOR_TOP_BACK, CANSparkLowLevel.MotorType.kBrushless);
     private SparkRelativeEncoder m_encoder = (SparkRelativeEncoder) m_bottomMotor.getEncoder();
-    private SparkPIDController m_pid = m_bottomMotor.getPIDController();
+    private SparkPIDController m_bottomPid = m_bottomMotor.getPIDController();
     private SparkPIDController m_topPid = m_topMotor.getPIDController();
+    private SparkPIDController m_bottomBackPid = m_bottomBackMotor.getPIDController();
+    private SparkPIDController m_topBackPid = m_topBackMotor.getPIDController();
 
     DigitalInput m_beamBreak = new DigitalInput(2);
     
@@ -35,27 +37,35 @@ public class ShooterSubsystem extends SubsystemBase
         m_topMotor.setSmartCurrentLimit(80, 50);
         m_topMotor.setIdleMode(IdleMode.kCoast);
 
-        m_bottomMotorFollower.restoreFactoryDefaults();
-        m_bottomMotorFollower.setInverted(true);
-        m_bottomMotorFollower.setSmartCurrentLimit(80, 50);
-        m_bottomMotorFollower.setIdleMode(IdleMode.kCoast);
-        m_bottomMotorFollower.follow(m_bottomMotor,false);
+        m_bottomBackMotor.restoreFactoryDefaults();
+        m_bottomBackMotor.setInverted(true);
+        m_bottomBackMotor.setSmartCurrentLimit(80, 50);
+        m_bottomBackMotor.setIdleMode(IdleMode.kCoast);
 
-        m_topMotorFollower.restoreFactoryDefaults();
-        m_topMotorFollower.setInverted(true);
-        m_topMotorFollower.setSmartCurrentLimit(80, 50);
-        m_topMotorFollower.setIdleMode(IdleMode.kCoast);
-        m_topMotorFollower.follow(m_topMotor,false);
+        m_topBackMotor.restoreFactoryDefaults();
+        m_topBackMotor.setInverted(true);
+        m_topBackMotor.setSmartCurrentLimit(80, 50);
+        m_topBackMotor.setIdleMode(IdleMode.kCoast);
 
-        m_pid.setP(0.00005);
-        m_pid.setI(0.000000060);
-        m_pid.setD(0.0001);
-        m_pid.setFF(0.000145); //0.00018
+        m_bottomPid.setP(0.00005);
+        m_bottomPid.setI(0.000000060);
+        m_bottomPid.setD(0.0001);
+        m_bottomPid.setFF(0.000145); //0.00018
 
         m_topPid.setP(0.00005);
         m_topPid.setI(0.000000060);
         m_topPid.setD(0.0001);
         m_topPid.setFF(0.000145); //0.00018
+
+        m_bottomBackPid.setP(0.00005);
+        m_bottomBackPid.setI(0.000000060);
+        m_bottomBackPid.setD(0.0001);
+        m_bottomBackPid.setFF(0.000145); //0.00018
+
+        m_topBackPid.setP(0.00005);
+        m_topBackPid.setI(0.000000060);
+        m_topBackPid.setD(0.0001);
+        m_topBackPid.setFF(0.000145); //0.00018
 
 
         setShooterSpeed(0.0);
@@ -86,14 +96,18 @@ public class ShooterSubsystem extends SubsystemBase
         if (m_intendedSpeed > 10.0) 
         {
             // Spark MAX PID
-            m_pid.setReference(rpm, ControlType.kVelocity);
+            m_bottomPid.setReference(rpm, ControlType.kVelocity);
             m_topPid.setReference(rpm, ControlType.kVelocity);
+            m_bottomBackPid.setReference(rpm, ControlType.kVelocity);
+            m_topBackPid.setReference(rpm, ControlType.kVelocity);
         }
         else 
         {
             // Turn shooter off
             m_bottomMotor.set(0.0);
             m_topMotor.set(0.0);
+            m_bottomBackMotor.set(0.0);
+            m_topBackMotor.set(0.0);
         }
         
     }
@@ -104,6 +118,8 @@ public class ShooterSubsystem extends SubsystemBase
         m_intendedSpeed = 0;
         m_bottomMotor.set(output);
         m_topMotor.set(output);
+        m_bottomBackMotor.set(output);
+        m_topBackMotor.set(output);
         Logger.recordOutput("Shooter/Setpoint", 0.0);
         Logger.recordOutput("Shooter/Jog", output );
    }

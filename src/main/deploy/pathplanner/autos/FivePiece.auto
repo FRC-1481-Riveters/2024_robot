@@ -20,13 +20,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "NewTopClose"
+            "pathName": "NewMiddleClose"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "ShootCommand"
+            "name": "Shoot3FootCommand"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "NotBuggyTopClose"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot3FootCommand"
           }
         },
         {
@@ -44,25 +56,19 @@
         {
           "type": "named",
           "data": {
-            "name": "ShootCommand"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "NewMiddleClose"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ShootCommand"
+            "name": "Shoot3FootCommand"
           }
         },
         {
           "type": "path",
           "data": {
             "pathName": "NewOuter Far Outer"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot3FootCommand"
           }
         }
       ]

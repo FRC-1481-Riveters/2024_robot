@@ -128,6 +128,7 @@ public class IntakeSubsystem extends SubsystemBase {
         Logger.recordOutput("Intake/RollerRPM", 0.0 );
         Logger.recordOutput("Intake/AngleSet", 0.0 );
         Logger.recordOutput("Intake/AnglePosition", 0.0 );
+        Logger.recordOutput("Intake/AngleAtPosition",false);
         Logger.recordOutput("Intake/CamJog", 0.0 );
         Logger.recordOutput("Intake/CamSetpoint", 0.0 );
         Logger.recordOutput("Intake/CamPosition", 0.0 );
@@ -188,6 +189,7 @@ public class IntakeSubsystem extends SubsystemBase {
         {
             retval = false;
         }
+        Logger.recordOutput("Intake/AngleAtPosition", retval);
         if( m_camPidEnabled == true )
         {
             if( Math.abs( m_camSetPoint - m_camPosition) < IntakeConstants.INTAKE_CAM_ANGLE_TOLERANCE)

@@ -136,9 +136,10 @@ public final class Constants {
         public static final int SHOOTER_MOTOR_BOTTOM_BACK = 4;
         public static final int SHOOTER_MOTOR_TOP_BACK = 5;
         public static final int SHOOTER_MOTOR_BOTTOM_FORWARD = 6;
-        public static final double SHOOTER_SPEED_TOLERANCE = 100.0;
+        public static final double SHOOTER_SPEED_TOLERANCE = 0.1;
         public static final double SHOOTER_SPEED_SPEAKER = 3600;
         public static final double SHOOTER_SPEED_3FOOT = 4200;
+        public static final double SHOOTER_SPEED_PODIUM = 4200;
         public static final double SHOOTER_SPEED_AMP = 6000;
         public static final double SHOOTER_SPEED_AMP_LOAD = 600;
 
@@ -154,6 +155,7 @@ public final class Constants {
         public static final double SHOOTER_PIVOT_TRAVEL = 58.0;
         public static final double SHOOTER_PIVOT_CLOSE = 130.0;
         public static final double SHOOTER_PIVOT_3FOOT = 114.0;
+        public static final double SHOOTER_PIVOT_PODIUM = 109.0;
         public static final double SHOOTER_PIVOT_AMP_LOAD = 94.0;
         public static final double SHOOTER_PIVOT_MAX = 140; // max travel
 
@@ -173,8 +175,9 @@ public final class Constants {
         public static final double ELEVATOR_WING = -7.9;
         public static final double ELEVATOR_3FOOT = -16.0;
         public static final double ELEVATOR_CLOSE = -16.0;
+        public static final double ELEVATOR_PODIUM = -16.0;
         public static final double ELEVATOR_AMP_START = -5.66;
-        public static final double ELEVATOR_PIVOT_CLEAR = -10.3;
+        public static final double ELEVATOR_PIVOT_CLEAR = -11.3;
         public static final double ELEVATOR_AMP = -20.5;
         public static final double ELEVATOR_MAX = -21.5;
         public static final double ELEVATOR_TRAP = 0;

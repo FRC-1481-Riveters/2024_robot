@@ -79,17 +79,22 @@ public class ShooterPivotSubsystem extends SubsystemBase {
         else if( (angle > (ShooterPivotConstants.SHOOTER_PIVOT_TRAVEL - 0.1) ) &&
             (angle < (ShooterPivotConstants.SHOOTER_PIVOT_TRAVEL + 0.1) ) )
         {
-            m_tolerance = 1.5;
+            m_tolerance = 3.5;
         }
         else if( (angle > (ShooterPivotConstants.SHOOTER_PIVOT_CLOSE - 0.1) ) &&
             (angle < (ShooterPivotConstants.SHOOTER_PIVOT_CLOSE + 0.1) ) )
         {
-            m_tolerance = 6.5;
+            m_tolerance = 7.0;
         }
         else if( (angle > (ShooterPivotConstants.SHOOTER_PIVOT_3FOOT - 0.1) ) &&
             (angle < (ShooterPivotConstants.SHOOTER_PIVOT_3FOOT + 0.1) ) )
         {
-            m_tolerance = 5.5;
+            m_tolerance = 7.0;
+        }
+        else if( (angle > (ShooterPivotConstants.SHOOTER_PIVOT_PODIUM - 0.1) ) &&
+            (angle < (ShooterPivotConstants.SHOOTER_PIVOT_PODIUM + 0.1) ) )
+        {
+            m_tolerance = 7.0;
         }
         else if( (angle > (ShooterPivotConstants.SHOOTER_PIVOT_AMP_LOAD - 0.1) ) &&
             (angle < (ShooterPivotConstants.SHOOTER_PIVOT_AMP_LOAD + 0.1) ) )

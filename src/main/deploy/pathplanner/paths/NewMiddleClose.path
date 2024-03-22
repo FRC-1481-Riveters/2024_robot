@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.870995964214151,
+        "x": 1.31,
         "y": 5.53
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.2845568907468286,
+        "x": 1.7235609265326777,
         "y": 5.53
       },
       "isLocked": false,
-      "linkedName": "Middle Shot"
+      "linkedName": null
     },
     {
       "anchor": {
@@ -32,11 +32,11 @@
     },
     {
       "anchor": {
-        "x": 1.870995964214151,
+        "x": 2.1305265418407298,
         "y": 5.53
       },
       "prevControl": {
-        "x": 1.9576890209070812,
+        "x": 2.21721959853366,
         "y": 5.53
       },
       "nextControl": null,
@@ -55,7 +55,7 @@
   "eventMarkers": [
     {
       "name": "Retract",
-      "waypointRelativePos": 1.15,
+      "waypointRelativePos": 1.2,
       "command": {
         "type": "sequential",
         "data": {
@@ -113,7 +113,7 @@
   ],
   "globalConstraints": {
     "maxVelocity": 2.0,
-    "maxAcceleration": 2.0,
+    "maxAcceleration": 1.75,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },

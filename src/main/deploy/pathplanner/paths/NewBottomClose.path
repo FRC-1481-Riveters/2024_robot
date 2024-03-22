@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.870995964214151,
+        "x": 2.1305265418407298,
         "y": 5.53
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.5273488616974555,
-        "y": 5.53
+        "x": 2.098624768678109,
+        "y": 4.778983272252259
       },
       "isLocked": false,
       "linkedName": "Middle Shot"
@@ -20,8 +20,8 @@
         "y": 4.084695058278905
       },
       "prevControl": {
-        "x": 1.0586176727909014,
-        "y": 4.004882454209353
+        "x": 1.8346886012101387,
+        "y": 4.084695058278905
       },
       "nextControl": null,
       "isLocked": false,
@@ -69,7 +69,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 180.0,
+    "rotation": -178.90349843646337,
     "rotateFast": false
   },
   "reversed": false,
