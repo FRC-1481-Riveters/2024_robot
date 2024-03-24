@@ -282,7 +282,7 @@ public class RobotContainer
                 Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition(ElevatorConstants.ELEVATOR_CLOSE), elevatorSubsystem)
             )
             .andThen( 
-                Commands.waitSeconds(10000)
+                Commands.waitSeconds(10)
                     .until( elevatorSubsystem::isAtPosition)
             )
             .andThen(   
@@ -304,7 +304,7 @@ public class RobotContainer
                 Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition(ElevatorConstants.ELEVATOR_3FOOT), elevatorSubsystem)
             )
             .andThen( 
-                Commands.waitSeconds(10000)
+                Commands.waitSeconds(10)
                     .until( elevatorSubsystem::isAtPosition)
             )
             .andThen(   
@@ -325,7 +325,7 @@ public class RobotContainer
                 Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition(ElevatorConstants.ELEVATOR_PODIUM), elevatorSubsystem)
             )
             .andThen( 
-                Commands.waitSeconds(10000)
+                Commands.waitSeconds(10)
                     .until( elevatorSubsystem::isAtPosition)
             )
             .andThen(   
@@ -369,7 +369,7 @@ public class RobotContainer
                 .until( elevatorSubsystem::isAtPosition))
             .andThen( Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivot(ShooterPivotConstants.SHOOTER_PIVOT_AMP_LOAD), shooterPivotSubsystem))
             .andThen( Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(ShooterConstants.SHOOTER_SPEED_AMP_LOAD), shooterSubsystem))
-            .andThen( Commands.waitSeconds(10) 
+            .andThen( Commands.waitSeconds(3) 
                 .until( shooterPivotSubsystem::atSetpoint))
             .andThen( Commands.runOnce( ()-> intakeSubsystem.setIntakeRoller( 0.7 ), intakeSubsystem))
             .andThen( Commands.waitSeconds(10)
@@ -388,7 +388,7 @@ public class RobotContainer
                 .andThen( Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivot(ShooterPivotConstants.SHOOTER_PIVOT_AMP), shooterPivotSubsystem))
                 .andThen( Commands.waitSeconds(10)
                     .until( elevatorSubsystem::isAtPosition))
-                .andThen( Commands.waitSeconds(10) 
+                .andThen( Commands.waitSeconds(3) 
                     .until( shooterPivotSubsystem::atSetpoint))
                 .andThen( Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(ShooterConstants.SHOOTER_SPEED_AMP), shooterSubsystem))
                 .andThen( Commands.waitSeconds(2))
@@ -411,17 +411,17 @@ public class RobotContainer
             .andThen( 
                 Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivot(ShooterPivotConstants.SHOOTER_PIVOT_TRAVEL_BEFORE), shooterPivotSubsystem)
             )
-            .andThen( Commands.waitSeconds(10000)
+            .andThen( Commands.waitSeconds(3)
                 .until( shooterPivotSubsystem::atSetpoint)
             )
             .andThen( 
                 Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivot(ShooterPivotConstants.SHOOTER_PIVOT_TRAVEL), shooterPivotSubsystem)
             )
-            .andThen( Commands.waitSeconds(10000)
+            .andThen( Commands.waitSeconds(3)
                 .until( shooterPivotSubsystem::atSetpoint)
             .andThen( Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition(ElevatorConstants.ELEVATOR_START ), elevatorSubsystem)
             )
-            .andThen( Commands.waitSeconds(10000) 
+            .andThen( Commands.waitSeconds(10) 
                 .until( elevatorSubsystem::isAtPosition ))
             )
             .andThen(
@@ -447,7 +447,7 @@ public class RobotContainer
             .andThen( Commands.waitSeconds(10) 
                 .until( elevatorSubsystem::isAtPosition ))
             .andThen(Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivot(ShooterPivotConstants.SHOOTER_PIVOT_CLIMB), shooterPivotSubsystem))
-            .andThen( Commands.waitSeconds(10)
+            .andThen( Commands.waitSeconds(3)
                 .until( shooterPivotSubsystem::atSetpoint)
             .andThen(
                 Commands.runOnce( ()->setBling(0, 255, 0) ),
@@ -605,7 +605,7 @@ public class RobotContainer
     {
         return Commands.runOnce( ()->System.out.println("IntakeRollersInCommand") )
             .andThen( Commands.runOnce( ()-> intakeSubsystem.setIntakeRoller( -0.7 ) ) )
-            .andThen( Commands.waitSeconds(10000)
+            .andThen( Commands.waitSeconds(20)
                 .until(intakeSubsystem::isIntakeBeamBreakLoaded))
             .andThen( Commands.runOnce( ()-> intakeSubsystem.setIntakeRoller( 0 )));
     }
