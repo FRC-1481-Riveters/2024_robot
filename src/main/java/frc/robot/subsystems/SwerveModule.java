@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.MathUtil;
 //import com.revrobotics.CANSparkMax;
 //import com.revrobotics.RelativeEncoder;
 //import com.revrobotics.CANSparkMaxLowLevel.MotorType;
@@ -16,6 +17,7 @@ import frc.robot.Constants.ModuleConstants;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
+import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
@@ -153,6 +155,7 @@ public class SwerveModule {
     public void setDesiredState(SwerveModuleState state) 
     {
         double driveOutput;
+        double motorOutput;
 
         if (Math.abs(state.speedMetersPerSecond) < 0.001) {
             stop();
@@ -162,8 +165,9 @@ public class SwerveModule {
         double speed = state.speedMetersPerSecond;
         double turningPosition = getTurningPosition();
         driveOutput = speed / DriveConstants.kPhysicalMaxSpeedMetersPerSecond;
-//        driveOutput = m_feedForward.calculate( driveOutput );
-        driveMotor.set( ControlMode.PercentOutput, driveOutput );
+        driveMotor.set(ControlMode.PercentOutput,  driveOutput );
+//        motorOutput = MathUtil.clamp( m_feedForward.calculate( speed ), -12, 12 );
+//        driveMotor.set(ControlMode.PercentOutput,  motorOutput / 12.0 );
         turningMotor.set( ControlMode.PercentOutput, 
                           turningPidController.calculate( turningPosition, state.angle.getRadians() ) );
         SmartDashboard.putNumber("Turning Position[" + absoluteEncoder.getDeviceID() + "]", turningPosition );

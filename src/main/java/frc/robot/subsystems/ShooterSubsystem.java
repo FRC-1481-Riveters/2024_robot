@@ -31,42 +31,41 @@ public class ShooterSubsystem extends SubsystemBase
         m_bottomMotor.setInverted(true);
         m_bottomMotor.setSmartCurrentLimit(80, 50);
         m_bottomMotor.setIdleMode(IdleMode.kCoast);
+        m_bottomPid.setP(0.00005);
+        m_bottomPid.setI(0.000000060);
+        m_bottomPid.setD(0.0001);
+        m_bottomPid.setFF(0.000145); //0.00018
+        m_bottomMotor.burnFlash();
 
         m_topMotor.restoreFactoryDefaults();
         m_topMotor.setInverted(true);
         m_topMotor.setSmartCurrentLimit(80, 50);
         m_topMotor.setIdleMode(IdleMode.kCoast);
+        m_topPid.setP(0.00005);
+        m_topPid.setI(0.000000060);
+        m_topPid.setD(0.0001);
+        m_topPid.setFF(0.000145); //0.00018
+        m_topMotor.burnFlash();
 
         m_bottomBackMotor.restoreFactoryDefaults();
         m_bottomBackMotor.setInverted(true);
         m_bottomBackMotor.setSmartCurrentLimit(80, 50);
         m_bottomBackMotor.setIdleMode(IdleMode.kCoast);
+        m_bottomBackPid.setP(0.00005);
+        m_bottomBackPid.setI(0.000000060);
+        m_bottomBackPid.setD(0.0001);
+        m_bottomBackPid.setFF(0.000145); //0.00018
+        m_bottomBackMotor.burnFlash();
 
         m_topBackMotor.restoreFactoryDefaults();
         m_topBackMotor.setInverted(true);
         m_topBackMotor.setSmartCurrentLimit(80, 50);
         m_topBackMotor.setIdleMode(IdleMode.kCoast);
-
-        m_bottomPid.setP(0.00005);
-        m_bottomPid.setI(0.000000060);
-        m_bottomPid.setD(0.0001);
-        m_bottomPid.setFF(0.000145); //0.00018
-
-        m_topPid.setP(0.00005);
-        m_topPid.setI(0.000000060);
-        m_topPid.setD(0.0001);
-        m_topPid.setFF(0.000145); //0.00018
-
-        m_bottomBackPid.setP(0.00005);
-        m_bottomBackPid.setI(0.000000060);
-        m_bottomBackPid.setD(0.0001);
-        m_bottomBackPid.setFF(0.000145); //0.00018
-
         m_topBackPid.setP(0.00005);
         m_topBackPid.setI(0.000000060);
         m_topBackPid.setD(0.0001);
         m_topBackPid.setFF(0.000145); //0.00018
-
+        m_topBackMotor.burnFlash();
 
         setShooterSpeed(0.0);
 
@@ -131,6 +130,7 @@ public class ShooterSubsystem extends SubsystemBase
     public boolean isAtSpeed() 
     {
         boolean retval;
+
         if( m_intendedSpeed == 0.0 )
             retval = true;
         else if (Math.abs(

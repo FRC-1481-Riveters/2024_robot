@@ -103,6 +103,7 @@ public class RobotContainer
 
      public void setBling( int red, int green, int blue )
     {
+        // limelight ledMode: 1=off, 2=blink, 3=on
         if(red == 0 && blue == 0 && green == 255){
             NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(3);
         }else if(red == 255 && green == 255 && blue == 0 ){
@@ -110,6 +111,10 @@ public class RobotContainer
         }else if(red == 0 && green == 0 && blue == 0){
             NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(1);
         }
+        else if( red == 255 && green == 25 && blue == 0 ) {
+            NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(2);
+        }
+
         int i;
         for( i=0; i<m_ledBuffer.getLength(); i++ )
         {
@@ -195,7 +200,8 @@ public class RobotContainer
 
     
         Trigger operatorIntakeRetractTrigger = operatorJoystick.a();
-        operatorIntakeRetractTrigger.onTrue(IntakeRetractCommand());
+        operatorIntakeRetractTrigger
+            .onTrue(IntakeRetractCommand());
 
         Trigger operatorIntakeWheelsInTrigger = operatorJoystick.leftBumper();
         operatorIntakeWheelsInTrigger
@@ -359,13 +365,13 @@ public class RobotContainer
         .onFalse( Commands.runOnce( ()->StopControls(true) ) )
         .whileTrue(
             Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition(ElevatorConstants.ELEVATOR_PIVOT_CLEAR), elevatorSubsystem)
-            .andThen( Commands.waitSeconds(10000)
+            .andThen( Commands.waitSeconds(10)
                 .until( elevatorSubsystem::isAtPosition))
             .andThen( Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivot(ShooterPivotConstants.SHOOTER_PIVOT_AMP_LOAD), shooterPivotSubsystem))
             .andThen( Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(ShooterConstants.SHOOTER_SPEED_AMP_LOAD), shooterSubsystem))
             .andThen( Commands.waitSeconds(10) 
                 .until( shooterPivotSubsystem::atSetpoint))
-            .andThen( Commands.runOnce( ()-> intakeSubsystem.setIntakeRoller( 0.50 ), intakeSubsystem))
+            .andThen( Commands.runOnce( ()-> intakeSubsystem.setIntakeRoller( 0.7 ), intakeSubsystem))
             .andThen( Commands.waitSeconds(10)
                 .until( shooterSubsystem::isLightCurtainBlocked))
             .andThen( Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(0), shooterSubsystem))
@@ -403,6 +409,12 @@ public class RobotContainer
         .whileTrue(
             Commands.runOnce( ()->System.out.println("Stow Sequence") ) 
             .andThen( 
+                Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivot(ShooterPivotConstants.SHOOTER_PIVOT_TRAVEL_BEFORE), shooterPivotSubsystem)
+            )
+            .andThen( Commands.waitSeconds(10000)
+                .until( shooterPivotSubsystem::atSetpoint)
+            )
+            .andThen( 
                 Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivot(ShooterPivotConstants.SHOOTER_PIVOT_TRAVEL), shooterPivotSubsystem)
             )
             .andThen( Commands.waitSeconds(10000)
@@ -424,8 +436,28 @@ public class RobotContainer
 
         Trigger operatorStart = operatorJoystick.start();
         operatorStart  
+         .onFalse(
+            Commands.runOnce( ()->operatorJoystick.getHID().setRumble(RumbleType.kBothRumble, 0))
+            .alongWith (
+                Commands.runOnce( ()->driverJoystick.getHID().setRumble(RumbleType.kBothRumble, 0))
+                )
+            )      
         .onTrue(
-            Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition(ElevatorConstants.ELEVATOR_CLIMB ), elevatorSubsystem));
+            Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition(ElevatorConstants.ELEVATOR_CLIMB ), elevatorSubsystem)
+            .andThen( Commands.waitSeconds(10) 
+                .until( elevatorSubsystem::isAtPosition ))
+            .andThen(Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivot(ShooterPivotConstants.SHOOTER_PIVOT_CLIMB), shooterPivotSubsystem))
+            .andThen( Commands.waitSeconds(10)
+                .until( shooterPivotSubsystem::atSetpoint)
+            .andThen(
+                Commands.runOnce( ()->setBling(0, 255, 0) ),
+                Commands.runOnce( ()->driverJoystick.getHID().setRumble(RumbleType.kBothRumble, 1) ),
+                Commands.runOnce( ()->operatorJoystick.getHID().setRumble(RumbleType.kBothRumble, 1) ),
+                Commands.waitSeconds(0.5 ),
+                Commands.runOnce( ()->driverJoystick.getHID().setRumble(RumbleType.kBothRumble, 0) ),
+                Commands.runOnce( ()->operatorJoystick.getHID().setRumble(RumbleType.kBothRumble, 0) ) )
+            )
+        );
     }
     
 

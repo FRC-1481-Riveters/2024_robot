@@ -6,23 +6,23 @@ import frc.robot.Constants.*;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.RemoteFeedbackDevice;
-
-import edu.wpi.first.math.controller.PIDController;
 
 import org.littletonrobotics.junction.Logger;
 
 public class ShooterPivotSubsystem extends SubsystemBase {
 
     private TalonSRX m_motor;
-    private TalonSRX m_motorFollower;
     private CANCoder m_CANCoder = new CANCoder(ShooterPivotConstants.SHOOTER_PIVOT_CANCODER);
     private double m_Setpoint;
     private double m_output;
     private double m_position;
     private double m_tolerance;
+    private double m_expectedAngle;
+    private boolean m_atSetpoint;
+    private int m_atSetpointDebounceCounter;
+
 
     public ShooterPivotSubsystem() 
     {
@@ -48,6 +48,9 @@ public class ShooterPivotSubsystem extends SubsystemBase {
         m_motor.config_kP(0, ShooterPivotConstants.SHOOTER_PIVOT_0_KP);
         m_motor.config_kI(0, ShooterPivotConstants.SHOOTER_PIVOT_0_KI);
         m_motor.config_kD(0, ShooterPivotConstants.SHOOTER_PIVOT_0_KD);
+        m_motor.config_IntegralZone(0, ShooterPivotConstants.SHOOTER_PIVOT_IZONE);
+        m_motor.configMaxIntegralAccumulator(0, ShooterPivotConstants.SHOOTER_PIVOT_MAXIACCUM);
+        
         // Set acceleration and cruise velocity
         m_motor.configMotionCruiseVelocity(ShooterPivotConstants.SHOOTER_PIVOT_CRUISE );
         m_motor.configMotionAcceleration(ShooterPivotConstants.SHOOTER_PIVOT_ACCELERATION );
@@ -74,32 +77,50 @@ public class ShooterPivotSubsystem extends SubsystemBase {
         if( (angle > (ShooterPivotConstants.SHOOTER_PIVOT_AMP - 0.1) ) &&
             (angle < (ShooterPivotConstants.SHOOTER_PIVOT_AMP + 0.1) ) )
         {
-            m_tolerance = 6.0;
+            m_expectedAngle = ShooterPivotConstants.SHOOTER_PIVOT_AMP_EXPECTED;
+            m_tolerance = 4.0;
+        }
+        else if( (angle > (ShooterPivotConstants.SHOOTER_PIVOT_TRAVEL_BEFORE - 0.1) ) &&
+            (angle < (ShooterPivotConstants.SHOOTER_PIVOT_TRAVEL_BEFORE + 0.1) ) )
+        {
+            m_expectedAngle = ShooterPivotConstants.SHOOTER_PIVOT_TRAVEL_BEFORE_EXPECTED;
+            m_tolerance = 5.0;
         }
         else if( (angle > (ShooterPivotConstants.SHOOTER_PIVOT_TRAVEL - 0.1) ) &&
             (angle < (ShooterPivotConstants.SHOOTER_PIVOT_TRAVEL + 0.1) ) )
         {
-            m_tolerance = 3.5;
+            m_expectedAngle = ShooterPivotConstants.SHOOTER_PIVOT_TRAVEL_EXPECTED;
+            m_tolerance = 4.0;
         }
         else if( (angle > (ShooterPivotConstants.SHOOTER_PIVOT_CLOSE - 0.1) ) &&
             (angle < (ShooterPivotConstants.SHOOTER_PIVOT_CLOSE + 0.1) ) )
         {
-            m_tolerance = 7.0;
+            m_expectedAngle = ShooterPivotConstants.SHOOTER_PIVOT_CLOSE_EXPECTED;
+            m_tolerance = 4.0;
+        }
+        else if( (angle > (ShooterPivotConstants.SHOOTER_PIVOT_CLIMB - 0.1) ) &&
+            (angle < (ShooterPivotConstants.SHOOTER_PIVOT_CLIMB + 0.1) ) )
+        {
+            m_expectedAngle = ShooterPivotConstants.SHOOTER_PIVOT_CLIMB_EXPECTED;
+            m_tolerance = 4.0;
         }
         else if( (angle > (ShooterPivotConstants.SHOOTER_PIVOT_3FOOT - 0.1) ) &&
             (angle < (ShooterPivotConstants.SHOOTER_PIVOT_3FOOT + 0.1) ) )
         {
-            m_tolerance = 7.0;
+            m_expectedAngle = ShooterPivotConstants.SHOOTER_PIVOT_3FOOT_EXPECTED;
+            m_tolerance = 4.0;
         }
         else if( (angle > (ShooterPivotConstants.SHOOTER_PIVOT_PODIUM - 0.1) ) &&
             (angle < (ShooterPivotConstants.SHOOTER_PIVOT_PODIUM + 0.1) ) )
         {
-            m_tolerance = 7.0;
+            m_expectedAngle = ShooterPivotConstants.SHOOTER_PIVOT_PODIUM_EXPECTED;
+            m_tolerance = 4.0;
         }
         else if( (angle > (ShooterPivotConstants.SHOOTER_PIVOT_AMP_LOAD - 0.1) ) &&
             (angle < (ShooterPivotConstants.SHOOTER_PIVOT_AMP_LOAD + 0.1) ) )
         {
-            m_tolerance = 6.0;
+            m_expectedAngle = ShooterPivotConstants.SHOOTER_PIVOT_AMP_LOAD_EXPECTED;
+            m_tolerance = 3.0;
         }
         
         m_Setpoint = angle;
@@ -107,7 +128,7 @@ public class ShooterPivotSubsystem extends SubsystemBase {
         m_motor.set(ControlMode.MotionMagic, sensorSetpoint);
         Logger.recordOutput("ShooterPivot/Setpoint", m_Setpoint );
 
-        System.out.println("setShooterPivot " + angle + ", current angle=" + getShooterPivot());
+        System.out.println("setShooterPivot " + angle + ", current angle=" + m_position);
     }
 
     public void setShooterPivotJog( double speed )
@@ -118,33 +139,34 @@ public class ShooterPivotSubsystem extends SubsystemBase {
         System.out.println("setShooterPivotJog " + m_output );
     }
 
-    public double getShooterPivot ()
-    {
-        return (m_CANCoder.getAbsolutePosition());
-    }
-
-    public boolean atSetpoint(){
-        boolean retval;
-        
-        if( Math.abs( getShooterPivot() - m_Setpoint ) < m_tolerance )
-            retval = true;
-        else   
-            retval = false;
-        Logger.recordOutput("ShooterPivot/AtSetpoint", retval );
-        return retval;
+    public boolean atSetpoint()
+    {        
+        return m_atSetpoint;
     }
 
     @Override
     public void periodic() 
     {
-        
-        double pidCalculate;
-
         // This method will be called once per scheduler run
 
         m_position = m_CANCoder.getAbsolutePosition();
 
         Logger.recordOutput("ShooterPivot/Position", m_position);
+        if( Math.abs( m_position - m_expectedAngle ) > m_tolerance )
+        {
+            m_atSetpoint = false;
+            m_atSetpointDebounceCounter = 0;
+            Logger.recordOutput("ShooterPivot/AtSetpoint", m_atSetpoint );
+        }
+        else if( m_atSetpointDebounceCounter < 7 )
+        {
+            m_atSetpointDebounceCounter++;
+            if( m_atSetpointDebounceCounter == 7 )
+            {
+                m_atSetpoint = true;
+                Logger.recordOutput("ShooterPivot/AtSetpoint", m_atSetpoint );
+            }
+        }
     }
 
     public double getPosition(){
