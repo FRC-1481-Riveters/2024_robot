@@ -22,7 +22,9 @@ import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.ShooterPivotSubsystem;
-
+import com.ctre.phoenix.led.*;
+import com.ctre.phoenix.led.CANdle.LEDStripType;
+import com.ctre.phoenix.led.CANdle.VBatOutputMode;
 
 public class RobotContainer 
 {
@@ -43,11 +45,13 @@ public class RobotContainer
 
     public AddressableLED m_led;
     public AddressableLEDBuffer m_ledBuffer;
+    public CANdle m_CANdle;
     public boolean m_allTestsPassed;
 
     public RobotContainer() 
     {
         m_led = new AddressableLED(0);
+        m_CANdle = new CANdle(Constants.OIConstants.CANDLE_ID);
 
         // Reuse buffer
         // Default to a length of 60, start empty output
@@ -63,7 +67,14 @@ public class RobotContainer
         // Set the data
         m_led.setData(m_ledBuffer);
         m_led.start();
-        
+        CANdleConfiguration configAll = new CANdleConfiguration();
+        configAll.statusLedOffWhenActive = true;
+        configAll.disableWhenLOS = false;
+        configAll.stripType = LEDStripType.RGB;
+        configAll.brightnessScalar = 0.1;
+        m_CANdle.configAllSettings(configAll, 100);
+        m_CANdle.animate( new RainbowAnimation(1.0, 1.0, 8) );
+    
         swerveSubsystem.setDefaultCommand(new SwerveJoystickCmd(
                 swerveSubsystem,
                 () -> getDriverMoveFwdBack(),
@@ -122,6 +133,7 @@ public class RobotContainer
         }
         // Set the data
         m_led.setData(m_ledBuffer);
+        m_CANdle.setLEDs(red,green,blue,0,0,8);
         m_led.start();
     }
 
@@ -243,12 +255,12 @@ public class RobotContainer
         Trigger operatorRightJoystickAxisUp = operatorJoystick.axisGreaterThan(5, 0.7 );
         operatorRightJoystickAxisUp
             .onFalse(Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog( 0 ), shooterPivotSubsystem))
-            .onTrue( Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog( -0.7 ), shooterPivotSubsystem));
+            .onTrue( Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog( -1.0 ), shooterPivotSubsystem));
         
         Trigger operatorRightJoystickAxisDown = operatorJoystick.axisLessThan(5, -0.7 );
         operatorRightJoystickAxisDown
             .onFalse(Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog( 0 ), shooterPivotSubsystem))
-            .onTrue( Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog( 0.7 ), shooterPivotSubsystem));
+            .onTrue( Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog( 1.0 ), shooterPivotSubsystem));
         
         Trigger operatorLeftJoystickAxisUp = operatorJoystick.axisGreaterThan(1, 0.7 );
         operatorLeftJoystickAxisUp 
@@ -275,9 +287,9 @@ public class RobotContainer
         operatorDPadLeft
          .onFalse(
             Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(0), shooterSubsystem)
-        )      
+        )
         .whileTrue(
-            Commands.runOnce( ()->System.out.println("Close Operator Sequence") ) 
+            Commands.runOnce( ()->System.out.println("Close Operator Sequence") )      
             .andThen( 
                 Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition(ElevatorConstants.ELEVATOR_CLOSE), elevatorSubsystem)
             )

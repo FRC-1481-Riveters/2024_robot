@@ -171,12 +171,10 @@ public final class Constants {
 
         public static final double SHOOTER_PIVOT_ACCELERATION = 1000;
         public static final double SHOOTER_PIVOT_CRUISE = 1000;
-        public static final double SHOOTER_PIVOT_0_KP = 2.5;
-        public static final double SHOOTER_PIVOT_0_KI = 0.04;
-        public static final double SHOOTER_PIVOT_0_KD = 0.0;
+        public static final double SHOOTER_PIVOT_0_KP = 0.004;
+        public static final double SHOOTER_PIVOT_0_KI = 0.004;
+        public static final double SHOOTER_PIVOT_0_KD = 0.0003;
         public static final double SHOOTER_PIVOT_0_KF = 0.0;
-        public static final double SHOOTER_PIVOT_IZONE = 80;
-        public static final double SHOOTER_PIVOT_MAXIACCUM = 1000;
     }
 
     public static final class ElevatorConstants{
@@ -214,5 +212,6 @@ public final class Constants {
         public static final int kDriverFieldOrientedButtonIdx = 1;
 
         public static final double kDeadband = 0.15;
+        public static final int CANDLE_ID = 40;
     }
 }
