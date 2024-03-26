@@ -24,7 +24,6 @@ public class ShooterPivotSubsystem extends SubsystemBase
     private double m_output;
     private double m_position;
     private double m_tolerance;
-    private double m_expectedAngle;
     private boolean m_atSetpoint;
     private int m_atSetpointDebounceCounter;
     private boolean m_pid;
@@ -33,6 +32,9 @@ public class ShooterPivotSubsystem extends SubsystemBase
     public ShooterPivotSubsystem() 
     {
         m_CANCoder.setPosition(m_CANCoder.getAbsolutePosition());
+
+        m_tolerance = 2.0;
+        //pid.setIZone(m_tolerance);
 
         m_motor.restoreFactoryDefaults();
         m_motor.setInverted(true);
@@ -50,9 +52,9 @@ public class ShooterPivotSubsystem extends SubsystemBase
     {
         double sensorSetpoint;
 
-        m_tolerance = 2.5;
         m_Setpoint = angle;
         m_pid = true;
+        pid.reset();
         Logger.recordOutput("ShooterPivot/Setpoint", m_Setpoint );
 
         System.out.println("setShooterPivot " + angle + ", current angle=" + m_position);
@@ -89,6 +91,7 @@ public class ShooterPivotSubsystem extends SubsystemBase
           pidCalculate = pid.calculate( m_position, m_Setpoint);
           m_output = MathUtil.clamp( pidCalculate, -0.3, 0.3);
         }
+
         if( (m_position > ShooterPivotConstants.SHOOTER_PIVOT_MAX) ||
             (m_position < ShooterPivotConstants.SHOOTER_PIVOT_MIN) )
         {
@@ -99,16 +102,16 @@ public class ShooterPivotSubsystem extends SubsystemBase
         Logger.recordOutput("ShooterPivot/Output", m_output);
 
         Logger.recordOutput("ShooterPivot/Position", m_position);
-        if( Math.abs( m_position - m_expectedAngle ) > m_tolerance )
+        if( Math.abs( m_position - m_Setpoint ) > m_tolerance )
         {
             m_atSetpoint = false;
             m_atSetpointDebounceCounter = 0;
             Logger.recordOutput("ShooterPivot/AtSetpoint", m_atSetpoint );
         }
-        else if( m_atSetpointDebounceCounter < 7 )
+        else if( m_atSetpointDebounceCounter < 10 )
         {
             m_atSetpointDebounceCounter++;
-            if( m_atSetpointDebounceCounter == 7 )
+            if( m_atSetpointDebounceCounter == 10 )
             {
                 m_atSetpoint = true;
                 Logger.recordOutput("ShooterPivot/AtSetpoint", m_atSetpoint );

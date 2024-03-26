@@ -374,7 +374,6 @@ public class RobotContainer
         //Amp OPERATOR HALF
         Trigger operatorDPadDown = operatorJoystick.povDown();
         operatorDPadDown
-        .onFalse( Commands.runOnce( ()->StopControls(true) ) )
         .whileTrue(
             Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition(ElevatorConstants.ELEVATOR_PIVOT_CLEAR), elevatorSubsystem)
             .andThen( Commands.waitSeconds(10)
@@ -388,24 +387,22 @@ public class RobotContainer
                 .until( shooterSubsystem::isLightCurtainBlocked))
             .andThen( Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(0), shooterSubsystem))
             .andThen(Commands.runOnce( ()-> intakeSubsystem.setIntakeRoller( 0 ), intakeSubsystem))
+            .andThen( Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition(Constants.ElevatorConstants.ELEVATOR_AMP), elevatorSubsystem) )
+            .andThen( Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivot(ShooterPivotConstants.SHOOTER_PIVOT_AMP), shooterPivotSubsystem))
         );
 
 
         //amp DRIVER HALF
         Trigger driverXTrigger = driverJoystick.x();
         driverXTrigger
-            .onFalse( Commands.runOnce( ()->StopControls(true) ) )
-            .whileTrue( Commands.runOnce( ()->System.out.println("AMP Driver Sequence") )
-                .andThen( Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition(Constants.ElevatorConstants.ELEVATOR_AMP), elevatorSubsystem) )
-                .andThen( Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivot(ShooterPivotConstants.SHOOTER_PIVOT_AMP), shooterPivotSubsystem))
-                .andThen( Commands.waitSeconds(10)
-                    .until( elevatorSubsystem::isAtPosition))
-                .andThen( Commands.waitSeconds(3) 
-                    .until( shooterPivotSubsystem::atSetpoint))
-                .andThen( Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(ShooterConstants.SHOOTER_SPEED_AMP), shooterSubsystem))
-                .andThen( Commands.waitSeconds(2))
-                .andThen( Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(0), shooterSubsystem))
-            );
+         .onFalse(
+            Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(0), shooterSubsystem)
+         )
+        .whileTrue( Commands.runOnce( ()->System.out.println("AMP Driver Sequence") )
+            .andThen( Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(ShooterConstants.SHOOTER_SPEED_AMP), shooterSubsystem))
+            .andThen( Commands.waitSeconds(2))
+            .andThen( Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(0), shooterSubsystem))
+        );
 
 
         //Stow
@@ -421,16 +418,21 @@ public class RobotContainer
         .whileTrue(
             Commands.runOnce( ()->System.out.println("Stow Sequence") ) 
             .andThen( 
-                Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivot(ShooterPivotConstants.SHOOTER_PIVOT_TRAVEL_BEFORE), shooterPivotSubsystem)
-            )
-            .andThen( Commands.waitSeconds(3)
-                .until( shooterPivotSubsystem::atSetpoint)
-            )
-            .andThen( 
                 Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivot(ShooterPivotConstants.SHOOTER_PIVOT_TRAVEL), shooterPivotSubsystem)
             )
             .andThen( Commands.waitSeconds(3)
                 .until( shooterPivotSubsystem::atSetpoint)
+            )
+            .andThen( Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition(ElevatorConstants.ELEVATOR_PAST_BUMP ), elevatorSubsystem)
+            .andThen( Commands.waitSeconds(3)
+                .until( elevatorSubsystem::isAtPosition)
+            )
+            .andThen( 
+                Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivot(ShooterPivotConstants.SHOOTER_PIVOT_CLEAR_INTAKE), shooterPivotSubsystem)
+            )
+            .andThen( Commands.waitSeconds(3)
+                .until( shooterPivotSubsystem::atSetpoint)
+            )
             .andThen( Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition(ElevatorConstants.ELEVATOR_START ), elevatorSubsystem)
             )
             .andThen( Commands.waitSeconds(10) 
@@ -442,7 +444,8 @@ public class RobotContainer
                 Commands.runOnce( ()->operatorJoystick.getHID().setRumble(RumbleType.kBothRumble, 1) ),
                 Commands.waitSeconds(0.5 ),
                 Commands.runOnce( ()->driverJoystick.getHID().setRumble(RumbleType.kBothRumble, 0) ),
-                Commands.runOnce( ()->operatorJoystick.getHID().setRumble(RumbleType.kBothRumble, 0) )
+                Commands.runOnce( ()->operatorJoystick.getHID().setRumble(RumbleType.kBothRumble, 0) ),
+                Commands.runOnce( ()->StopControls(true) )
             )
         );
 
@@ -647,8 +650,8 @@ public class RobotContainer
     public void StopControls( boolean stopped)
     {
         System.out.println("StopControls");
-//        shooterPivotSubsystem.setShooterPivotJog(0);
-//        elevatorSubsystem.setElevatorJog(0);
+        shooterPivotSubsystem.setShooterPivotJog(0);
+        elevatorSubsystem.setElevatorJog(0);
         intakeSubsystem.setIntakeRoller( 0.0 );
         intakeSubsystem.setCamJog(0);
         shooterSubsystem.setShooterJog(0);
@@ -658,8 +661,7 @@ public class RobotContainer
     {
         if( elevatorSubsystem.isAtPosition() && 
             shooterSubsystem.isAtSpeed() &&
-            shooterPivotSubsystem.atSetpoint() &&
-            intakeSubsystem.atSetpoint())
+            shooterPivotSubsystem.atSetpoint() )
             return true;
         else
             return false;

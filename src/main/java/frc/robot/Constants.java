@@ -151,27 +151,17 @@ public final class Constants {
         public static final int SHOOTER_PIVOT_CANCODER = 37;
 
         public static final double SHOOTER_PIVOT_MIN = 10;
-        public static final double SHOOTER_PIVOT_AMP = 20.0;
-        public static final double SHOOTER_PIVOT_AMP_EXPECTED = 23;
-        public static final double SHOOTER_PIVOT_TRAVEL = 53.0;
-        public static final double SHOOTER_PIVOT_TRAVEL_EXPECTED = 54.5;
-        public static final double SHOOTER_PIVOT_TRAVEL_BEFORE = 70.0;
-        public static final double SHOOTER_PIVOT_TRAVEL_BEFORE_EXPECTED = 70.0;
-        public static final double SHOOTER_PIVOT_CLOSE = 130.0;
-        public static final double SHOOTER_PIVOT_CLOSE_EXPECTED = 122.5;
-        public static final double SHOOTER_PIVOT_CLIMB = 90.0;
-        public static final double SHOOTER_PIVOT_CLIMB_EXPECTED = 85;
-        public static final double SHOOTER_PIVOT_3FOOT = 114.0;
-        public static final double SHOOTER_PIVOT_3FOOT_EXPECTED = 110.0;
-        public static final double SHOOTER_PIVOT_PODIUM = 109.0;
-        public static final double SHOOTER_PIVOT_PODIUM_EXPECTED = 106.0;
-        public static final double SHOOTER_PIVOT_AMP_LOAD = 94.0;
-        public static final double SHOOTER_PIVOT_AMP_LOAD_EXPECTED = 88.2;
+        public static final double SHOOTER_PIVOT_AMP = 23.0;
+        public static final double SHOOTER_PIVOT_TRAVEL = 58.0;
+        public static final double SHOOTER_PIVOT_CLEAR_INTAKE = 61.0; // elevator -2.7
+        public static final double SHOOTER_PIVOT_CLOSE = 122.5;
+        public static final double SHOOTER_PIVOT_CLIMB = 85.0;
+        public static final double SHOOTER_PIVOT_3FOOT = 108.0;
+        public static final double SHOOTER_PIVOT_PODIUM = 104.0;
+        public static final double SHOOTER_PIVOT_AMP_LOAD = 88.2;
         public static final double SHOOTER_PIVOT_MAX = 140; // max travel
 
-        public static final double SHOOTER_PIVOT_ACCELERATION = 1000;
-        public static final double SHOOTER_PIVOT_CRUISE = 1000;
-        public static final double SHOOTER_PIVOT_0_KP = 0.004;
+        public static final double SHOOTER_PIVOT_0_KP = 0.003;
         public static final double SHOOTER_PIVOT_0_KI = 0.004;
         public static final double SHOOTER_PIVOT_0_KD = 0.0003;
         public static final double SHOOTER_PIVOT_0_KF = 0.0;
@@ -182,6 +172,7 @@ public final class Constants {
         public static final double ELEVATOR_POSITION_TOLERANCE = 0.5;
         //fill out position values later
         public static final double ELEVATOR_START = 0;
+        public static final double ELEVATOR_PAST_BUMP = -2.7;
         public static final double ELEVATOR_WING = -7.9;
         public static final double ELEVATOR_3FOOT = -16.0;
         public static final double ELEVATOR_CLOSE = -16.0;

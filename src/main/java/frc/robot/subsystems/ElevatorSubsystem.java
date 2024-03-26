@@ -22,6 +22,7 @@ public class ElevatorSubsystem extends SubsystemBase{
     private double m_setpoint;
     private int m_positionStable;
     public boolean m_beamBreakState;
+    private double m_position;
 
     public ElevatorSubsystem(){
       m_motor.restoreFactoryDefaults();
@@ -42,33 +43,33 @@ public class ElevatorSubsystem extends SubsystemBase{
     @Override
     public void periodic() {
       // This method will be called once per scheduler run
-      double position;
       double pidCalculate;
       double output;
-      position = m_encoder.getPosition();
+      m_position = m_encoder.getPosition();
 
       // This method will be called once per scheduler run
       Logger.recordOutput("Elevator/BeamBreak", m_beamBreak.get() );
 
-      if( m_pid == true )
-      {
-        pidCalculate = pidElevator.calculate( position, m_setpoint);
-        output = MathUtil.clamp( pidCalculate, -0.4, 0.4);
-        m_motor.set( output );
-        Logger.recordOutput("Elevator/Output", output);
-      }
-
       // If the elevator is all the way down, zero the encoder
       if( m_beamBreak.get() == false )
       {
-        position = 0;
-        m_encoder.setPosition(position);
+        m_position = 0;
+        m_encoder.setPosition(m_position);
         m_beamBreakState = true;
       }
       else{
         m_beamBreakState = false;
       }
-      Logger.recordOutput("Elevator/Position", position );
+
+      if( m_pid == true )
+      {
+        pidCalculate = pidElevator.calculate( m_position, m_setpoint);
+        output = MathUtil.clamp( pidCalculate, -0.4, 0.4);
+        m_motor.set( output );
+        Logger.recordOutput("Elevator/Output", output);
+      }
+
+      Logger.recordOutput("Elevator/Position", m_position );
     } // end of method
 
     public void setElevatorJog( double speed )
@@ -88,12 +89,12 @@ public class ElevatorSubsystem extends SubsystemBase{
     }
 
     public double getPosition() {
-        return m_encoder.getPosition();
+        return m_position;
     }
     
     public boolean isAtPosition() {
       boolean retval;
-      if (Math.abs((getPosition() - m_setpoint)) <= ElevatorConstants.ELEVATOR_POSITION_TOLERANCE) 
+      if (Math.abs((m_position - m_setpoint)) <= ElevatorConstants.ELEVATOR_POSITION_TOLERANCE) 
       {
         m_positionStable++;
         if (m_positionStable >= 4)
