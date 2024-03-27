@@ -147,6 +147,14 @@ public class SwerveSubsystem extends SubsystemBase {
     public void periodic() {
         odometer.update(getRotation2d(), new SwerveModulePosition[]{frontLeft.getPosition(),frontRight.getPosition(),backLeft.getPosition(),backRight.getPosition()});
         Logger.recordOutput("Drive/Gyro", getRotation2d());
+        Logger.recordOutput("Drive/FLDriveCurrent", frontLeft.getDriveCurrent());
+        Logger.recordOutput("Drive/FLTurningCurrent", frontLeft.getTurningCurrent());
+        Logger.recordOutput("Drive/FRDriveCurrent", frontRight.getDriveCurrent());
+        Logger.recordOutput("Drive/FRTurningCurrent", frontRight.getTurningCurrent());
+        Logger.recordOutput("Drive/BLDriveCurrent", backLeft.getDriveCurrent());
+        Logger.recordOutput("Drive/BLTurningCurrent", backLeft.getTurningCurrent());
+        Logger.recordOutput("Drive/BRDriveCurrent", backRight.getDriveCurrent());
+        Logger.recordOutput("Drive/BRTurningCurrent", backRight.getTurningCurrent());
         m_field.setRobotPose(odometer.getPoseMeters());
     }
 

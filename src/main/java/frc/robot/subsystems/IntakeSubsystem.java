@@ -243,10 +243,12 @@ public class IntakeSubsystem extends SubsystemBase {
         {
             if (m_BeamBreakLoadedNew == true)
             {
+                // note in
                 m_robotContainer.setBling(255, 25, 0 );
             }
             else
             {
+                // note empty
                 m_robotContainer.setRosie();
             }
             m_BeamBreakLoadedPrevious = m_BeamBreakLoadedNew;
@@ -259,6 +261,7 @@ public class IntakeSubsystem extends SubsystemBase {
         Logger.recordOutput("Intake/AnglePosition", m_angleCANcoder.getAbsolutePosition());
         Logger.recordOutput("Intake/CamPosition", m_camPosition);
         Logger.recordOutput("Intake/Output", m_angleMotor.getMotorOutputPercent());
+        Logger.recordOutput("Intake/Current", m_angleMotor.getStatorCurrent());
         Logger.recordOutput("Intake/BeamBreakShooter", !m_BeamBreakShooter.get() );
         Logger.recordOutput("Intake/BeamBreakLoaded", m_BeamBreakLoadedNew );
     }

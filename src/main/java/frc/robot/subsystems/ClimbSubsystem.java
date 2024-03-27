@@ -54,13 +54,18 @@ public class ClimbSubsystem extends SubsystemBase {
         Logger.recordOutput("Climb/Position", position );
 
         if( (m_setpoint < 0) &&
-            (elevator_position > (ElevatorConstants.ELEVATOR_START - 0.5) ) )
+            ( 
+              (elevator_position > (ElevatorConstants.ELEVATOR_CLIMB_FULL) ) ||
+              (position < ClimbConstants.CLIMB_ENCODER_FULLY_CLIMBED)
+            )
+          )
         {
             // spooling - operator left trigger        {
             m_setpoint = 0.0;
             m_motor.set(m_setpoint);
             m_motorFollower.set(m_setpoint);
             Logger.recordOutput("Climb/Output", m_setpoint );
+            Logger.recordOutput("Climb/Current", m_motor.getOutputCurrent());
         }
     }
 
@@ -77,7 +82,7 @@ public class ClimbSubsystem extends SubsystemBase {
             m_motorFollower.set(percentOutput);
         }
         else if( (percentOutput < 0) &&
-            (elevator_position < (ElevatorConstants.ELEVATOR_START - 0.5) ) )
+            (elevator_position < (ElevatorConstants.ELEVATOR_CLIMB_FULL) ) )
         {
             // spooling - operator left trigger
             m_setpoint = percentOutput;

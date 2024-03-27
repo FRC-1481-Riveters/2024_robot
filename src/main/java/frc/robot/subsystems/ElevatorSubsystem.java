@@ -67,6 +67,7 @@ public class ElevatorSubsystem extends SubsystemBase{
         output = MathUtil.clamp( pidCalculate, -0.4, 0.4);
         m_motor.set( output );
         Logger.recordOutput("Elevator/Output", output);
+        Logger.recordOutput("Elevator/Current", m_motor.getOutputCurrent());
       }
 
       Logger.recordOutput("Elevator/Position", m_position );

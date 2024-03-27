@@ -73,7 +73,7 @@ public class RobotContainer
         configAll.stripType = LEDStripType.RGB;
         configAll.brightnessScalar = 0.1;
         m_CANdle.configAllSettings(configAll, 100);
-        m_CANdle.animate( new RainbowAnimation(1.0, 1.0, 8) );
+        m_CANdle.animate( new RainbowAnimation(1.0, 1.0, 8), 0 );
     
         swerveSubsystem.setDefaultCommand(new SwerveJoystickCmd(
                 swerveSubsystem,
@@ -124,6 +124,8 @@ public class RobotContainer
         }
         else if( red == 255 && green == 25 && blue == 0 ) {
             NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(2);
+            //schedule brief double rumble 
+            GamepieceRumbleCommand().schedule();
         }
 
         int i;
@@ -133,6 +135,7 @@ public class RobotContainer
         }
         // Set the data
         m_led.setData(m_ledBuffer);
+        m_CANdle.clearAnimation(0);
         m_CANdle.setLEDs(red,green,blue,0,0,8);
         m_led.start();
     }
@@ -200,7 +203,7 @@ public class RobotContainer
         driverDPadLeft
             .onTrue(Commands.runOnce( ()->System.out.println("IntakeHalf") )
                 .andThen(Commands.runOnce( ()-> intakeSubsystem.setIntakeAngle( IntakeConstants.INTAKE_HALF ), intakeSubsystem))
-                .andThen(Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition( ElevatorConstants.ELEVATOR_CLIMB), elevatorSubsystem))
+                .andThen(Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition( ElevatorConstants.ELEVATOR_AMP), elevatorSubsystem))
             )
             .onFalse(IntakeRetractCommand()
                 .andThen(Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition( ElevatorConstants.ELEVATOR_START), elevatorSubsystem))
@@ -244,7 +247,20 @@ public class RobotContainer
         operatorLeftTrigger
             // spool climb
             .onFalse(Commands.runOnce( ()-> climbSubsystem.setClimbJog( 0 ), climbSubsystem))
-            .whileTrue( Commands.run( ()-> climbSubsystem.setClimbJog( -operatorJoystick.getLeftTriggerAxis() ), climbSubsystem));
+            .whileTrue( 
+                Commands.runOnce( ()->System.out.println("Climb Sequence") ) 
+                .andThen( 
+                    Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivot(ShooterPivotConstants.SHOOTER_PIVOT_TRAVEL), shooterPivotSubsystem)
+                )
+                .andThen( Commands.waitSeconds(3)
+                    .until( shooterPivotSubsystem::atSetpoint)
+                )
+                .andThen( Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition(ElevatorConstants.ELEVATOR_PIVOT_CLEAR ), elevatorSubsystem) )
+                .andThen( Commands.waitSeconds(3)
+                    .until( elevatorSubsystem::isAtPosition )
+                )
+                .andThen( Commands.run( ()-> climbSubsystem.setClimbJog( -operatorJoystick.getLeftTriggerAxis() ), climbSubsystem) )
+            );
 
         Trigger operatorRightTrigger = operatorJoystick.rightTrigger( 0.15 );
         operatorRightTrigger
@@ -449,6 +465,7 @@ public class RobotContainer
             )
         );
 
+        //climb
         Trigger operatorStart = operatorJoystick.start();
         operatorStart  
          .onFalse(
@@ -458,7 +475,7 @@ public class RobotContainer
                 )
             )      
         .onTrue(
-            Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition(ElevatorConstants.ELEVATOR_CLIMB ), elevatorSubsystem)
+            Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition(ElevatorConstants.ELEVATOR_CLIMB_START ), elevatorSubsystem)
             .andThen( Commands.waitSeconds(10) 
                 .until( elevatorSubsystem::isAtPosition ))
             .andThen(Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivot(ShooterPivotConstants.SHOOTER_PIVOT_CLIMB), shooterPivotSubsystem))
@@ -637,6 +654,23 @@ public class RobotContainer
             .andThen( Commands.runOnce( ()-> intakeSubsystem.setIntakeRoller(1 )));
     }
 
+    public Command GamepieceRumbleCommand()
+    {
+        return 
+            Commands.runOnce( ()->driverJoystick.getHID().setRumble(RumbleType.kBothRumble, 0.25) )
+            .andThen(
+                Commands.runOnce( ()->operatorJoystick.getHID().setRumble(RumbleType.kBothRumble, 0.25) ),
+                Commands.waitSeconds(0.2 ),
+                Commands.runOnce( ()->driverJoystick.getHID().setRumble(RumbleType.kBothRumble, 0) ),
+                Commands.runOnce( ()->operatorJoystick.getHID().setRumble(RumbleType.kBothRumble, 0) ),
+                Commands.waitSeconds(0.2 ),
+                Commands.runOnce( ()->driverJoystick.getHID().setRumble(RumbleType.kBothRumble, 0.25) ),
+                Commands.runOnce( ()->operatorJoystick.getHID().setRumble(RumbleType.kBothRumble, 0.25) ),
+                Commands.waitSeconds(0.2 ),
+                Commands.runOnce( ()->driverJoystick.getHID().setRumble(RumbleType.kBothRumble, 0) ),
+                Commands.runOnce( ()->operatorJoystick.getHID().setRumble(RumbleType.kBothRumble, 0) )
+            );
+    }
     /**
      * Use this to pass the autonomous command to the main {@link Robot} class.
      *

@@ -114,7 +114,7 @@ public final class Constants {
         public static final double INTAKE_CAM_MOTOR_MAX = 200;
         public static final double INTAKE_CAM_MOTOR_MIN = 5;
 
-        public static final double INTAKE_ANGLE_STOWED = 0;
+        public static final double INTAKE_ANGLE_STOWED = 10;
         public static final double INTAKE_FLOOR_PICKUP = 189;
         public static final double INTAKE_SOURCE = 45.0;
         public static final double INTAKE_HALF = 94.5;
@@ -153,17 +153,20 @@ public final class Constants {
         public static final double SHOOTER_PIVOT_MIN = 10;
         public static final double SHOOTER_PIVOT_AMP = 23.0;
         public static final double SHOOTER_PIVOT_TRAVEL = 58.0;
-        public static final double SHOOTER_PIVOT_CLEAR_INTAKE = 61.0; // elevator -2.7
-        public static final double SHOOTER_PIVOT_CLOSE = 122.5;
+        public static final double SHOOTER_PIVOT_CLEAR_INTAKE = 61.0;
+        public static final double SHOOTER_PIVOT_CLOSE = 124.5;
         public static final double SHOOTER_PIVOT_CLIMB = 85.0;
         public static final double SHOOTER_PIVOT_3FOOT = 108.0;
         public static final double SHOOTER_PIVOT_PODIUM = 104.0;
         public static final double SHOOTER_PIVOT_AMP_LOAD = 88.2;
         public static final double SHOOTER_PIVOT_MAX = 140; // max travel
 
-        public static final double SHOOTER_PIVOT_0_KP = 0.003;
-        public static final double SHOOTER_PIVOT_0_KI = 0.004;
-        public static final double SHOOTER_PIVOT_0_KD = 0.0003;
+//        public static final double SHOOTER_PIVOT_0_KP = 0.0030;
+//        public static final double SHOOTER_PIVOT_0_KI = 0.012;
+//        public static final double SHOOTER_PIVOT_0_KD = 0.00034;
+        public static final double SHOOTER_PIVOT_0_KP = 0.003; //0.0037;
+        public static final double SHOOTER_PIVOT_0_KI = 0.004;//0.009;
+        public static final double SHOOTER_PIVOT_0_KD = 0.0003;//0.00034;
         public static final double SHOOTER_PIVOT_0_KF = 0.0;
     }
 
@@ -180,7 +183,9 @@ public final class Constants {
         public static final double ELEVATOR_AMP_START = -5.66;
         public static final double ELEVATOR_PIVOT_CLEAR = -11.3;
         public static final double ELEVATOR_AMP = -19.5;
-        public static final double ELEVATOR_CLIMB = -13.0;
+        public static final double ELEVATOR_CLIMB_START = -13.0;
+        public static final double ELEVATOR_CLIMB_TAUT = -8.1;
+        public static final double ELEVATOR_CLIMB_FULL = -3.2;
         public static final double ELEVATOR_MAX = -20.0;
         public static final double ELEVATOR_TRAP = 0;
     }
@@ -189,6 +194,7 @@ public final class Constants {
         public static final int CLIMB_MOTOR = 24;
         public static final int CLIMB_MOTOR_FOLLOWER = 25;
         public static final double CLIMB_POSITION_MAX = 15.0;
+        public static final double CLIMB_ENCODER_FULLY_CLIMBED = -40;
         public static final int CLIMB_MIN = 0;
 
     }

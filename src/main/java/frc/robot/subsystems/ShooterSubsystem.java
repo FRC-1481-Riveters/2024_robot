@@ -82,6 +82,11 @@ public class ShooterSubsystem extends SubsystemBase
     {
         // This method will be called once per scheduler run
         Logger.recordOutput("Shooter/Speed", getSpeed() );
+        Logger.recordOutput("Shooter/CurrentTopBack", m_topBackMotor.getOutputCurrent() );
+        Logger.recordOutput("Shooter/CurrentTopForward", m_topMotor.getOutputCurrent() );
+        Logger.recordOutput("Shooter/CurrentBottomBack", m_bottomBackMotor.getOutputCurrent() );
+        Logger.recordOutput("Shooter/CurrentBottomForward", m_bottomMotor.getOutputCurrent() );
+
         Logger.recordOutput("Shooter/BeamBreak", isLightCurtainBlocked() );
     }
 

@@ -33,8 +33,8 @@ public class ShooterPivotSubsystem extends SubsystemBase
     {
         m_CANCoder.setPosition(m_CANCoder.getAbsolutePosition());
 
-        m_tolerance = 2.0;
-        //pid.setIZone(m_tolerance);
+        m_tolerance = 2.5;
+        pid.setIZone(m_tolerance*3);
 
         m_motor.restoreFactoryDefaults();
         m_motor.setInverted(true);
@@ -89,7 +89,7 @@ public class ShooterPivotSubsystem extends SubsystemBase
         if( m_pid == true )
         {
           pidCalculate = pid.calculate( m_position, m_Setpoint);
-          m_output = MathUtil.clamp( pidCalculate, -0.3, 0.3);
+          m_output = MathUtil.clamp( pidCalculate, -0.25, 0.25);
         }
 
         if( (m_position > ShooterPivotConstants.SHOOTER_PIVOT_MAX) ||
@@ -100,6 +100,7 @@ public class ShooterPivotSubsystem extends SubsystemBase
     
         m_motor.set( m_output );
         Logger.recordOutput("ShooterPivot/Output", m_output);
+        Logger.recordOutput("ShooterPivot/Current",m_motor.getOutputCurrent());
 
         Logger.recordOutput("ShooterPivot/Position", m_position);
         if( Math.abs( m_position - m_Setpoint ) > m_tolerance )
@@ -108,10 +109,10 @@ public class ShooterPivotSubsystem extends SubsystemBase
             m_atSetpointDebounceCounter = 0;
             Logger.recordOutput("ShooterPivot/AtSetpoint", m_atSetpoint );
         }
-        else if( m_atSetpointDebounceCounter < 10 )
+        else if( m_atSetpointDebounceCounter < 12 )
         {
             m_atSetpointDebounceCounter++;
-            if( m_atSetpointDebounceCounter == 10 )
+            if( m_atSetpointDebounceCounter == 12 )
             {
                 m_atSetpoint = true;
                 Logger.recordOutput("ShooterPivot/AtSetpoint", m_atSetpoint );
