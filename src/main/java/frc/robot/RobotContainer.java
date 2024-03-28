@@ -110,9 +110,19 @@ public class RobotContainer
         // Set the data
         m_led.setData(m_ledBuffer);
         m_led.start();
+
+        NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(1);
+        m_CANdle.clearAnimation(0);
+        for( i=0; i<8; i++ )
+        {
+            if( i % 2 == 0 )
+                m_CANdle.setLEDs(255,0,0,0,i,1);
+            else
+                m_CANdle.setLEDs(255,255,255,255,i,1);
+        }
     }
 
-     public void setBling( int red, int green, int blue )
+    public void setBling( int red, int green, int blue )
     {
         // limelight ledMode: 1=off, 2=blink, 3=on
         if(red == 0 && blue == 0 && green == 255){
@@ -135,9 +145,10 @@ public class RobotContainer
         }
         // Set the data
         m_led.setData(m_ledBuffer);
+        m_led.start();
+
         m_CANdle.clearAnimation(0);
         m_CANdle.setLEDs(red,green,blue,0,0,8);
-        m_led.start();
     }
 
     private double getDriverMoveFwdBack()
@@ -180,21 +191,30 @@ public class RobotContainer
         
         Trigger driverShootTrigger = driverJoystick.a();
         driverShootTrigger
-            .onFalse(Commands.runOnce( ()-> intakeSubsystem.setIntakeRoller( 0 ), intakeSubsystem))
+            .onFalse(
+                Commands.runOnce( ()-> intakeSubsystem.setIntakeRoller( 0 ), intakeSubsystem )
+                    .andThen( Commands.runOnce( ()->setBling(0, 0, 0) ) )
+            )
             .onTrue( 
                 ShooterCommand()
             );
 
         Trigger driverShoot3FootTrigger = driverJoystick.y();
         driverShoot3FootTrigger
-            .onFalse(Commands.runOnce( ()-> intakeSubsystem.setIntakeRoller( 0 ), intakeSubsystem))
+            .onFalse(
+                Commands.runOnce( ()-> intakeSubsystem.setIntakeRoller( 0 ), intakeSubsystem )
+                    .andThen( Commands.runOnce( ()->setBling(0, 0, 0) ) )
+            )
             .onTrue( 
                 Shooter3FootCommand()
             );
 
         Trigger driverShootPodiumTrigger = driverJoystick.b();
         driverShootPodiumTrigger
-            .onFalse(Commands.runOnce( ()-> intakeSubsystem.setIntakeRoller( 0 ), intakeSubsystem))
+            .onFalse(
+                Commands.runOnce( ()-> intakeSubsystem.setIntakeRoller( 0 ), intakeSubsystem )
+                    .andThen( Commands.runOnce( ()->setBling(0, 0, 0) ) )
+            )
             .onTrue( 
                 ShooterPodiumCommand()
             );
@@ -254,10 +274,6 @@ public class RobotContainer
                 )
                 .andThen( Commands.waitSeconds(3)
                     .until( shooterPivotSubsystem::atSetpoint)
-                )
-                .andThen( Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition(ElevatorConstants.ELEVATOR_PIVOT_CLEAR ), elevatorSubsystem) )
-                .andThen( Commands.waitSeconds(3)
-                    .until( elevatorSubsystem::isAtPosition )
                 )
                 .andThen( Commands.run( ()-> climbSubsystem.setClimbJog( -operatorJoystick.getLeftTriggerAxis() ), climbSubsystem) )
             );
@@ -465,7 +481,7 @@ public class RobotContainer
             )
         );
 
-        //climb
+        //climb start
         Trigger operatorStart = operatorJoystick.start();
         operatorStart  
          .onFalse(

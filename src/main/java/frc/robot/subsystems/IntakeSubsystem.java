@@ -262,6 +262,7 @@ public class IntakeSubsystem extends SubsystemBase {
         Logger.recordOutput("Intake/CamPosition", m_camPosition);
         Logger.recordOutput("Intake/Output", m_angleMotor.getMotorOutputPercent());
         Logger.recordOutput("Intake/Current", m_angleMotor.getStatorCurrent());
+        Logger.recordOutput("Intake/CurrentFollower", m_angleMotorFollower.getStatorCurrent());
         Logger.recordOutput("Intake/BeamBreakShooter", !m_BeamBreakShooter.get() );
         Logger.recordOutput("Intake/BeamBreakLoaded", m_BeamBreakLoadedNew );
     }

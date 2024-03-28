@@ -161,12 +161,12 @@ public final class Constants {
         public static final double SHOOTER_PIVOT_AMP_LOAD = 88.2;
         public static final double SHOOTER_PIVOT_MAX = 140; // max travel
 
-//        public static final double SHOOTER_PIVOT_0_KP = 0.0030;
-//        public static final double SHOOTER_PIVOT_0_KI = 0.012;
-//        public static final double SHOOTER_PIVOT_0_KD = 0.00034;
-        public static final double SHOOTER_PIVOT_0_KP = 0.003; //0.0037;
-        public static final double SHOOTER_PIVOT_0_KI = 0.004;//0.009;
-        public static final double SHOOTER_PIVOT_0_KD = 0.0003;//0.00034;
+        public static final double SHOOTER_PIVOT_0_KP = 0.0040;
+        public static final double SHOOTER_PIVOT_0_KI = 0.024;
+        public static final double SHOOTER_PIVOT_0_KD = 0.00034;
+//        public static final double SHOOTER_PIVOT_0_KP = 0.003;
+//        public static final double SHOOTER_PIVOT_0_KI = 0.004;
+//        public static final double SHOOTER_PIVOT_0_KD = 0.0003;
         public static final double SHOOTER_PIVOT_0_KF = 0.0;
     }
 
@@ -194,7 +194,7 @@ public final class Constants {
         public static final int CLIMB_MOTOR = 24;
         public static final int CLIMB_MOTOR_FOLLOWER = 25;
         public static final double CLIMB_POSITION_MAX = 15.0;
-        public static final double CLIMB_ENCODER_FULLY_CLIMBED = -40;
+        public static final double CLIMB_ENCODER_FULLY_CLIMBED = -150;
         public static final int CLIMB_MIN = 0;
 
     }

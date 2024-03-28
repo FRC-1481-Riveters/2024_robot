@@ -46,26 +46,26 @@ public class ClimbSubsystem extends SubsystemBase {
     public void periodic() 
     {
         // This method will be called once per scheduler run
-        double position;
-        position = m_encoder.getPosition();
+        m_position = m_encoder.getPosition();
         double elevator_position = m_elevatorSubsystem.getPosition();
 
         // This method will be called once per scheduler run
-        Logger.recordOutput("Climb/Position", position );
+        Logger.recordOutput("Climb/Position", m_position );
 
         if( (m_setpoint < 0) &&
             ( 
-              (elevator_position > (ElevatorConstants.ELEVATOR_CLIMB_FULL) ) ||
-              (position < ClimbConstants.CLIMB_ENCODER_FULLY_CLIMBED)
+              (elevator_position < (ElevatorConstants.ELEVATOR_CLIMB_FULL + 0.5) ) ||
+              (m_position < ClimbConstants.CLIMB_ENCODER_FULLY_CLIMBED)
             )
           )
         {
-            // spooling - operator left trigger        {
+            // climb complete - STOP SPOOLING
             m_setpoint = 0.0;
             m_motor.set(m_setpoint);
             m_motorFollower.set(m_setpoint);
             Logger.recordOutput("Climb/Output", m_setpoint );
             Logger.recordOutput("Climb/Current", m_motor.getOutputCurrent());
+            Logger.recordOutput("Climb/CurrentFollower", m_motorFollower.getOutputCurrent());
         }
     }
 
@@ -82,7 +82,8 @@ public class ClimbSubsystem extends SubsystemBase {
             m_motorFollower.set(percentOutput);
         }
         else if( (percentOutput < 0) &&
-            (elevator_position < (ElevatorConstants.ELEVATOR_CLIMB_FULL) ) )
+            (elevator_position < (ElevatorConstants.ELEVATOR_CLIMB_FULL + 0.5) ) &&
+              (m_position > ClimbConstants.CLIMB_ENCODER_FULLY_CLIMBED) )
         {
             // spooling - operator left trigger
             m_setpoint = percentOutput;
