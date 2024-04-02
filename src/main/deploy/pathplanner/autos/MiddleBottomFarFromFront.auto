@@ -20,7 +20,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "TopClose"
+            "pathName": "MiddleClose"
           }
         },
         {
@@ -50,7 +50,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "MiddleClose"
+            "pathName": "FarBottomFromFront"
           }
         },
         {

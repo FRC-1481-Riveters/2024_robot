@@ -3,41 +3,41 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.31,
-        "y": 5.53
+        "x": 0.7910011248593932,
+        "y": 4.479930331289235
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.723560926532678,
-        "y": 5.53
+        "x": 1.0284843426829717,
+        "y": 3.840777967270221
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.465111215936718,
-        "y": 5.558377783422233
+        "x": 2.4357923001560295,
+        "y": 4.104648209296419
       },
       "prevControl": {
-        "x": 2.2614059091159207,
-        "y": 5.560937814208131
+        "x": 2.083965310787765,
+        "y": 4.0606698356253865
       },
       "nextControl": {
-        "x": 2.691925606073435,
-        "y": 5.555527333276888
+        "x": 2.6016451334678434,
+        "y": 4.125379813460396
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.31,
-        "y": 5.53
+        "x": 0.7910011248593932,
+        "y": 4.479930331289235
       },
       "prevControl": {
-        "x": 1.3966930566929303,
-        "y": 5.53
+        "x": 1.043143800573316,
+        "y": 3.811459051489532
       },
       "nextControl": null,
       "isLocked": false,
@@ -46,8 +46,8 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1,
-      "rotationDegrees": 180.0,
+      "waypointRelativePos": 1.0,
+      "rotationDegrees": 179.99999999967264,
       "rotateFast": false
     }
   ],
@@ -55,7 +55,7 @@
   "eventMarkers": [
     {
       "name": "Retract",
-      "waypointRelativePos": 1.25,
+      "waypointRelativePos": 1.35,
       "command": {
         "type": "sequential",
         "data": {
@@ -64,6 +64,12 @@
               "type": "named",
               "data": {
                 "name": "IntakeRetractCommand"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "IntakeRollersStop"
               }
             }
           ]
@@ -92,40 +98,23 @@
           ]
         }
       }
-    },
-    {
-      "name": "Roller Stop",
-      "waypointRelativePos": 1.45,
-      "command": {
-        "type": "parallel",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "IntakeRollersStop"
-              }
-            }
-          ]
-        }
-      }
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 2.0,
-    "maxAcceleration": 1.72,
+    "maxVelocity": 3.0,
+    "maxAcceleration": 2.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 180.0,
+    "rotation": 119.93151184050778,
     "rotateFast": false
   },
   "reversed": false,
   "folder": null,
   "previewStartingState": {
-    "rotation": 180.0,
+    "rotation": 119.47588900324571,
     "velocity": 0
   },
   "useDefaultConstraints": false

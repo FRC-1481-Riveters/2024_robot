@@ -123,4 +123,10 @@ public class ElevatorSubsystem extends SubsystemBase{
         System.out.println("elevatorDisable current position=" + getPosition());
         Logger.recordOutput("Elevator/Output", 0.0);
     }
+
+    public void zeroEncoder()
+    {
+        m_position = 0;
+        m_encoder.setPosition(m_position);
+    }
 }

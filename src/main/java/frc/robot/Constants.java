@@ -79,7 +79,7 @@ public final class Constants {
 
         public static final HolonomicPathFollowerConfig pathFollowerConfig = new HolonomicPathFollowerConfig(
             new PIDConstants(5, 0.0, 0.00), // Translation constants 
-            new PIDConstants(5, 0.0, 0.0), // Rotation constants 
+            new PIDConstants(10, 0.0, 0.0), // Rotation constants 
             kPhysicalMaxSpeedMetersPerSecond, 
             new Translation2d(kWheelBase / 2, kTrackWidth / 2).getNorm(), // Drive base radius (distance from center to furthest module) 
             new ReplanningConfig()
@@ -139,7 +139,7 @@ public final class Constants {
         public static final double SHOOTER_SPEED_TOLERANCE = 0.1;
         public static final double SHOOTER_SPEED_SPEAKER = 3600;
         public static final double SHOOTER_SPEED_3FOOT = 4200;
-        public static final double SHOOTER_SPEED_PODIUM = 4200;
+        public static final double SHOOTER_SPEED_PODIUM = 4800;
         public static final double SHOOTER_SPEED_AMP = 6000;
         public static final double SHOOTER_SPEED_AMP_LOAD = 800;
 
@@ -156,8 +156,8 @@ public final class Constants {
         public static final double SHOOTER_PIVOT_CLEAR_INTAKE = 61.0;
         public static final double SHOOTER_PIVOT_CLOSE = 124.5;
         public static final double SHOOTER_PIVOT_CLIMB = 85.0;
-        public static final double SHOOTER_PIVOT_3FOOT = 108.0;
-        public static final double SHOOTER_PIVOT_PODIUM = 104.0;
+        public static final double SHOOTER_PIVOT_3FOOT = 114.0;
+        public static final double SHOOTER_PIVOT_PODIUM = 108.0;
         public static final double SHOOTER_PIVOT_AMP_LOAD = 88.2;
         public static final double SHOOTER_PIVOT_MAX = 140; // max travel
 
@@ -179,7 +179,7 @@ public final class Constants {
         public static final double ELEVATOR_WING = -7.9;
         public static final double ELEVATOR_3FOOT = -16.0;
         public static final double ELEVATOR_CLOSE = -16.0;
-        public static final double ELEVATOR_PODIUM = -16.0;
+        public static final double ELEVATOR_PODIUM = -14.0;
         public static final double ELEVATOR_AMP_START = -5.66;
         public static final double ELEVATOR_PIVOT_CLEAR = -11.3;
         public static final double ELEVATOR_AMP = -19.5;

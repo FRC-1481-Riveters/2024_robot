@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.79,
-      "y": 4.48
+      "x": 0.75,
+      "y": 6.66
     },
-    "rotation": 119.92263783296026
+    "rotation": -120.15611005392843
   },
   "command": {
     "type": "sequential",
@@ -18,15 +18,15 @@
           }
         },
         {
-          "type": "path",
+          "type": "wait",
           "data": {
-            "pathName": "FarBottomFetch"
+            "waitTime": 8.0
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "ShootCommand"
+            "pathName": "BackUpFromTop"
           }
         }
       ]

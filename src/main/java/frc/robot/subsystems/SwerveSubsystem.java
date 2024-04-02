@@ -68,6 +68,7 @@ public class SwerveSubsystem extends SubsystemBase {
             new Rotation2d(0),new SwerveModulePosition[]{frontLeft.getPosition(),frontRight.getPosition(),backLeft.getPosition(),backRight.getPosition()});
     
     private final Field2d m_field = new Field2d();
+    private Pose2d savedOdometry;
 
     public SwerveSubsystem() {
         new Thread(() -> {
@@ -142,7 +143,16 @@ public class SwerveSubsystem extends SubsystemBase {
         odometer.resetPosition(getRotation2d(),new SwerveModulePosition[]{frontLeft.getPosition(),frontRight.getPosition(),backLeft.getPosition(),backRight.getPosition()},pose);
     }
 
+    public void saveOdometry()
+    {
+        savedOdometry = getPose();
+    }
 
+    public Pose2d getSavedOdometry()
+    {
+        return savedOdometry;
+    }
+    
     @Override
     public void periodic() {
         odometer.update(getRotation2d(), new SwerveModulePosition[]{frontLeft.getPosition(),frontRight.getPosition(),backLeft.getPosition(),backRight.getPosition()});

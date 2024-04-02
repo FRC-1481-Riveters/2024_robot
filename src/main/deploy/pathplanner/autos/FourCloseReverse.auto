@@ -32,7 +32,7 @@
         {
           "type": "named",
           "data": {
-            "name": "ShootCommand"
+            "name": "ShootAgainCommand"
           }
         },
         {
@@ -44,7 +44,7 @@
         {
           "type": "named",
           "data": {
-            "name": "ShootCommand"
+            "name": "ShootAgainCommand"
           }
         },
         {
@@ -56,7 +56,7 @@
         {
           "type": "named",
           "data": {
-            "name": "ShootCommand"
+            "name": "ShootAgainCommand"
           }
         }
       ]

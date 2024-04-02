@@ -1,7 +1,8 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.*;
 
@@ -15,10 +16,14 @@ public class ShooterPivotSubsystem extends SubsystemBase
 {
     private CANSparkMax m_motor = new CANSparkMax(ShooterPivotConstants.SHOOTER_PIVOT_MOTOR, CANSparkLowLevel.MotorType.kBrushless );
     private CANCoder m_CANCoder = new CANCoder(ShooterPivotConstants.SHOOTER_PIVOT_CANCODER);
-    private PIDController pid = new PIDController(
+
+    private final TrapezoidProfile.Constraints m_constraints =
+        new TrapezoidProfile.Constraints(300, 600);
+    private ProfiledPIDController pid = new ProfiledPIDController(
                                         ShooterPivotConstants.SHOOTER_PIVOT_0_KP,
                                         ShooterPivotConstants.SHOOTER_PIVOT_0_KI,
-                                        ShooterPivotConstants.SHOOTER_PIVOT_0_KD
+                                        ShooterPivotConstants.SHOOTER_PIVOT_0_KD,
+                                        m_constraints, 0.02
                                     );
     private double m_Setpoint;
     private double m_output;
@@ -64,7 +69,7 @@ public class ShooterPivotSubsystem extends SubsystemBase
             pid.setP( ShooterPivotConstants.SHOOTER_PIVOT_0_KP );
             pid.setI( ShooterPivotConstants.SHOOTER_PIVOT_0_KI );
         }
-        pid.reset();
+        pid.reset(m_position);
         m_pid = true;
         Logger.recordOutput("ShooterPivot/Setpoint", m_Setpoint );
 

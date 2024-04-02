@@ -17,7 +17,10 @@ public class ShooterSubsystem extends SubsystemBase
     private CANSparkMax m_bottomBackMotor = new CANSparkMax(ShooterConstants.SHOOTER_MOTOR_BOTTOM_BACK, CANSparkLowLevel.MotorType.kBrushless);
     private CANSparkMax m_topMotor = new CANSparkMax(ShooterConstants.SHOOTER_MOTOR_TOP_FORWARD, CANSparkLowLevel.MotorType.kBrushless );
     private CANSparkMax m_topBackMotor = new CANSparkMax(ShooterConstants.SHOOTER_MOTOR_TOP_BACK, CANSparkLowLevel.MotorType.kBrushless);
-    private SparkRelativeEncoder m_encoder = (SparkRelativeEncoder) m_bottomMotor.getEncoder();
+    private SparkRelativeEncoder m_bottomEncoder = (SparkRelativeEncoder) m_bottomMotor.getEncoder();
+    private SparkRelativeEncoder m_bottomBackEncoder = (SparkRelativeEncoder) m_bottomBackMotor.getEncoder();
+    private SparkRelativeEncoder m_topEncoder = (SparkRelativeEncoder) m_topMotor.getEncoder();
+    private SparkRelativeEncoder m_topBackEncoder = (SparkRelativeEncoder) m_topBackMotor.getEncoder();
     private SparkPIDController m_bottomPid = m_bottomMotor.getPIDController();
     private SparkPIDController m_topPid = m_topMotor.getPIDController();
     private SparkPIDController m_bottomBackPid = m_bottomBackMotor.getPIDController();
@@ -27,7 +30,7 @@ public class ShooterSubsystem extends SubsystemBase
     
     public ShooterSubsystem()
     {
-        m_bottomMotor.restoreFactoryDefaults();
+//       m_bottomMotor.restoreFactoryDefaults();
         m_bottomMotor.setInverted(true);
         m_bottomMotor.setSmartCurrentLimit(80, 50);
         m_bottomMotor.setIdleMode(IdleMode.kCoast);
@@ -35,9 +38,9 @@ public class ShooterSubsystem extends SubsystemBase
         m_bottomPid.setI(0.000000060);
         m_bottomPid.setD(0.0001);
         m_bottomPid.setFF(0.000145); //0.00018
-        m_bottomMotor.burnFlash();
+//        m_bottomMotor.burnFlash();
 
-        m_topMotor.restoreFactoryDefaults();
+//        m_topMotor.restoreFactoryDefaults();
         m_topMotor.setInverted(true);
         m_topMotor.setSmartCurrentLimit(80, 50);
         m_topMotor.setIdleMode(IdleMode.kCoast);
@@ -45,9 +48,9 @@ public class ShooterSubsystem extends SubsystemBase
         m_topPid.setI(0.000000060);
         m_topPid.setD(0.0001);
         m_topPid.setFF(0.000145); //0.00018
-        m_topMotor.burnFlash();
+//        m_topMotor.burnFlash();
 
-        m_bottomBackMotor.restoreFactoryDefaults();
+//        m_bottomBackMotor.restoreFactoryDefaults();
         m_bottomBackMotor.setInverted(true);
         m_bottomBackMotor.setSmartCurrentLimit(80, 50);
         m_bottomBackMotor.setIdleMode(IdleMode.kCoast);
@@ -55,9 +58,9 @@ public class ShooterSubsystem extends SubsystemBase
         m_bottomBackPid.setI(0.000000060);
         m_bottomBackPid.setD(0.0001);
         m_bottomBackPid.setFF(0.000145); //0.00018
-        m_bottomBackMotor.burnFlash();
+//        m_bottomBackMotor.burnFlash();
 
-        m_topBackMotor.restoreFactoryDefaults();
+//        m_topBackMotor.restoreFactoryDefaults();
         m_topBackMotor.setInverted(true);
         m_topBackMotor.setSmartCurrentLimit(80, 50);
         m_topBackMotor.setIdleMode(IdleMode.kCoast);
@@ -65,13 +68,16 @@ public class ShooterSubsystem extends SubsystemBase
         m_topBackPid.setI(0.000000060);
         m_topBackPid.setD(0.0001);
         m_topBackPid.setFF(0.000145); //0.00018
-        m_topBackMotor.burnFlash();
+//        m_topBackMotor.burnFlash();
 
         setShooterSpeed(0.0);
 
         // Create an initial log entry so they all show up in AdvantageScope without having to enable anything
         Logger.recordOutput("Shooter/Setpoint", 0.0 );
-        Logger.recordOutput("Shooter/Speed", 0.0 );
+        Logger.recordOutput("Shooter/BottomSpeed", 0.0 );
+        Logger.recordOutput("Shooter/BottomBackSpeed", 0.0 );
+        Logger.recordOutput("Shooter/TopSpeed", 0.0 );
+        Logger.recordOutput("Shooter/TopBackSpeed", 0.0 );
         Logger.recordOutput("Shooter/AtSpeed", false );
         Logger.recordOutput("Shooter/BeamBreak", false );
         Logger.recordOutput("Shooter/Jog", 0.0 );
@@ -81,7 +87,10 @@ public class ShooterSubsystem extends SubsystemBase
     public void periodic() 
     {
         // This method will be called once per scheduler run
-        Logger.recordOutput("Shooter/Speed", getSpeed() );
+        Logger.recordOutput("Shooter/BottomSpeed", getSpeed() );
+        Logger.recordOutput("Shooter/BottomBackSpeed", m_bottomBackEncoder.getVelocity() );
+        Logger.recordOutput("Shooter/TopSpeed", m_topEncoder.getVelocity() );
+        Logger.recordOutput("Shooter/TopBackSpeed", m_topBackEncoder.getVelocity() );
         Logger.recordOutput("Shooter/CurrentTopBack", m_topBackMotor.getOutputCurrent() );
         Logger.recordOutput("Shooter/CurrentTopForward", m_topMotor.getOutputCurrent() );
         Logger.recordOutput("Shooter/CurrentBottomBack", m_bottomBackMotor.getOutputCurrent() );
@@ -129,7 +138,7 @@ public class ShooterSubsystem extends SubsystemBase
    }
 
     public double getSpeed() {
-        return m_encoder.getVelocity();
+        return m_bottomEncoder.getVelocity();
     }
     
     public boolean isAtSpeed() 

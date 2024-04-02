@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.7,
-      "y": 6.67
+      "x": 1.31,
+      "y": 5.53
     },
-    "rotation": -119.70266009910912
+    "rotation": 180.0
   },
   "command": {
     "type": "sequential",
@@ -20,25 +20,31 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Outer Close Outer"
+            "pathName": "NewMiddleClose"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "ShootCommand"
+            "name": "Shoot3FootCommand"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Outer Far Outer"
+            "pathName": "NotBuggyTopClose"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "ShootCommand"
+            "name": "Shoot3FootCommand"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "NewOuter Far Outer"
           }
         }
       ]

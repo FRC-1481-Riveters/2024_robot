@@ -20,43 +20,43 @@
         {
           "type": "path",
           "data": {
-            "pathName": "TopClose"
+            "pathName": "NewMiddleClose"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "ShootAgainCommand"
+            "name": "Shoot3FootCommand"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "BottomClose"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "BottomCloseReturn"
+            "pathName": "NotBuggyTopClose"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "ShootAgainCommand"
+            "name": "Shoot3FootCommand"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "MiddleClose"
+            "pathName": "NewBottomClose"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "NewBottomCloseReturn"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "ShootAgainCommand"
+            "name": "Shoot3FootCommand"
           }
         }
       ]

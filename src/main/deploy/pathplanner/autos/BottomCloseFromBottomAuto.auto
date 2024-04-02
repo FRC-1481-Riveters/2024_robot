@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.7910011248593932,
-      "y": 4.479930331289235
+      "x": 0.79,
+      "y": 4.48
     },
-    "rotation": 121.63603599862765
+    "rotation": 120.25910231916376
   },
   "command": {
     "type": "sequential",
@@ -20,7 +20,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "FarBottomFetch"
+            "pathName": "BottomCloseFromBottom"
           }
         },
         {

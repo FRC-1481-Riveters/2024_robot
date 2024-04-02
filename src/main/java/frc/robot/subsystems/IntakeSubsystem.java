@@ -14,6 +14,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.RemoteFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.revrobotics.*;
+import edu.wpi.first.util.CircularBuffer;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 
@@ -30,11 +31,14 @@ public class IntakeSubsystem extends SubsystemBase {
     private double m_camSetPoint;
     private boolean m_camPidEnabled;   
     private double m_camPosition; 
+    private CircularBuffer <Double> circularBuffer;
+    private boolean m_angleStable;
 
     private SparkRelativeEncoder m_rollerEncoder = (SparkRelativeEncoder) m_rollerMotor.getEncoder();
     private SparkPIDController m_rollerPid = m_rollerMotor.getPIDController();
     private CANCoder m_angleCANcoder = new CANCoder(IntakeConstants.INTAKE_ANGLE_CANCODER);
     private double m_angleSetpoint;
+    private double m_anglePosition;
     private DigitalInput m_BeamBreakShooter = new DigitalInput(0);
     private DigitalInput m_BeamBreakLoaded = new DigitalInput(1);
     private boolean m_BeamBreakLoadedPrevious;
@@ -55,6 +59,7 @@ public class IntakeSubsystem extends SubsystemBase {
         m_rollerPid.setI(0.00000060);
         m_rollerPid.setD(0.0001);
         m_rollerPid.setFF(0.000145); //0.00018
+        circularBuffer = new CircularBuffer <Double> (20);
 
         m_camCANCoder = new CANCoder(IntakeConstants.INTAKE_CAM_CANCODER);        
         m_camCANCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
@@ -114,9 +119,9 @@ public class IntakeSubsystem extends SubsystemBase {
         m_angleMotorFollower = new TalonSRX(IntakeConstants.INTAKE_ANGLE_MOTOR_FOLLOWER);
         m_angleMotorFollower.configFactoryDefault();
         // Set peak current
-        m_angleMotorFollower.configPeakCurrentLimit(15, IntakeConstants.TALON_TIMEOUT_MS);
+        m_angleMotorFollower.configPeakCurrentLimit(30, IntakeConstants.TALON_TIMEOUT_MS);
         m_angleMotorFollower.configPeakCurrentDuration(500, IntakeConstants.TALON_TIMEOUT_MS);
-        m_angleMotorFollower.configContinuousCurrentLimit(15, IntakeConstants.TALON_TIMEOUT_MS);
+        m_angleMotorFollower.configContinuousCurrentLimit(25, IntakeConstants.TALON_TIMEOUT_MS);
         m_angleMotorFollower.enableCurrentLimit(true);
         m_angleMotorFollower.setNeutralMode(NeutralMode.Coast);
         m_angleMotorFollower.setInverted(false);
@@ -229,7 +234,10 @@ public class IntakeSubsystem extends SubsystemBase {
         System.out.println("setCamPosition " + position);
     }
 
-
+    public boolean isAngleStable()
+    {
+        return m_angleStable;
+    }
 
     @Override
     public void periodic() 
@@ -237,7 +245,32 @@ public class IntakeSubsystem extends SubsystemBase {
         m_rollerRpm = m_rollerEncoder.getVelocity();
         m_camPosition = m_camCANCoder.getAbsolutePosition();
         boolean m_BeamBreakLoadedNew;
+        m_anglePosition = m_angleCANcoder.getAbsolutePosition();
 
+        circularBuffer.addFirst(m_anglePosition);
+        double min = circularBuffer.get(0);
+        double max = min;
+        for(int i = 0; i<circularBuffer.size(); i++)
+        {
+            double val = circularBuffer.get(i);
+            if(val<min)
+            {
+                min = val;
+            }
+            if(val>max)
+            {
+                max = val;
+            }
+        }
+        if(max-min<1)
+        {
+            m_angleStable = true;
+        }
+        else
+        {
+            m_angleStable = false;
+        }
+        
         m_BeamBreakLoadedNew = !m_BeamBreakLoaded.get();
         if (m_BeamBreakLoadedPrevious != m_BeamBreakLoadedNew)
         {
@@ -258,7 +291,7 @@ public class IntakeSubsystem extends SubsystemBase {
         Logger.recordOutput("Intake/RollerRPM", m_rollerRpm );
         m_angleMotorFollower.follow(m_angleMotor);  // Recommended by CTRE in case follower loses power
 
-        Logger.recordOutput("Intake/AnglePosition", m_angleCANcoder.getAbsolutePosition());
+        Logger.recordOutput("Intake/AnglePosition", m_anglePosition);
         Logger.recordOutput("Intake/CamPosition", m_camPosition);
         Logger.recordOutput("Intake/Output", m_angleMotor.getMotorOutputPercent());
         Logger.recordOutput("Intake/Current", m_angleMotor.getStatorCurrent());
