@@ -29,12 +29,12 @@ public class ClimbSubsystem extends SubsystemBase {
         m_motor.restoreFactoryDefaults();
         m_motor.setInverted(false);
         m_motor.setSmartCurrentLimit(80, 50);
-        m_motor.setIdleMode(IdleMode.kBrake);
+        m_motor.setIdleMode(IdleMode.kCoast);
         m_encoder.setPosition(0);
         m_motorFollower.restoreFactoryDefaults();
         m_motorFollower.setInverted(true);
         m_motorFollower.setSmartCurrentLimit(80, 50);
-        m_motorFollower.setIdleMode(IdleMode.kBrake);
+        m_motorFollower.setIdleMode(IdleMode.kCoast);
 //        m_motorFollower.follow(m_motor,false);
 
         // Create an initial log entry so they all show up in AdvantageScope without having to enable anything

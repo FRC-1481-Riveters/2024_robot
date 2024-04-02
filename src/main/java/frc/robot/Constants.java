@@ -161,11 +161,17 @@ public final class Constants {
         public static final double SHOOTER_PIVOT_AMP_LOAD = 88.2;
         public static final double SHOOTER_PIVOT_MAX = 140; // max travel
 
+        public static final double SHOOTER_PIVOT_ACCELERATION = 500;
+        public static final double SHOOTER_PIVOT_VELOCITY = 250;
         public static final double SHOOTER_PIVOT_0_KP = 0.0040;
         public static final double SHOOTER_PIVOT_0_KI = 0.024;
         public static final double SHOOTER_PIVOT_0_KD = 0.00034;
-        public static final double SHOOTER_PIVOT_1_KP = 0.005;
-        public static final double SHOOTER_PIVOT_1_KI = 0.0300;
+        public static final double SHOOTER_PIVOT_CLOSE_KP = 0.0030; //0.005;
+        public static final double SHOOTER_PIVOT_CLOSE_KI = 0.0240;
+        public static final double SHOOTER_PIVOT_CLOSE_KD = 0.00034;
+        public static final double SHOOTER_PIVOT_AMP_KP = 0.0028; //0.005;
+        public static final double SHOOTER_PIVOT_AMP_KI = 0.0350;
+        public static final double SHOOTER_PIVOT_AMP_KD = 0.00034;
 //        public static final double SHOOTER_PIVOT_0_KP = 0.003;
 //        public static final double SHOOTER_PIVOT_0_KI = 0.004;
 //        public static final double SHOOTER_PIVOT_0_KD = 0.0003;
@@ -174,9 +180,10 @@ public final class Constants {
 
     public static final class ElevatorConstants{
         public static final int ELEVATOR_MOTOR = 42;
-        public static final double ELEVATOR_POSITION_TOLERANCE = 0.5;
+        public static final double ELEVATOR_POSITION_TOLERANCE = 0.3;
         //fill out position values later
         public static final double ELEVATOR_START = 0;
+        public static final double ELEVATOR_ABOVE_BUMP = -0.2;
         public static final double ELEVATOR_PAST_BUMP = -2.7;
         public static final double ELEVATOR_WING = -7.9;
         public static final double ELEVATOR_3FOOT = -16.0;

@@ -18,7 +18,7 @@ public class ShooterPivotSubsystem extends SubsystemBase
     private CANCoder m_CANCoder = new CANCoder(ShooterPivotConstants.SHOOTER_PIVOT_CANCODER);
 
     private final TrapezoidProfile.Constraints m_constraints =
-        new TrapezoidProfile.Constraints(300, 600);
+        new TrapezoidProfile.Constraints(ShooterPivotConstants.SHOOTER_PIVOT_VELOCITY, ShooterPivotConstants.SHOOTER_PIVOT_ACCELERATION);
     private ProfiledPIDController pid = new ProfiledPIDController(
                                         ShooterPivotConstants.SHOOTER_PIVOT_0_KP,
                                         ShooterPivotConstants.SHOOTER_PIVOT_0_KI,
@@ -61,13 +61,22 @@ public class ShooterPivotSubsystem extends SubsystemBase
         if( (angle >= (ShooterPivotConstants.SHOOTER_PIVOT_CLOSE - 0.5)) &&
             (angle <= (ShooterPivotConstants.SHOOTER_PIVOT_CLOSE + 0.5)) )
         {
-            pid.setP( ShooterPivotConstants.SHOOTER_PIVOT_1_KP );
-            pid.setI( ShooterPivotConstants.SHOOTER_PIVOT_1_KI );
+            pid.setP( ShooterPivotConstants.SHOOTER_PIVOT_CLOSE_KP );
+            pid.setI( ShooterPivotConstants.SHOOTER_PIVOT_CLOSE_KI );
+            pid.setD( ShooterPivotConstants.SHOOTER_PIVOT_CLOSE_KD );
+        }
+        else if( (angle >= (ShooterPivotConstants.SHOOTER_PIVOT_AMP - 0.5)) &&
+            (angle <= (ShooterPivotConstants.SHOOTER_PIVOT_AMP + 0.5)) )
+        {
+            pid.setP( ShooterPivotConstants.SHOOTER_PIVOT_AMP_KP );
+            pid.setI( ShooterPivotConstants.SHOOTER_PIVOT_AMP_KI );
+            pid.setD( ShooterPivotConstants.SHOOTER_PIVOT_AMP_KD );
         }
         else
         {
             pid.setP( ShooterPivotConstants.SHOOTER_PIVOT_0_KP );
             pid.setI( ShooterPivotConstants.SHOOTER_PIVOT_0_KI );
+            pid.setD( ShooterPivotConstants.SHOOTER_PIVOT_0_KD );
         }
         pid.reset(m_position);
         m_pid = true;

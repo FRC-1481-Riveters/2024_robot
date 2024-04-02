@@ -15,19 +15,19 @@ import org.littletonrobotics.junction.Logger;
 public class ElevatorSubsystem extends SubsystemBase{
     private CANSparkMax m_motor = new CANSparkMax(ElevatorConstants.ELEVATOR_MOTOR, CANSparkLowLevel.MotorType.kBrushless );
     private SparkRelativeEncoder m_encoder = (SparkRelativeEncoder) m_motor.getEncoder();
-    private PIDController pidElevator = new PIDController(0.13, 0, 0.005);
+    private PIDController pidElevator = new PIDController(0.20, 0.090, 0.005);
     private DigitalInput m_beamBreak = new DigitalInput(3);
 
     private boolean m_pid;
     private double m_setpoint;
-    private int m_positionStable;
     public boolean m_beamBreakState;
     private double m_position;
+    private boolean m_atPosition;
 
     public ElevatorSubsystem(){
       m_motor.restoreFactoryDefaults();
       m_motor.setInverted(true);
-      m_motor.setSmartCurrentLimit(20, 20);
+      m_motor.setSmartCurrentLimit(30, 30);
       m_motor.setIdleMode(IdleMode.kBrake);
       m_encoder.setPosition(0);
       m_motor.setSoftLimit(SoftLimitDirection.kReverse, (float) ElevatorConstants.ELEVATOR_MAX);
@@ -35,9 +35,12 @@ public class ElevatorSubsystem extends SubsystemBase{
 
       // Create an initial log entry so they all show up in AdvantageScope without having to enable anything
       Logger.recordOutput("Elevator/Position", 0.0 );
+      Logger.recordOutput("Elevator/Setpoint", 0.0);
       Logger.recordOutput("Elevator/Output", 0.0 );
       Logger.recordOutput("Elevator/BeamBreak", false );
       Logger.recordOutput("Elevator/AtPosition", false );
+
+      pidElevator.setIZone(1.0);
     }
 
     @Override
@@ -61,16 +64,23 @@ public class ElevatorSubsystem extends SubsystemBase{
         m_beamBreakState = false;
       }
 
+      m_atPosition = false;
+
       if( m_pid == true )
       {
         pidCalculate = pidElevator.calculate( m_position, m_setpoint);
-        output = MathUtil.clamp( pidCalculate, -0.4, 0.4);
+        output = MathUtil.clamp( pidCalculate, -0.50, 0.50);
         m_motor.set( output );
         Logger.recordOutput("Elevator/Output", output);
         Logger.recordOutput("Elevator/Current", m_motor.getOutputCurrent());
+        if (Math.abs((m_position - m_setpoint)) <= ElevatorConstants.ELEVATOR_POSITION_TOLERANCE)
+        {
+           m_atPosition = true;
+        }
       }
 
       Logger.recordOutput("Elevator/Position", m_position );
+      Logger.recordOutput("Elevator/AtPosition", m_atPosition );
     } // end of method
 
     public void setElevatorJog( double speed )
@@ -86,34 +96,27 @@ public class ElevatorSubsystem extends SubsystemBase{
 
         m_setpoint = position;    
         m_pid = true;
-        m_positionStable = 0;
+        pidElevator.reset();
+        Logger.recordOutput("Elevator/Setpoint", m_setpoint);
     }
 
     public double getPosition() {
         return m_position;
     }
     
-    public boolean isAtPosition() {
+    public boolean isAboveIntake()
+    {
       boolean retval;
-      if (Math.abs((m_position - m_setpoint)) <= ElevatorConstants.ELEVATOR_POSITION_TOLERANCE) 
-      {
-        m_positionStable++;
-        if (m_positionStable >= 4)
-        {
-          retval = true; 
-        }
-        else
-        {
-          retval = false;
-        } 
-      } 
+      if( m_position < ElevatorConstants.ELEVATOR_ABOVE_BUMP )
+        retval = true;
       else
-      {
-        m_positionStable = 0;
         retval = false;
-      }
-      Logger.recordOutput("Elevator/AtPosition", retval );
       return retval;
+    }
+
+    public boolean isAtPosition() 
+    {
+      return m_atPosition;
     }
 
     public void elevatorDisable()
