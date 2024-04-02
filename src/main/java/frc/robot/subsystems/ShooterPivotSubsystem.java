@@ -61,8 +61,8 @@ public class ShooterPivotSubsystem extends SubsystemBase
         if( (angle >= (ShooterPivotConstants.SHOOTER_PIVOT_CLOSE - 0.5)) &&
             (angle <= (ShooterPivotConstants.SHOOTER_PIVOT_CLOSE + 0.5)) )
         {
-            pid.setP( 0.005 );
-            pid.setI( 0.0300 );
+            pid.setP( ShooterPivotConstants.SHOOTER_PIVOT_1_KP );
+            pid.setI( ShooterPivotConstants.SHOOTER_PIVOT_1_KI );
         }
         else
         {

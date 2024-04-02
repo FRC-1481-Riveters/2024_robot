@@ -164,6 +164,8 @@ public final class Constants {
         public static final double SHOOTER_PIVOT_0_KP = 0.0040;
         public static final double SHOOTER_PIVOT_0_KI = 0.024;
         public static final double SHOOTER_PIVOT_0_KD = 0.00034;
+        public static final double SHOOTER_PIVOT_1_KP = 0.005;
+        public static final double SHOOTER_PIVOT_1_KI = 0.0300;
 //        public static final double SHOOTER_PIVOT_0_KP = 0.003;
 //        public static final double SHOOTER_PIVOT_0_KI = 0.004;
 //        public static final double SHOOTER_PIVOT_0_KD = 0.0003;
