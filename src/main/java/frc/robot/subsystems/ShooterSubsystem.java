@@ -110,9 +110,9 @@ public class ShooterSubsystem extends SubsystemBase
         {
             // Spark MAX PID
             m_bottomPid.setReference(rpm, ControlType.kVelocity);
-            m_topPid.setReference(rpm, ControlType.kVelocity);
+            m_topPid.setReference(rpm+50, ControlType.kVelocity);
             m_bottomBackPid.setReference(rpm, ControlType.kVelocity);
-            m_topBackPid.setReference(rpm, ControlType.kVelocity);
+            m_topBackPid.setReference(rpm+50, ControlType.kVelocity);
         }
         else 
         {

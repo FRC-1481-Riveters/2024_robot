@@ -224,11 +224,7 @@ public class RobotContainer
         driverDPadLeft
             .onTrue(Commands.runOnce( ()->System.out.println("IntakeHalf") )
                 .andThen(Commands.runOnce( ()-> intakeSubsystem.setIntakeAngle( IntakeConstants.INTAKE_HALF ), intakeSubsystem))
-                .andThen(Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition( ElevatorConstants.ELEVATOR_AMP), elevatorSubsystem))
-            )
-            .onFalse(IntakeRetractCommand()
-                .andThen(Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition( ElevatorConstants.ELEVATOR_START), elevatorSubsystem))
-            );
+                 );
 
         Trigger operatorIntakeDeployTrigger = operatorJoystick.y();
         operatorIntakeDeployTrigger
@@ -297,7 +293,7 @@ public class RobotContainer
         Trigger operatorLeftJoystickAxisUp = operatorJoystick.axisGreaterThan(1, 0.7 );
         operatorLeftJoystickAxisUp 
             .onFalse(Commands.runOnce( ()-> elevatorSubsystem.setElevatorJog( 0 ), elevatorSubsystem))
-            .onTrue( Commands.runOnce( ()-> elevatorSubsystem.setElevatorJog( 0.25 ), elevatorSubsystem));
+            .onTrue( Commands.runOnce( ()-> elevatorSubsystem.setElevatorJog( 0.35 ), elevatorSubsystem));
         
         Trigger operatorLeftJoystickAxisDown = operatorJoystick.axisLessThan(1, -0.7 );
         operatorLeftJoystickAxisDown
@@ -464,6 +460,7 @@ public class RobotContainer
         operatorBack
          .onFalse(
             Commands.runOnce( ()-> shooterSubsystem.setShooterJog(0), shooterSubsystem)
+            .andThen( Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivotJog(0), shooterPivotSubsystem) )
             .alongWith (
                 Commands.runOnce( ()->operatorJoystick.getHID().setRumble(RumbleType.kBothRumble, 0)),
                 Commands.runOnce( ()->driverJoystick.getHID().setRumble(RumbleType.kBothRumble, 0))
@@ -761,14 +758,14 @@ public class RobotContainer
     public void testElevatorBeamBreak(boolean intendedState){
         String status;
         if(intendedState == true){
-            status = "Pressed";}
+            status = "Active";}
         else{
-            status = "not Pressed";}
-        if (elevatorSubsystem.m_beamBreakState == intendedState){
-            System.out.println("PASS: Elevator Beam Break is " + status);
+            status = "not Active";}
+        if (elevatorSubsystem.m_proxSwitchBottomState == intendedState){
+            System.out.println("PASS: Elevator Prox Switch is " + status);
         }
         else{
-            System.out.println("FAIL: Elevator Beam Break is " + status);
+            System.out.println("FAIL: Elevator Prox Switch is " + status);
             m_allTestsPassed = false;
         }
     }

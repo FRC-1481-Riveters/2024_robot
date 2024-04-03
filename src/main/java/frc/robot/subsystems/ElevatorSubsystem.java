@@ -2,8 +2,11 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ElevatorConstants;
+import frc.robot.Constants.ShooterPivotConstants;
 import edu.wpi.first.wpilibj.DigitalInput;
 
 import com.revrobotics.*;
@@ -15,12 +18,14 @@ import org.littletonrobotics.junction.Logger;
 public class ElevatorSubsystem extends SubsystemBase{
     private CANSparkMax m_motor = new CANSparkMax(ElevatorConstants.ELEVATOR_MOTOR, CANSparkLowLevel.MotorType.kBrushless );
     private SparkRelativeEncoder m_encoder = (SparkRelativeEncoder) m_motor.getEncoder();
-    private PIDController pidElevator = new PIDController(0.20, 0.090, 0.005);
-    private DigitalInput m_beamBreak = new DigitalInput(3);
+    private final TrapezoidProfile.Constraints m_constraints =
+        new TrapezoidProfile.Constraints(ElevatorConstants.ELEVATOR_VELOCITY, ElevatorConstants.ELEVATOR_ACCELERATION);
+    private ProfiledPIDController pidElevator = new ProfiledPIDController(0.30, 0.090, 0.005, m_constraints, 0.02);
+    private DigitalInput m_proxSwitchBottom = new DigitalInput(3);
+    public boolean m_proxSwitchBottomState;
 
     private boolean m_pid;
     private double m_setpoint;
-    public boolean m_beamBreakState;
     private double m_position;
     private boolean m_atPosition;
 
@@ -51,17 +56,14 @@ public class ElevatorSubsystem extends SubsystemBase{
       m_position = m_encoder.getPosition();
 
       // This method will be called once per scheduler run
-      Logger.recordOutput("Elevator/BeamBreak", m_beamBreak.get() );
+      m_proxSwitchBottomState = !m_proxSwitchBottom.get();
+      Logger.recordOutput("Elevator/ProxSwitchBottom", m_proxSwitchBottomState );
 
       // If the elevator is all the way down, zero the encoder
-      if( m_beamBreak.get() == false )
+      if( m_proxSwitchBottomState == true )
       {
         m_position = 0;
         m_encoder.setPosition(m_position);
-        m_beamBreakState = true;
-      }
-      else{
-        m_beamBreakState = false;
       }
 
       m_atPosition = false;
@@ -69,7 +71,7 @@ public class ElevatorSubsystem extends SubsystemBase{
       if( m_pid == true )
       {
         pidCalculate = pidElevator.calculate( m_position, m_setpoint);
-        output = MathUtil.clamp( pidCalculate, -0.50, 0.50);
+        output = MathUtil.clamp( pidCalculate, -0.75, 0.75);
         m_motor.set( output );
         Logger.recordOutput("Elevator/Output", output);
         Logger.recordOutput("Elevator/Current", m_motor.getOutputCurrent());
@@ -96,7 +98,7 @@ public class ElevatorSubsystem extends SubsystemBase{
 
         m_setpoint = position;    
         m_pid = true;
-        pidElevator.reset();
+        pidElevator.reset(m_position);
         Logger.recordOutput("Elevator/Setpoint", m_setpoint);
     }
 

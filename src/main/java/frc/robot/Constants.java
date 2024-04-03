@@ -117,7 +117,7 @@ public final class Constants {
         public static final double INTAKE_ANGLE_STOWED = 10;
         public static final double INTAKE_FLOOR_PICKUP = 189;
         public static final double INTAKE_SOURCE = 45.0;
-        public static final double INTAKE_HALF = 94.5;
+        public static final double INTAKE_HALF = 115;
         public static final double INTAKE_ANGLE_TOLERANCE = 7;
         public static final double INTAKE_ANGLE_MOTOR_ACCELERATION = 3500;
         public static final double INTAKE_ANGLE_MOTOR_CRUISE = 8000;
@@ -156,8 +156,8 @@ public final class Constants {
         public static final double SHOOTER_PIVOT_CLEAR_INTAKE = 61.0;
         public static final double SHOOTER_PIVOT_CLOSE = 124.5;
         public static final double SHOOTER_PIVOT_CLIMB = 85.0;
-        public static final double SHOOTER_PIVOT_3FOOT = 114.0;
-        public static final double SHOOTER_PIVOT_PODIUM = 108.0;
+        public static final double SHOOTER_PIVOT_3FOOT = 114.0; // 3 deg diff
+        public static final double SHOOTER_PIVOT_PODIUM = 106.5; // 3 deg diff?
         public static final double SHOOTER_PIVOT_AMP_LOAD = 88.2;
         public static final double SHOOTER_PIVOT_MAX = 140; // max travel
 
@@ -179,6 +179,8 @@ public final class Constants {
     }
 
     public static final class ElevatorConstants{
+        public static final double ELEVATOR_VELOCITY = 40;
+        public static final double ELEVATOR_ACCELERATION = 120;
         public static final int ELEVATOR_MOTOR = 42;
         public static final double ELEVATOR_POSITION_TOLERANCE = 0.3;
         //fill out position values later

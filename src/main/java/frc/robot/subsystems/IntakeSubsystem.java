@@ -90,9 +90,9 @@ public class IntakeSubsystem extends SubsystemBase {
         m_angleMotor.configFactoryDefault();
         // Set peak current
         m_angleMotor.setInverted(true);
-        m_angleMotor.configPeakCurrentLimit(15, IntakeConstants.TALON_TIMEOUT_MS);
+        m_angleMotor.configPeakCurrentLimit(30, IntakeConstants.TALON_TIMEOUT_MS);
         m_angleMotor.configPeakCurrentDuration(500, IntakeConstants.TALON_TIMEOUT_MS);
-        m_angleMotor.configContinuousCurrentLimit(15, IntakeConstants.TALON_TIMEOUT_MS);
+        m_angleMotor.configContinuousCurrentLimit(25, IntakeConstants.TALON_TIMEOUT_MS);
         m_angleMotor.enableCurrentLimit(true);
         m_angleMotor.setNeutralMode(NeutralMode.Coast);
 
