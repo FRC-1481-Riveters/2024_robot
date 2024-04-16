@@ -58,12 +58,14 @@ public class ShooterPivotSubsystem extends SubsystemBase
         double sensorSetpoint;
 
         m_Setpoint = angle;
+        pid.setIZone(m_tolerance*3);
         if( (angle >= (ShooterPivotConstants.SHOOTER_PIVOT_CLOSE - 0.5)) &&
             (angle <= (ShooterPivotConstants.SHOOTER_PIVOT_CLOSE + 0.5)) )
         {
             pid.setP( ShooterPivotConstants.SHOOTER_PIVOT_CLOSE_KP );
             pid.setI( ShooterPivotConstants.SHOOTER_PIVOT_CLOSE_KI );
             pid.setD( ShooterPivotConstants.SHOOTER_PIVOT_CLOSE_KD );
+            pid.setIZone(m_tolerance*4);
         }
         else if( (angle >= (ShooterPivotConstants.SHOOTER_PIVOT_AMP - 0.5)) &&
             (angle <= (ShooterPivotConstants.SHOOTER_PIVOT_AMP + 0.5)) )

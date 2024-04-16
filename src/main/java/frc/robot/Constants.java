@@ -12,7 +12,7 @@ import edu.wpi.first.math.util.Units;
 public final class Constants {
 
     public static final class ModuleConstants {
-        public static final double kWheelDiameterMeters = Units.inchesToMeters(4);
+        public static final double kWheelDiameterMeters = Units.inchesToMeters(3.825);
         public static final double SWERVE_STEERING_RATIO = (150.0 / 7.0);
         public static final double kPTurning = 0.2;
 
@@ -142,6 +142,7 @@ public final class Constants {
         public static final double SHOOTER_SPEED_PODIUM = 4800;
         public static final double SHOOTER_SPEED_AMP = 6000;
         public static final double SHOOTER_SPEED_AMP_LOAD = 800;
+        public static final double SHOOTER_SPEED_AUTON_SPEW = 2700;
 
     }
 
@@ -166,9 +167,9 @@ public final class Constants {
         public static final double SHOOTER_PIVOT_0_KP = 0.0040;
         public static final double SHOOTER_PIVOT_0_KI = 0.024;
         public static final double SHOOTER_PIVOT_0_KD = 0.00034;
-        public static final double SHOOTER_PIVOT_CLOSE_KP = 0.0030; //0.005;
-        public static final double SHOOTER_PIVOT_CLOSE_KI = 0.0240;
-        public static final double SHOOTER_PIVOT_CLOSE_KD = 0.00034;
+        public static final double SHOOTER_PIVOT_CLOSE_KP = 0.0040; //0.004;
+        public static final double SHOOTER_PIVOT_CLOSE_KI = 0.0400; //0.024
+        public static final double SHOOTER_PIVOT_CLOSE_KD = 0.00030;
         public static final double SHOOTER_PIVOT_AMP_KP = 0.0028; //0.005;
         public static final double SHOOTER_PIVOT_AMP_KI = 0.0350;
         public static final double SHOOTER_PIVOT_AMP_KD = 0.00034;

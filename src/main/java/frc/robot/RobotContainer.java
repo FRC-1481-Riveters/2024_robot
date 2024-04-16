@@ -88,10 +88,12 @@ public class RobotContainer
         NamedCommands.registerCommand("ShootCommand", AutonShooterCommand());
         NamedCommands.registerCommand("ShootAgainCommand", AutonShootAgainCommand());
         NamedCommands.registerCommand("Shoot3FootCommand", AutonShooter3FootCommand());
+        NamedCommands.registerCommand("SpewCommand", AutonSpewCommand());
         NamedCommands.registerCommand("IntakeRetractCommand", IntakeRetractAutoCommand() );
         NamedCommands.registerCommand("IntakeDeployCommand", IntakeDeployAutoCommand() );
         NamedCommands.registerCommand("IntakeRollersIn", IntakeRollersInCommand() );
         NamedCommands.registerCommand("IntakeRollersStop", IntakeRollersStopCommand() );
+        NamedCommands.registerCommand("Stow", AutonStowCommand());
         // A chooser for autonomous commands
         // Add a button to run the example auto to SmartDashboard
         //SmartDashboard.putData("Example Auto", new PathPlannerAuto("Example Auto"));
@@ -604,17 +606,28 @@ public class RobotContainer
     {
         return Commands.runOnce( ()->System.out.println("AutonShooterCommand") )
             .andThen(Commands.runOnce(()-> swerveSubsystem.saveOdometry()))
-            .andThen( 
+            /*.andThen( 
                 Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition(ElevatorConstants.ELEVATOR_PIVOT_CLEAR), elevatorSubsystem)
             )
             .andThen( 
                 Commands.waitSeconds(10)
                     .until( elevatorSubsystem::isAtPosition)
+            ) */
+            .andThen( 
+                Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition(ElevatorConstants.ELEVATOR_CLOSE), elevatorSubsystem)
             )
             .andThen( 
-                Commands.runOnce( ()-> shooterSubsystem.setShooterSpeed(ShooterConstants.SHOOTER_SPEED_SPEAKER), shooterSubsystem),
-                Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivot(ShooterPivotConstants.SHOOTER_PIVOT_CLOSE), shooterPivotSubsystem),
-                Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition(ElevatorConstants.ELEVATOR_CLOSE), elevatorSubsystem) 
+                Commands.waitSeconds(3)
+                    .until( elevatorSubsystem::isAboveIntake )
+            )
+            .andThen(  Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivot(ShooterPivotConstants.SHOOTER_PIVOT_TRAVEL), shooterPivotSubsystem) )
+            .andThen( 
+                Commands.waitSeconds(10)
+                    .until( elevatorSubsystem::isAtPosition)
+            )
+            .andThen(   
+                Commands.runOnce(()-> shooterSubsystem.setShooterSpeed(ShooterConstants.SHOOTER_SPEED_SPEAKER), shooterSubsystem),
+                Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivot(ShooterPivotConstants.SHOOTER_PIVOT_CLOSE), shooterPivotSubsystem)
             )
             .andThen( Commands.waitSeconds(3.0)
                 .until( this::isAtAllPositions ))
@@ -641,6 +654,33 @@ public class RobotContainer
         ;
     }
 
+    public Command AutonSpewCommand()
+    {
+        return Commands.runOnce( ()->System.out.println("AutonShooterCommand") )
+            .andThen(Commands.runOnce(()-> swerveSubsystem.saveOdometry()))
+            .andThen( 
+                Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition(ElevatorConstants.ELEVATOR_CLOSE), elevatorSubsystem)
+            )
+            .andThen( 
+                Commands.waitSeconds(3)
+                    .until( elevatorSubsystem::isAboveIntake )
+            )
+            .andThen(  Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivot(ShooterPivotConstants.SHOOTER_PIVOT_TRAVEL), shooterPivotSubsystem) )
+            .andThen( 
+                Commands.waitSeconds(10)
+                    .until( elevatorSubsystem::isAtPosition)
+            )
+            .andThen(   
+                Commands.runOnce(()-> shooterSubsystem.setShooterSpeed(ShooterConstants.SHOOTER_SPEED_AUTON_SPEW), shooterSubsystem),
+                Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivot(ShooterPivotConstants.SHOOTER_PIVOT_CLOSE), shooterPivotSubsystem)
+            )
+            .andThen( Commands.waitSeconds(3.0)
+                .until( this::isAtAllPositions ))
+            .andThen( IntakeRollersOutCommand())
+            .andThen( Commands.waitSeconds(0.60))
+            .andThen( IntakeRollersStopCommand());
+    }
+
     public Command AutonShooter3FootCommand() 
     {
         return Commands.runOnce( ()->System.out.println("AutonShooter3FootCommand") )
@@ -655,6 +695,34 @@ public class RobotContainer
             .andThen(Commands.waitSeconds(0.60))
             .andThen(IntakeRollersStopCommand())
         ;
+    }
+
+    public Command AutonStowCommand()
+    {
+        return Commands.runOnce( ()->System.out.println("Auton Stow Sequence") ) 
+            .andThen(Commands.runOnce(()-> shooterSubsystem.setShooterJog(0)))
+            .andThen( 
+                Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivot(ShooterPivotConstants.SHOOTER_PIVOT_TRAVEL), shooterPivotSubsystem)
+            )
+            .andThen( Commands.waitSeconds(3)
+                .until( shooterPivotSubsystem::atSetpoint)
+            )
+            .andThen( Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition(ElevatorConstants.ELEVATOR_PAST_BUMP ), elevatorSubsystem)
+            .andThen( Commands.waitSeconds(3)
+                .until( elevatorSubsystem::isAtPosition)
+            )
+            .andThen( 
+                Commands.runOnce( ()-> shooterPivotSubsystem.setShooterPivot(ShooterPivotConstants.SHOOTER_PIVOT_CLEAR_INTAKE), shooterPivotSubsystem)
+            )
+            .andThen( Commands.waitSeconds(3)
+                .until( shooterPivotSubsystem::atSetpoint)
+            )
+            .andThen( Commands.runOnce( ()-> elevatorSubsystem.setElevatorPosition(ElevatorConstants.ELEVATOR_START ), elevatorSubsystem)
+            )
+            .andThen( Commands.waitSeconds(10) 
+                .until( elevatorSubsystem::isAtPosition ))
+            .andThen(Commands.runOnce( ()->StopControls(true) ))
+            );
     }
 
     public Command IntakeRetractCommand() 
